@@ -417,6 +417,14 @@ section{position:relative;}
     ev.preventDefault();
     if(!f.checkValidity()){f.reportValidity();return;}
     var btn=f.querySelector('button[type=submit]'); if(btn) btn.disabled=true;
+    try{
+      var cfd=new FormData(f); var crol=cfd.get('rol')||'';
+      fetch('https://hollandrecruitment.app.n8n.cloud/webhook/lead',{method:'POST',mode:'no-cors',body:new URLSearchParams({
+        type: crol==='Werkgever'?'employer':'employee',
+        name: cfd.get('naam')||'', email: cfd.get('email')||'', phone: cfd.get('telefoon')||'',
+        company_name:'', role: crol, message: cfd.get('bericht')||'', source:'website-contact'
+      })});
+    }catch(e){}
     fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Accept':'application/json'},body:new FormData(f)})
       .then(function(r){return r.json();})
       .then(function(j){

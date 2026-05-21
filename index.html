@@ -853,13 +853,34 @@ document.querySelectorAll('[data-tab]').forEach(function(el){
 });
 /* Web3Forms — aanvragen komen binnen op sales@holland-recruitment.nl */
 var LEAD_ENDPOINT = "https://api.web3forms.com/submit";
-function bindForm(formId, okId){
+/* n8n — leads worden ook opgeslagen in de Supabase-database */
+var CRM_ENDPOINT = "https://hollandrecruitment.app.n8n.cloud/webhook/lead";
+function sendToCRM(params){
+  try {
+    fetch(CRM_ENDPOINT, {method:'POST', mode:'no-cors', body:new URLSearchParams(params)});
+  } catch(e){}
+}
+function bindForm(formId, okId, leadType, leadSource){
   var f = document.getElementById(formId);
+  if(!f) return;
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
     if(!f.checkValidity()){ f.reportValidity(); return; }
     var btn = f.querySelector('button[type=submit]');
     if(btn) btn.disabled = true;
+    var fd = new FormData(f);
+    var g = function(k){ return fd.get(k) || ''; };
+    if(leadType === 'employer'){
+      sendToCRM({ type:'employer', name:g('naam'), email:g('email'), phone:g('telefoon'),
+        company_name:g('bedrijf'), role:g('functie'),
+        message:'Aantal: '+g('aantal')+' | Locatie: '+g('locatie')+' | Toelichting: '+g('toelichting'),
+        source:leadSource });
+    } else {
+      sendToCRM({ type:'employee', name:g('naam'), email:g('email'), phone:g('telefoon'),
+        company_name:'', role:g('functie'),
+        message:'Woonplaats: '+g('woonplaats')+' | Beschikbaarheid: '+g('beschikbaarheid')+' | Ervaring: '+g('ervaring'),
+        source:leadSource });
+    }
     var done = function(){
       f.style.display = 'none';
       var ok = document.getElementById(okId);
@@ -876,8 +897,8 @@ function bindForm(formId, okId){
       .catch(fail);
   });
 }
-bindForm('form-emp','ok-emp');
-bindForm('form-wrk','ok-wrk');
+bindForm('form-emp','ok-emp','employer','website-werkgever');
+bindForm('form-wrk','ok-wrk','employee','website-werknemer');
 </script>
 </body>
 </html>
