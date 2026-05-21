@@ -492,6 +492,9 @@ section{position:relative;}
       </div>
       <div class="frm-body" id="frm-emp">
         <form id="form-emp" novalidate>
+          <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
+          <input type="hidden" name="subject" value="Nieuwe personeelsaanvraag via de website">
+          <input type="checkbox" name="botcheck" style="display:none">
           <div class="frm-grid">
             <div class="frm-field"><label>Bedrijfsnaam *</label><input type="text" name="bedrijf" required></div>
             <div class="frm-field"><label>Contactpersoon *</label><input type="text" name="naam" required></div>
@@ -515,6 +518,9 @@ section{position:relative;}
       </div>
       <div class="frm-body" id="frm-wrk" style="display:none;">
         <form id="form-wrk" novalidate>
+          <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
+          <input type="hidden" name="subject" value="Nieuwe inschrijving werkzoekende via de website">
+          <input type="checkbox" name="botcheck" style="display:none">
           <div class="frm-grid">
             <div class="frm-field"><label>Voor- en achternaam *</label><input type="text" name="naam" required></div>
             <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
@@ -828,23 +834,29 @@ document.querySelectorAll('.frm-tab').forEach(function(t){
 document.querySelectorAll('[data-tab]').forEach(function(el){
   el.addEventListener('click', function(){ showFormTab(el.dataset.tab); });
 });
-/* LEAD_ENDPOINT leeg = demo. Vul je Formspree-/Tally-endpoint in om leads echt te ontvangen. */
-var LEAD_ENDPOINT = "";
+/* Web3Forms — aanvragen komen binnen op sales@holland-recruitment.nl */
+var LEAD_ENDPOINT = "https://api.web3forms.com/submit";
 function bindForm(formId, okId){
   var f = document.getElementById(formId);
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
     if(!f.checkValidity()){ f.reportValidity(); return; }
+    var btn = f.querySelector('button[type=submit]');
+    if(btn) btn.disabled = true;
     var done = function(){
       f.style.display = 'none';
       var ok = document.getElementById(okId);
       ok.style.display = 'block';
       ok.scrollIntoView({behavior:'smooth', block:'center'});
     };
-    if(LEAD_ENDPOINT){
-      fetch(LEAD_ENDPOINT, {method:'POST', headers:{'Accept':'application/json'}, body:new FormData(f)})
-        .then(done).catch(function(){ alert('Er ging iets mis. Probeer het later opnieuw.'); });
-    } else { done(); }
+    var fail = function(){
+      if(btn) btn.disabled = false;
+      alert('Er ging iets mis bij het versturen. Probeer het opnieuw, of mail ons direct op info@holland-recruitment.nl.');
+    };
+    fetch(LEAD_ENDPOINT, {method:'POST', headers:{'Accept':'application/json'}, body:new FormData(f)})
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(j && j.success){ done(); } else { fail(); } })
+      .catch(fail);
   });
 }
 bindForm('form-emp','ok-emp');
