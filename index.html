@@ -342,8 +342,8 @@ section{position:relative;}
         <a href="#faq">Vragen</a>
       </div>
       <div class="nav-right">
-        <a href="#werknemers" class="nav-ghost">Ik zoek werk</a>
-        <a href="#aanvraag" class="btn btn-blue nav-cta" data-finder>Personeel aanvragen</a>
+        <a href="#formulier" class="nav-ghost" data-tab="wrk">Ik zoek werk</a>
+        <a href="#formulier" class="btn btn-blue nav-cta" data-tab="emp">Personeel aanvragen</a>
         <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
       </div>
     </nav>
@@ -352,7 +352,7 @@ section{position:relative;}
       <a href="#waarom">Waarom wij</a>
       <a href="#werknemers">Voor werknemers</a>
       <a href="#faq">Vragen</a>
-      <a href="#aanvraag" style="color:var(--blue);">Personeel aanvragen →</a>
+      <a href="#formulier" style="color:var(--blue);" data-tab="emp">Personeel aanvragen →</a>
     </div>
   </div>
 </div>
@@ -367,10 +367,10 @@ section{position:relative;}
         <h1 class="reveal d1">Logistiek personeel, <span class="blue">geregeld</span> in <span class="hl"><span>24&nbsp;uur</span></span>.</h1>
         <p class="hero-sub reveal d2">Holland Recruitment matcht warehouse-personeel aan logistieke bedrijven — met slimme technologie én een mens die opneemt. Jij plaatst de aanvraag, wij regelen contract, verloning en risico.</p>
         <div class="hero-cta reveal d3">
-          <a href="#aanvraag" class="btn btn-blue" data-finder>Personeel aanvragen
+          <a href="#formulier" class="btn btn-blue" data-tab="emp">Personeel aanvragen
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </a>
-          <a href="#werknemers" class="btn btn-line">Ik zoek werk</a>
+          <a href="#formulier" class="btn btn-line" data-tab="wrk">Ik zoek werk</a>
         </div>
         <div class="hero-trust reveal d4">
           <span><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Geen risico — wij zijn de juridische werkgever</span>
@@ -483,7 +483,7 @@ section{position:relative;}
       </div>
     </div>
 
-    <div class="frm-divider reveal"><span>Klaar? Plaats hier je aanvraag</span></div>
+    <div class="frm-divider reveal" id="formulier" style="scroll-margin-top:110px"><span>Klaar? Plaats hier je aanvraag</span></div>
     <div class="frm-shell reveal">
       <div class="frm-tabs">
         <button class="frm-tab active" data-frm="emp" type="button">Ik zoek personeel</button>
@@ -611,7 +611,7 @@ section{position:relative;}
           <li><span class="wck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Kies zelf je shifts en je beschikbaarheid</li>
           <li><span class="wck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Altijd duidelijk over je loon en je uren</li>
         </ul>
-        <a href="#aanvraag" class="btn btn-lime">Schrijf je in
+        <a href="#formulier" class="btn btn-lime" data-tab="wrk">Schrijf je in
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -711,10 +711,10 @@ section{position:relative;}
     <h2>Klaar om je personeelstekort op te lossen?</h2>
     <p>Plaats vrijblijvend een aanvraag. Binnen één werkdag hoor je van ons.</p>
     <div class="hero-cta">
-      <a href="#aanvraag" class="btn btn-lime" data-finder>Personeel aanvragen
+      <a href="#formulier" class="btn btn-lime" data-tab="emp">Personeel aanvragen
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
-      <a href="#werknemers" class="btn btn-white">Ik zoek werk</a>
+      <a href="#formulier" class="btn btn-white" data-tab="wrk">Ik zoek werk</a>
     </div>
   </div>
 </section>
@@ -737,11 +737,11 @@ section{position:relative;}
       </div>
       <div class="footer-col">
         <h4>Voor werkgevers</h4>
-        <a href="#hoe">Hoe het werkt</a><a href="#waarom">Waarom wij</a><a href="#aanvraag">Personeel aanvragen</a>
+        <a href="#hoe">Hoe het werkt</a><a href="#waarom">Waarom wij</a><a href="#formulier" data-tab="emp">Personeel aanvragen</a>
       </div>
       <div class="footer-col">
         <h4>Voor werknemers</h4>
-        <a href="#werknemers">Werken via ons</a><a href="#aanvraag">Inschrijven</a><a href="#faq">Vragen</a>
+        <a href="#werknemers">Werken via ons</a><a href="#formulier" data-tab="wrk">Inschrijven</a><a href="#faq">Vragen</a>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
@@ -814,20 +814,18 @@ function runFinder(){
 }
 document.getElementById('f-go').addEventListener('click', runFinder);
 
-/* CTA buttons scroll + focus finder */
-document.querySelectorAll('[data-finder]').forEach(function(el){
-  el.addEventListener('click', function(){
-    setTimeout(function(){ var s=document.getElementById('f-func'); if(s) s.focus({preventScroll:true}); }, 600);
-  });
-});
-
-/* intake form: tabs + submit */
+/* intake form: tab switching */
+function showFormTab(which){
+  document.querySelectorAll('.frm-tab').forEach(function(x){ x.classList.toggle('active', x.dataset.frm === which); });
+  document.getElementById('frm-emp').style.display = which === 'wrk' ? 'none' : 'block';
+  document.getElementById('frm-wrk').style.display = which === 'wrk' ? 'block' : 'none';
+}
 document.querySelectorAll('.frm-tab').forEach(function(t){
-  t.addEventListener('click', function(){
-    document.querySelectorAll('.frm-tab').forEach(function(x){ x.classList.toggle('active', x === t); });
-    document.getElementById('frm-emp').style.display = t.dataset.frm === 'emp' ? 'block' : 'none';
-    document.getElementById('frm-wrk').style.display = t.dataset.frm === 'wrk' ? 'block' : 'none';
-  });
+  t.addEventListener('click', function(){ showFormTab(t.dataset.frm); });
+});
+/* CTA buttons: open the form on the right tab */
+document.querySelectorAll('[data-tab]').forEach(function(el){
+  el.addEventListener('click', function(){ showFormTab(el.dataset.tab); });
 });
 /* LEAD_ENDPOINT leeg = demo. Vul je Formspree-/Tally-endpoint in om leads echt te ontvangen. */
 var LEAD_ENDPOINT = "";
