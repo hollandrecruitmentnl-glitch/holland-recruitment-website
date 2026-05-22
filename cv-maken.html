@@ -30,9 +30,13 @@ input,textarea{width:100%;font-family:inherit;font-size:.97rem;color:var(--ink);
 input:focus,textarea:focus{outline:none;border-color:var(--blue);}
 textarea{resize:vertical;min-height:78px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
-.blk{border-top:1px dashed var(--line);padding-top:16px;margin-top:4px;}
-.blk:first-of-type{border-top:0;padding-top:0;}
-.blk-n{font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);margin-bottom:10px;}
+.blk{border-top:1px dashed var(--line);padding-top:16px;margin-top:14px;}
+.blk:first-of-type{border-top:0;padding-top:0;margin-top:0;}
+.blk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.blk-n{font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;color:var(--muted);}
+.blk-del{background:none;border:0;color:var(--muted);font-size:.82rem;cursor:pointer;text-decoration:underline;padding:0;}
+.add-btn{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--blue);color:var(--blue);font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;border-radius:100px;padding:9px 18px;cursor:pointer;margin-top:6px;}
+.add-btn:hover{background:#E9ECFF;}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;border:0;border-radius:100px;padding:15px 30px;cursor:pointer;text-decoration:none;}
 .btn-blue{background:var(--blue);color:#fff;width:100%;}
 .btn-blue:disabled{opacity:.6;cursor:default;}
@@ -90,60 +94,33 @@ textarea{resize:vertical;min-height:78px;}
 
     <div class="card">
       <h2>Werkervaring</h2>
-      <p class="hint">Je laatste of belangrijkste banen. Vul in wat je hebt.</p>
-      <div class="blk"><div class="blk-n">Werkervaring 1</div>
-        <div class="grid2">
-          <div><label>Functie</label><input type="text" name="e1_functie"></div>
-          <div><label>Werkgever</label><input type="text" name="e1_werkgever"></div>
-        </div>
-        <label>Periode</label><input type="text" name="e1_periode" placeholder="bijv. 2022 – 2024">
-        <label>Wat deed je?</label><textarea name="e1_omschrijving" placeholder="Korte omschrijving van je taken."></textarea>
-      </div>
-      <div class="blk"><div class="blk-n">Werkervaring 2</div>
-        <div class="grid2">
-          <div><label>Functie</label><input type="text" name="e2_functie"></div>
-          <div><label>Werkgever</label><input type="text" name="e2_werkgever"></div>
-        </div>
-        <label>Periode</label><input type="text" name="e2_periode" placeholder="bijv. 2020 – 2022">
-        <label>Wat deed je?</label><textarea name="e2_omschrijving"></textarea>
-      </div>
-      <div class="blk"><div class="blk-n">Werkervaring 3</div>
-        <div class="grid2">
-          <div><label>Functie</label><input type="text" name="e3_functie"></div>
-          <div><label>Werkgever</label><input type="text" name="e3_werkgever"></div>
-        </div>
-        <label>Periode</label><input type="text" name="e3_periode">
-        <label>Wat deed je?</label><textarea name="e3_omschrijving"></textarea>
-      </div>
+      <p class="hint">Voeg al je relevante banen toe. Vul in wat je hebt.</p>
+      <div id="exp-list"></div>
+      <button type="button" class="add-btn" id="add-exp">+ Nog een werkervaring</button>
     </div>
 
     <div class="card">
       <h2>Opleiding</h2>
       <p class="hint">Diploma's of opleidingen die je hebt gevolgd.</p>
-      <div class="blk"><div class="blk-n">Opleiding 1</div>
-        <label>Opleiding / diploma</label><input type="text" name="o1_opleiding">
-        <div class="grid2">
-          <div><label>School</label><input type="text" name="o1_school"></div>
-          <div><label>Periode</label><input type="text" name="o1_periode"></div>
-        </div>
-      </div>
-      <div class="blk"><div class="blk-n">Opleiding 2</div>
-        <label>Opleiding / diploma</label><input type="text" name="o2_opleiding">
-        <div class="grid2">
-          <div><label>School</label><input type="text" name="o2_school"></div>
-          <div><label>Periode</label><input type="text" name="o2_periode"></div>
-        </div>
-      </div>
+      <div id="edu-list"></div>
+      <button type="button" class="add-btn" id="add-edu">+ Nog een opleiding</button>
     </div>
 
     <div class="card">
-      <h2>Vaardigheden & talen</h2>
+      <h2>Vaardigheden &amp; talen</h2>
       <label>Vaardigheden en certificaten</label>
       <input type="text" name="vaardigheden" placeholder="bijv. heftruckcertificaat, VCA, ervaring met scanwerk">
       <div class="grid2">
         <div><label>Talen</label><input type="text" name="talen" placeholder="bijv. Nederlands, Engels"></div>
         <div><label>Rijbewijs</label><input type="text" name="rijbewijs" placeholder="bijv. B"></div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>Certificaten &amp; diploma's <span style="color:var(--muted);font-weight:400;font-size:.9rem;">(optioneel)</span></h2>
+      <p class="hint">Heb je certificaten of diploma's? Voeg ze hier toe — wij koppelen ze aan je profiel.</p>
+      <input type="file" id="cert-files" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" style="font-size:.92rem;padding-top:11px;">
+      <span style="display:block;margin-top:2px;font-size:.82rem;color:var(--muted);">PDF of foto (JPG/PNG) &middot; meerdere bestanden mogelijk &middot; max 5 MB per bestand.</span>
     </div>
 
     <button type="submit" class="btn btn-blue" id="cv-submit">Maak mijn cv</button>
@@ -181,21 +158,53 @@ textarea{resize:vertical;min-height:78px;}
   var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
   var GEN_URL='https://hollandrecruitment.app.n8n.cloud/webhook/cv-genereren';
   var LINK_URL='https://hollandrecruitment.app.n8n.cloud/webhook/cv-toevoegen';
+  var DOC_URL='https://hollandrecruitment.app.n8n.cloud/webhook/document-toevoegen';
   var btn=document.getElementById('cv-submit');
 
   function v(n){var el=form.elements[n];return el?(el.value||'').trim():'';}
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function show(id){['cv-busy','cv-klaar','cv-err'].forEach(function(x){document.getElementById(x).style.display=(x===id?'block':'none');});}
 
+  /* ---- dynamische blokken ---- */
+  function block(kind){
+    var d=document.createElement('div');
+    d.className='blk';
+    var inner='<div class="blk-top"><span class="blk-n">'+(kind==='exp'?'Werkervaring':'Opleiding')+'</span>'
+      +'<button type="button" class="blk-del">verwijderen</button></div>';
+    if(kind==='exp'){
+      inner+='<div class="grid2"><div><label>Functie</label><input type="text" class="f-functie"></div>'
+        +'<div><label>Werkgever</label><input type="text" class="f-werkgever"></div></div>'
+        +'<label>Periode</label><input type="text" class="f-periode" placeholder="bijv. 2022 – 2024">'
+        +'<label>Wat deed je?</label><textarea class="f-omschrijving" placeholder="Korte omschrijving van je taken."></textarea>';
+    }else{
+      inner+='<label>Opleiding / diploma</label><input type="text" class="f-opleiding">'
+        +'<div class="grid2"><div><label>School</label><input type="text" class="f-school"></div>'
+        +'<div><label>Periode</label><input type="text" class="f-periode"></div></div>';
+    }
+    d.innerHTML=inner;
+    d.querySelector('.blk-del').addEventListener('click',function(){ d.remove(); });
+    return d;
+  }
+  var expList=document.getElementById('exp-list'), eduList=document.getElementById('edu-list');
+  document.getElementById('add-exp').addEventListener('click',function(){ expList.appendChild(block('exp')); });
+  document.getElementById('add-edu').addEventListener('click',function(){ eduList.appendChild(block('edu')); });
+  expList.appendChild(block('exp'));
+  eduList.appendChild(block('edu'));
+
   function collect(){
     var exp=[];
-    [1,2,3].forEach(function(i){
-      var f=v('e'+i+'_functie'),w=v('e'+i+'_werkgever'),p=v('e'+i+'_periode'),o=v('e'+i+'_omschrijving');
+    expList.querySelectorAll('.blk').forEach(function(b){
+      var f=b.querySelector('.f-functie').value.trim();
+      var w=b.querySelector('.f-werkgever').value.trim();
+      var p=b.querySelector('.f-periode').value.trim();
+      var o=b.querySelector('.f-omschrijving').value.trim();
       if(f||w||o) exp.push({functie:f,werkgever:w,periode:p,omschrijving:o});
     });
     var edu=[];
-    [1,2].forEach(function(i){
-      var op=v('o'+i+'_opleiding'),s=v('o'+i+'_school'),p=v('o'+i+'_periode');
+    eduList.querySelectorAll('.blk').forEach(function(b){
+      var op=b.querySelector('.f-opleiding').value.trim();
+      var s=b.querySelector('.f-school').value.trim();
+      var p=b.querySelector('.f-periode').value.trim();
       if(op||s) edu.push({opleiding:op,school:s,periode:p});
     });
     return {
@@ -227,8 +236,7 @@ textarea{resize:vertical;min-height:78px;}
       cv.opleiding.forEach(function(e){
         var meta=[e.school,e.periode].filter(Boolean).map(esc).join('  &middot;  ');
         h+='<div class="cv-item"><h4>'+esc(e.opleiding||'')+'</h4>';
-        if(meta) h+='<div class="cv-meta">'+meta+'</div></div>';
-        else h+='</div>';
+        if(meta) h+='<div class="cv-meta">'+meta+'</div></div>'; else h+='</div>';
       });
     }
     if(cv.vaardigheden){ h+='<div class="cv-sec">Vaardigheden &amp; certificaten</div><div class="cv-p">'+esc(cv.vaardigheden)+'</div>'; }
@@ -240,6 +248,28 @@ textarea{resize:vertical;min-height:78px;}
     document.getElementById('cv-doc').innerHTML=h;
   }
 
+  function safeName(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+/,'').replace(/-+$/,'');}
+
+  function uploadCerts(sb){
+    var input=document.getElementById('cert-files');
+    var files=input&&input.files?Array.prototype.slice.call(input.files):[];
+    return Promise.all(files.map(function(file){
+      if(file.size>5*1024*1024) return Promise.resolve();
+      var dot=file.name.lastIndexOf('.');
+      var ext=dot>-1?file.name.slice(dot).toLowerCase():'';
+      var path='certificaat/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+(safeName(file.name.slice(0,dot>-1?dot:file.name.length))||'document')+ext;
+      return sb.storage.from('kandidaat-documenten').upload(path,file,{contentType:file.type||'application/octet-stream'})
+        .then(function(res){
+          if(res&&res.error) return;
+          try{
+            var p=new URLSearchParams();
+            p.append('candidate_id',candId); p.append('type','certificaat'); p.append('file_url',path);
+            fetch(DOC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+          }catch(e){}
+        }).catch(function(){});
+    }));
+  }
+
   form.addEventListener('submit',function(ev){
     ev.preventDefault();
     if(!form.checkValidity()){form.reportValidity();return;}
@@ -247,14 +277,18 @@ textarea{resize:vertical;min-height:78px;}
     var data=collect();
     form.style.display='none';
     show('cv-busy');
+    var sb=window.supabase.createClient(SB_URL,SB_ANON);
 
-    fetch(GEN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    uploadCerts(sb)
+      .then(function(){
+        return fetch(GEN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      })
       .then(function(r){ if(!r.ok) throw new Error('http'); return r.json(); })
       .then(function(cv){
         if(!cv||(!cv.profiel&&!(cv.ervaring&&cv.ervaring.length))) throw new Error('leeg');
         renderCV(cv);
         show('cv-klaar');
-        var safe=((data.voornaam+'-'+data.achternaam).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+/,'').replace(/-+$/,''))||'kandidaat';
+        var safe=safeName(data.voornaam+'-'+data.achternaam)||'kandidaat';
         var path='cv/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+safe+'.pdf';
         var opt={margin:0,filename:'cv-'+safe+'.pdf',image:{type:'jpeg',quality:0.97},
           html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
@@ -264,7 +298,6 @@ textarea{resize:vertical;min-height:78px;}
             var dl=document.getElementById('cv-download');
             dl.href=URL.createObjectURL(blob);
             dl.setAttribute('download','cv-'+safe+'.pdf');
-            var sb=window.supabase.createClient(SB_URL,SB_ANON);
             return sb.storage.from('kandidaat-documenten').upload(path,blob,{contentType:'application/pdf'})
               .then(function(res){
                 if(res&&res.error) return;
