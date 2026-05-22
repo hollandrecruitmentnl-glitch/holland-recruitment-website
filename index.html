@@ -299,7 +299,7 @@ section{position:relative;}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width:940px){
-  .nav-links,.nav .nav-ghost{display:none;}
+  .nav-links,.nav .nav-ghost,.nav-cta-alt{display:none;}
   .burger{display:block;}
   .hero-grid,.finder-wrap,.workers-in{grid-template-columns:1fr;}
   .hero-visual{margin-top:30px;}
@@ -344,6 +344,7 @@ section{position:relative;}
         <a href="/over-ons.html">Over ons</a>
       </div>
       <div class="nav-right">
+        <a href="/inschrijven.html" class="btn btn-line nav-cta nav-cta-alt">Inschrijven</a>
         <a href="#formulier" class="btn btn-blue nav-cta" data-tab="emp">Personeel aanvragen</a>
         <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
       </div>
@@ -353,6 +354,7 @@ section{position:relative;}
       <a href="/voor-werknemers.html">Voor werknemers</a>
       <a href="/hoe-het-werkt.html">Hoe het werkt</a>
       <a href="/over-ons.html">Over ons</a>
+      <a href="/inschrijven.html" style="color:var(--blue);">Inschrijven →</a>
       <a href="#formulier" style="color:var(--blue);" data-tab="emp">Personeel aanvragen →</a>
     </div>
   </div>
@@ -371,7 +373,7 @@ section{position:relative;}
           <a href="#formulier" class="btn btn-blue" data-tab="emp">Personeel aanvragen
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </a>
-          <a href="#formulier" class="btn btn-line" data-tab="wrk">Ik zoek werk</a>
+          <a href="/inschrijven.html" class="btn btn-line">Ik zoek werk</a>
         </div>
         <div class="hero-trust reveal d4">
           <span><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Geen risico — wij zijn de juridische werkgever</span>
@@ -517,28 +519,12 @@ section{position:relative;}
         </div>
       </div>
       <div class="frm-body" id="frm-wrk" style="display:none;">
-        <form id="form-wrk" novalidate>
-          <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
-          <input type="hidden" name="subject" value="Nieuwe inschrijving werkzoekende via de website">
-          <input type="checkbox" name="botcheck" style="display:none">
-          <div class="frm-grid">
-            <div class="frm-field"><label>Voor- en achternaam *</label><input type="text" name="naam" required></div>
-            <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
-            <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
-            <div class="frm-field"><label>Woonplaats *</label><input type="text" name="woonplaats" required></div>
-            <div class="frm-field"><label>Welk werk zoek je? *</label><select name="functie" required><option value="">Maak een keuze</option><option>Orderpicker</option><option>Magazijnmedewerker</option><option>Heftruckchauffeur</option><option>Reachtruckchauffeur</option><option>Inpakker</option><option>Logistiek medewerker</option><option>Sta open</option></select></div>
-            <div class="frm-field"><label>Beschikbaarheid *</label><select name="beschikbaarheid" required><option value="">Maak een keuze</option><option>Fulltime</option><option>Parttime</option><option>Alleen weekend</option><option>Flexibel / oproep</option></select></div>
-            <div class="frm-field full"><label>Ervaring of certificaten</label><textarea name="ervaring" placeholder="bijv. heftruckcertificaat, 2 jaar magazijnervaring..."></textarea></div>
-          </div>
-          <div class="frm-foot">
-            <button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Inschrijven</button>
-            <p class="frm-note">Gratis inschrijven. We nemen snel contact met je op.</p>
-          </div>
-        </form>
-        <div class="frm-success" id="ok-wrk">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-          <h3>Welkom bij Holland Recruitment!</h3>
-          <p>Je inschrijving is binnen. We nemen snel contact op zodra er passend werk is.</p>
+        <div style="text-align:center;padding:36px 24px;">
+          <h3 style="font-family:'Poppins',sans-serif;font-size:1.4rem;color:var(--ink);margin-bottom:10px;">Werk zoeken? Schrijf je gratis in.</h3>
+          <p style="color:var(--muted);font-size:1rem;max-width:440px;margin:0 auto 22px;">Vul in twee minuten je profiel in — je beschikbaarheid, wat je zoekt en, als je wilt, je cv. Wij matchen jou aan passend werk in de logistiek.</p>
+          <a href="/inschrijven.html" class="btn btn-blue" style="justify-content:center;">Naar het inschrijfformulier
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
         </div>
       </div>
     </div>
@@ -618,7 +604,7 @@ section{position:relative;}
           <li><span class="wck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Kies zelf je shifts en je beschikbaarheid</li>
           <li><span class="wck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Altijd duidelijk over je loon en je uren</li>
         </ul>
-        <a href="#formulier" class="btn btn-lime" data-tab="wrk">Schrijf je in
+        <a href="/inschrijven.html" class="btn btn-lime">Schrijf je in
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -721,7 +707,7 @@ section{position:relative;}
       <a href="#formulier" class="btn btn-lime" data-tab="emp">Personeel aanvragen
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
-      <a href="#formulier" class="btn btn-white" data-tab="wrk">Ik zoek werk</a>
+      <a href="/inschrijven.html" class="btn btn-white">Ik zoek werk</a>
     </div>
   </div>
 </section>
@@ -900,7 +886,6 @@ function bindForm(formId, okId, leadType, leadSource){
   });
 }
 bindForm('form-emp','ok-emp','employer','website-werkgever');
-bindForm('form-wrk','ok-wrk','employee','website-werknemer');
 </script>
 </body>
 </html>
