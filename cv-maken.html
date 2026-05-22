@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Gratis je cv laten maken — Holland Recruitment</title>
-<meta name="description" content="Laat gratis een professioneel cv opstellen door Holland Recruitment. Vul je gegevens in, wij maken er een net cv van.">
-<meta name="robots" content="noindex">
+<title>Gratis cv maken — professioneel cv in een paar minuten | Holland Recruitment</title>
+<meta name="description" content="Maak gratis een professioneel cv met de cv-maker van Holland Recruitment. Vul je gegevens in — onze AI maakt er een net cv van, direct als PDF om te downloaden.">
+<link rel="canonical" href="https://www.holland-recruitment.nl/cv-maken.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,10 +14,14 @@
 :root{--blue:#3551E6;--ink:#15183A;--cream:#FBF6EC;--lime:#D6F24E;--line:#ECE5D6;--muted:#5C6178;}
 body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;font-size:16px;}
 .bar{background:#fff;border-bottom:1px solid var(--line);}
-.bar-in{max-width:1000px;margin:0 auto;padding:15px 22px;display:flex;align-items:center;gap:10px;}
+.bar-in{max-width:1000px;margin:0 auto;padding:15px 22px;display:flex;align-items:center;gap:12px;}
 .logo{width:34px;height:34px;}
 .brand{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;}
 .brand span{color:var(--blue);}
+.bar-links{margin-left:auto;display:flex;gap:20px;align-items:center;}
+.bar-links a{font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;}
+.bar-links a:hover{color:var(--blue);}
+.bar-links a.cta{background:var(--blue);color:#fff;padding:8px 16px;border-radius:100px;}
 .wrap{max-width:720px;margin:0 auto;padding:38px 22px 70px;}
 .tag{display:inline-block;background:#E9ECFF;color:var(--blue);font-family:'Poppins',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:7px 13px;border-radius:100px;margin-bottom:15px;}
 h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,2.5rem);line-height:1.15;letter-spacing:-.02em;margin-bottom:12px;}
@@ -59,6 +63,7 @@ textarea{resize:vertical;min-height:78px;}
 #cv-doc .cv-item .cv-meta{font-size:13px;color:#5C6178;margin:1px 0 4px;}
 #cv-doc .cv-item p{font-size:14px;line-height:1.55;color:#3a3d55;}
 #cv-doc .cv-foot{margin-top:34px;border-top:1px solid #ECE5D6;padding-top:12px;font-size:11.5px;color:#9a9a9a;}
+@media(max-width:640px){.bar-links{display:none;}}
 @media(max-width:560px){.grid2{grid-template-columns:1fr;}.wrap{padding:28px 16px 60px;}#cv-doc{padding:40px 34px;}}
 </style>
 </head>
@@ -66,12 +71,18 @@ textarea{resize:vertical;min-height:78px;}
 <div class="bar"><div class="bar-in">
   <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="34" fill="#3551E6"/><rect x="34" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="69" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="45" y="51.5" width="30" height="17" rx="5.5" fill="#D6F24E"/></svg>
   <a href="/" class="brand">Holland<span>.</span></a>
+  <div class="bar-links">
+    <a href="/voor-werknemers.html">Voor werknemers</a>
+    <a href="/voor-werkgevers.html">Voor werkgevers</a>
+    <a href="/hoe-het-werkt.html">Hoe het werkt</a>
+    <a href="/inschrijven.html" class="cta">Inschrijven</a>
+  </div>
 </div></div>
 
 <div class="wrap">
-  <span class="tag">Voor werknemers</span>
-  <h1>Laat gratis je cv maken.</h1>
-  <p class="lead">Geen cv? Geen probleem. Vul hieronder je gegevens in — wij maken er een net, professioneel cv van. Vul in wat je hebt; niet alles is verplicht.</p>
+  <span class="tag">Gratis &middot; voor werkzoekenden</span>
+  <h1>Gratis je cv maken.</h1>
+  <p class="lead">Geen cv of een verouderd cv? Vul hieronder je gegevens in — onze AI maakt er een net, professioneel cv van dat je meteen kunt downloaden als PDF. Gratis, in een paar minuten. Vul in wat je hebt; niet alles is verplicht.</p>
 
   <form id="cv-form" novalidate>
     <div class="card">
@@ -124,7 +135,7 @@ textarea{resize:vertical;min-height:78px;}
     </div>
 
     <button type="submit" class="btn btn-blue" id="cv-submit">Maak mijn cv</button>
-    <p class="note">Gratis. Je cv wordt direct aan je profiel bij Holland Recruitment gekoppeld.</p>
+    <p class="note">Gratis. Je cv wordt opgesteld en je profiel wordt aangemaakt bij Holland Recruitment.</p>
   </form>
 
   <div class="msg" id="cv-busy">
@@ -135,14 +146,9 @@ textarea{resize:vertical;min-height:78px;}
 
   <div class="msg" id="cv-klaar">
     <h2>Je cv is klaar!</h2>
-    <p>We hebben je cv opgesteld en aan je profiel gekoppeld. Download het hieronder.</p>
+    <p>We hebben je cv opgesteld. Download het hieronder — en we houden je op de hoogte van passend werk.</p>
     <a href="#" class="btn btn-blue" id="cv-download" style="width:auto;">Download je cv (PDF)</a>
     <div class="cv-wrap"><div id="cv-doc"></div></div>
-  </div>
-
-  <div class="msg" id="cv-err">
-    <h2>Deze link is niet compleet</h2>
-    <p>Open deze pagina via de knop in je e-mail van Holland Recruitment, of <a href="/inschrijven.html" style="color:var(--blue);font-weight:600;">schrijf je eerst in</a>.</p>
   </div>
 </div>
 
@@ -151,21 +157,18 @@ textarea{resize:vertical;min-height:78px;}
 <script>
 (function(){
   var form=document.getElementById('cv-form');
-  var candId=(new URLSearchParams(window.location.search).get('id')||'').trim();
-  if(!candId){ form.style.display='none'; document.getElementById('cv-err').style.display='block'; return; }
-
   var SB_URL='https://bmvxlxclcwiyrfemqiwx.supabase.co';
   var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
   var GEN_URL='https://hollandrecruitment.app.n8n.cloud/webhook/cv-genereren';
-  var LINK_URL='https://hollandrecruitment.app.n8n.cloud/webhook/cv-toevoegen';
+  var INTAKE_URL='https://hollandrecruitment.app.n8n.cloud/webhook/kandidaat';
   var DOC_URL='https://hollandrecruitment.app.n8n.cloud/webhook/document-toevoegen';
   var btn=document.getElementById('cv-submit');
 
   function v(n){var el=form.elements[n];return el?(el.value||'').trim():'';}
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function show(id){['cv-busy','cv-klaar','cv-err'].forEach(function(x){document.getElementById(x).style.display=(x===id?'block':'none');});}
+  function show(id){['cv-busy','cv-klaar'].forEach(function(x){document.getElementById(x).style.display=(x===id?'block':'none');});}
+  function safeName(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+/,'').replace(/-+$/,'');}
 
-  /* ---- dynamische blokken ---- */
   function block(kind){
     var d=document.createElement('div');
     d.className='blk';
@@ -208,7 +211,6 @@ textarea{resize:vertical;min-height:78px;}
       if(op||s) edu.push({opleiding:op,school:s,periode:p});
     });
     return {
-      candidate_id:candId,
       voornaam:v('voornaam'),achternaam:v('achternaam'),woonplaats:v('woonplaats'),
       telefoon:v('telefoon'),email:v('email'),over_jou:v('over_jou'),
       ervaring:exp,opleiding:edu,
@@ -248,26 +250,41 @@ textarea{resize:vertical;min-height:78px;}
     document.getElementById('cv-doc').innerHTML=h;
   }
 
-  function safeName(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+/,'').replace(/-+$/,'');}
-
+  /* registreer de kandidaat (upsert op e-mail) en koppel het cv */
+  function registreer(data,cvPath){
+    try{
+      var p=new URLSearchParams();
+      p.append('first_name',data.voornaam); p.append('last_name',data.achternaam);
+      p.append('email',data.email); p.append('phone',data.telefoon); p.append('city',data.woonplaats);
+      p.append('notes','Profiel via cv-generator: '+(data.over_jou||''));
+      p.append('cv_path',cvPath||'');
+      fetch(INTAKE_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+    }catch(e){}
+  }
+  /* koppel certificaten ~6s later, zodat de kandidaat al bestaat */
+  function koppelCerts(email,paths){
+    if(!paths.length) return;
+    setTimeout(function(){
+      paths.forEach(function(path){
+        try{
+          var p=new URLSearchParams();
+          p.append('email',email); p.append('type','certificaat'); p.append('file_url',path);
+          fetch(DOC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+        }catch(e){}
+      });
+    },6000);
+  }
   function uploadCerts(sb){
     var input=document.getElementById('cert-files');
     var files=input&&input.files?Array.prototype.slice.call(input.files):[];
     return Promise.all(files.map(function(file){
-      if(file.size>5*1024*1024) return Promise.resolve();
+      if(file.size>5*1024*1024) return Promise.resolve(null);
       var dot=file.name.lastIndexOf('.');
       var ext=dot>-1?file.name.slice(dot).toLowerCase():'';
       var path='certificaat/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+(safeName(file.name.slice(0,dot>-1?dot:file.name.length))||'document')+ext;
       return sb.storage.from('kandidaat-documenten').upload(path,file,{contentType:file.type||'application/octet-stream'})
-        .then(function(res){
-          if(res&&res.error) return;
-          try{
-            var p=new URLSearchParams();
-            p.append('candidate_id',candId); p.append('type','certificaat'); p.append('file_url',path);
-            fetch(DOC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
-          }catch(e){}
-        }).catch(function(){});
-    }));
+        .then(function(res){ return (res&&res.error)?null:path; }).catch(function(){return null;});
+    })).then(function(r){ return r.filter(Boolean); });
   }
 
   form.addEventListener('submit',function(ev){
@@ -278,9 +295,11 @@ textarea{resize:vertical;min-height:78px;}
     form.style.display='none';
     show('cv-busy');
     var sb=window.supabase.createClient(SB_URL,SB_ANON);
+    var certPaths=[];
 
     uploadCerts(sb)
-      .then(function(){
+      .then(function(paths){
+        certPaths=paths;
         return fetch(GEN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
       })
       .then(function(r){ if(!r.ok) throw new Error('http'); return r.json(); })
@@ -300,12 +319,9 @@ textarea{resize:vertical;min-height:78px;}
             dl.setAttribute('download','cv-'+safe+'.pdf');
             return sb.storage.from('kandidaat-documenten').upload(path,blob,{contentType:'application/pdf'})
               .then(function(res){
-                if(res&&res.error) return;
-                try{
-                  var p=new URLSearchParams();
-                  p.append('candidate_id',candId); p.append('cv_path',path);
-                  fetch(LINK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
-                }catch(e){}
+                var cvPath=(res&&res.error)?'':path;
+                registreer(data,cvPath);
+                koppelCerts(data.email,certPaths);
               });
           });
       })
