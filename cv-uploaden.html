@@ -374,6 +374,7 @@ section{position:relative;}
       </div>
       <div class="frm-foot"><button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Cv toevoegen</button></div>
     </form>
+    <p id="geen-cv" style="margin-top:18px;font-size:.95rem;color:var(--muted);">Heb je (nog) geen cv? <a id="naar-cv-maken" href="/cv-maken.html" style="color:var(--blue);font-weight:600;">Laat ons er gratis &eacute;&eacute;n maken &rarr;</a></p>
     <div class="frm-success" id="ok-cv">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h3>Je cv is toegevoegd!</h3>
@@ -389,7 +390,9 @@ section{position:relative;}
 (function(){
   var f=document.getElementById('form-cv'); if(!f) return;
   var candId=(new URLSearchParams(window.location.search).get('id')||'').trim();
-  if(!candId){ f.style.display='none'; document.getElementById('err-cv').style.display='block'; return; }
+  var mk=document.getElementById('naar-cv-maken');
+  if(!candId){ f.style.display='none'; document.getElementById('err-cv').style.display='block'; var gc=document.getElementById('geen-cv'); if(gc)gc.style.display='none'; return; }
+  if(mk) mk.href='/cv-maken.html?id='+encodeURIComponent(candId);
   var SB_URL='https://bmvxlxclcwiyrfemqiwx.supabase.co';
   var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
   var MAX=5*1024*1024;
