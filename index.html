@@ -498,6 +498,7 @@ section{position:relative;}
         <form id="form-emp" novalidate>
           <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
           <input type="hidden" name="subject" value="Nieuwe personeelsaanvraag via de website">
+          <input type="hidden" name="herkomst" value="">
           <input type="checkbox" name="botcheck" style="display:none">
           <div class="frm-grid">
             <div class="frm-field"><label>Bedrijfsnaam *</label><input type="text" name="bedrijf" required></div>
@@ -858,18 +859,20 @@ function bindForm(formId, okId, leadType, leadSource){
     if(!f.checkValidity()){ f.reportValidity(); return; }
     var btn = f.querySelector('button[type=submit]');
     if(btn) btn.disabled = true;
+    var herkomst = (window.hrHerkomst ? window.hrHerkomst() : 'Direct / geen verwijzing');
+    var herkomstField = f.elements['herkomst']; if(herkomstField) herkomstField.value = herkomst;
     var fd = new FormData(f);
     var g = function(k){ return fd.get(k) || ''; };
     if(leadType === 'employer'){
       sendToCRM({ type:'employer', name:g('naam'), email:g('email'), phone:g('telefoon'),
         company_name:g('bedrijf'), role:g('functie'),
         message:'Aantal: '+g('aantal')+' | Locatie: '+g('locatie')+' | Toelichting: '+g('toelichting'),
-        source:leadSource });
+        source:herkomst });
     } else {
       sendToCRM({ type:'employee', name:g('naam'), email:g('email'), phone:g('telefoon'),
         company_name:'', role:g('functie'),
         message:'Woonplaats: '+g('woonplaats')+' | Beschikbaarheid: '+g('beschikbaarheid')+' | Ervaring: '+g('ervaring'),
-        source:leadSource });
+        source:herkomst });
     }
     var done = function(){
       f.style.display = 'none';
@@ -889,6 +892,7 @@ function bindForm(formId, okId, leadType, leadSource){
 }
 bindForm('form-emp','ok-emp','employer','website-werkgever');
 </script>
+<script>(function(){try{var K='hr_herkomst';if(!sessionStorage.getItem(K)){var q=new URLSearchParams(location.search),c=q.get('utm_campaign'),s=q.get('utm_source'),L='';if(c){L='Campagne: '+c;}else if(s){L='Campagne: '+s;}else{var r=document.referrer||'',h='';if(r){try{h=new URL(r).hostname.replace(/^www[.]/,'');}catch(e){}}if(!r){L='Direct / geen verwijzing';}else if(h===location.hostname.replace(/^www[.]/,'')){L='';}else if(/google[.]|bing[.]|duckduckgo[.]|yahoo[.]|ecosia[.]/.test(h)){L='Zoekmachine: '+h;}else if(/linkedin[.]|facebook[.]|instagram[.]|twitter[.]|youtube[.]|tiktok[.]/.test(h)||h==='t.co'||h==='x.com'){L='Social: '+h;}else{L='Verwijzing: '+h;}}if(L){sessionStorage.setItem(K,L);}}}catch(e){}})();window.hrHerkomst=function(){try{return sessionStorage.getItem('hr_herkomst')||'Direct / geen verwijzing';}catch(e){return 'Direct / geen verwijzing';}};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wvk55mww7c");</script>
 </body>
