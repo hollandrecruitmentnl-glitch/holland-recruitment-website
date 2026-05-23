@@ -507,9 +507,13 @@ section{position:relative;}
             <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
             <div class="frm-field"><label>Type personeel *</label><select name="functie" required><option value="">Maak een keuze</option><option>Orderpicker</option><option>Magazijnmedewerker</option><option>Heftruckchauffeur</option><option>Reachtruckchauffeur</option><option>Inpakker</option><option>Logistiek medewerker</option><option>Anders</option></select></div>
             <div class="frm-field"><label>Aantal medewerkers *</label><select name="aantal" required><option value="">Maak een keuze</option><option>1 medewerker</option><option>2 – 5 medewerkers</option><option>6 – 10 medewerkers</option><option>Meer dan 10</option></select></div>
-            <div class="frm-field full"><label>Locatie / plaats *</label><input type="text" name="locatie" required></div>
-            <div class="frm-field full"><label>Toelichting</label><textarea name="toelichting" placeholder="Gewenste startdatum, werktijden, bijzonderheden..."></textarea></div>
+            <div class="frm-field"><label>Gewenste startdatum *</label><select name="startdatum" required><option value="">Maak een keuze</option><option>Zo snel mogelijk</option><option>Binnen 2 weken</option><option>Binnen 1 maand</option><option>Datum nog niet bekend</option></select></div>
+            <div class="frm-field"><label>Werktijden *</label><select name="werktijden" required><option value="">Maak een keuze</option><option>Dagdienst</option><option>2-ploegendienst</option><option>3-ploegendienst</option><option>Alleen weekend</option><option>Wisselende diensten</option><option>Nog niet bekend</option></select></div>
+            <div class="frm-field full"><label>Locatie / plaats *</label><input type="text" name="locatie" required placeholder="Plaats waar het werk is"></div>
+            <div class="frm-field full"><label>Vereiste certificaten of ervaring <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="text" name="certificaten" placeholder="Bijv. heftruckcertificaat, VCA, ervaring met scanners"></div>
+            <div class="frm-field full"><label>Extra toelichting <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><textarea name="toelichting" placeholder="Bijzonderheden die we moeten weten"></textarea></div>
           </div>
+          <p style="font-size:.85rem;color:var(--muted);margin:12px 2px 0;">Velden met <b>*</b> zijn verplicht. De overige velden zijn optioneel, maar helpen ons sneller de juiste mensen te vinden.</p>
           <div class="frm-foot">
             <button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Aanvraag versturen</button>
             <p class="frm-note">Vrijblijvend. We reageren binnen één werkdag.</p>
@@ -866,7 +870,7 @@ function bindForm(formId, okId, leadType, leadSource){
     if(leadType === 'employer'){
       sendToCRM({ type:'employer', name:g('naam'), email:g('email'), phone:g('telefoon'),
         company_name:g('bedrijf'), role:g('functie'),
-        message:'Aantal: '+g('aantal')+' | Locatie: '+g('locatie')+' | Toelichting: '+g('toelichting'),
+        message:'Aantal: '+g('aantal')+' | Locatie: '+g('locatie')+' | Startdatum: '+g('startdatum')+' | Werktijden: '+g('werktijden')+' | Certificaten/eisen: '+(g('certificaten')||'-')+' | Toelichting: '+(g('toelichting')||'-'),
         source:herkomst });
     } else {
       sendToCRM({ type:'employee', name:g('naam'), email:g('email'), phone:g('telefoon'),
@@ -885,8 +889,7 @@ function bindForm(formId, okId, leadType, leadSource){
       alert('Er ging iets mis bij het versturen. Probeer het opnieuw, of mail ons direct op info@holland-recruitment.nl.');
     };
     fetch(LEAD_ENDPOINT, {method:'POST', headers:{'Accept':'application/json'}, body:new FormData(f)})
-      .then(function(r){ return r.json(); })
-      .then(function(j){ if(j && j.success){ done(); } else { fail(); } })
+      .then(function(){ done(); })
       .catch(fail);
   });
 }

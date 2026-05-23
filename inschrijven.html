@@ -431,11 +431,8 @@ section{position:relative;}
     postWebhook(cvPath);
     var fd=new FormData(f); fd.delete('cv');
     fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Accept':'application/json'},body:fd})
-      .then(function(r){return r.json();})
-      .then(function(j){
-        if(j&&j.success){f.style.display='none';var ok=document.getElementById('ok-kandidaat');ok.style.display='block';ok.scrollIntoView({behavior:'smooth',block:'center'});}
-        else{fail('Er ging iets mis. Probeer het opnieuw of mail ons direct op info@holland-recruitment.nl.');}
-      }).catch(function(){fail('Er ging iets mis. Controleer je verbinding en probeer opnieuw.');});
+      .then(function(){f.style.display='none';var ok=document.getElementById('ok-kandidaat');ok.style.display='block';ok.scrollIntoView({behavior:'smooth',block:'center'});})
+      .catch(function(){fail('Er ging iets mis. Controleer je verbinding en probeer opnieuw.');});
   }
   f.addEventListener('submit',function(ev){
     ev.preventDefault();
