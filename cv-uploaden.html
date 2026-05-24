@@ -370,7 +370,7 @@ section{position:relative;}
   <div class="wrap"><div style="max-width:560px;">
     <form id="form-cv" novalidate>
       <div class="frm-grid">
-        <div class="frm-field full"><label>Je cv <span style="color:var(--muted);font-weight:400;">(PDF, DOC of DOCX)</span></label><input type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">Maximaal 5 MB.</span></div>
+        <div class="frm-field full"><label>Je cv <span style="color:var(--muted);font-weight:400;">(PDF)</span></label><input type="file" name="cv" accept=".pdf,application/pdf" required style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">Maximaal 5 MB.</span></div>
       </div>
       <div class="frm-foot"><button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Cv toevoegen</button></div>
     </form>
@@ -396,7 +396,7 @@ section{position:relative;}
   var SB_URL='https://bmvxlxclcwiyrfemqiwx.supabase.co';
   var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
   var MAX=5*1024*1024;
-  var OKEXT=['.pdf','.doc','.docx'];
+  var OKEXT=['.pdf'];
   var btn=f.querySelector('button[type=submit]');
   var origLabel=btn?btn.textContent:'';
   function endsWithAny(s,arr){for(var i=0;i<arr.length;i++){if(s.length>=arr[i].length&&s.slice(-arr[i].length)===arr[i])return true;}return false;}
@@ -409,7 +409,7 @@ section{position:relative;}
     if(!file){fail('Kies eerst een bestand.');return;}
     if(file.size>MAX){fail('Je cv is te groot (max 5 MB). Kies een kleiner bestand.');return;}
     var nm=file.name.toLowerCase();
-    if(!endsWithAny(nm,OKEXT)){fail('Alleen PDF, DOC of DOCX wordt geaccepteerd.');return;}
+    if(!endsWithAny(nm,OKEXT)){fail('Alleen PDF wordt geaccepteerd.');return;}
     if(btn){btn.disabled=true;btn.textContent='Cv uploaden…';}
     try{
       var sb=window.supabase.createClient(SB_URL,SB_ANON);

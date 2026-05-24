@@ -385,7 +385,7 @@ section{position:relative;}
         <div class="frm-field"><label>Beschikbaarheid *</label><select name="beschikbaarheid" required><option value="">Maak een keuze</option><option>Fulltime</option><option>Parttime</option><option>Alleen weekend</option><option>Flexibel / oproep</option></select></div>
         <div class="frm-field full"><label>Certificaten</label><input type="text" name="certificaten" placeholder="bijv. heftruckcertificaat, reachtruckcertificaat, VCA, rijbewijs B"></div>
         <div class="frm-field full"><label>Toelichting</label><textarea name="toelichting" placeholder="Vertel kort iets over jezelf, je ervaring of wat je zoekt."></textarea></div>
-        <div class="frm-field full"><label>Cv uploaden <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">PDF, DOC of DOCX &middot; max 5 MB &middot; een cv is niet verplicht, maar helpt ons je sneller te matchen.</span></div>
+        <div class="frm-field full"><label>Cv uploaden <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="file" name="cv" accept=".pdf,application/pdf" style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">PDF &middot; max 5 MB &middot; een cv is niet verplicht, maar helpt ons je sneller te matchen. Heb je geen pdf? Maak er gratis &eacute;&eacute;n via onze cv-tool.</span></div>
       </div>
       <div class="frm-foot"><button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Inschrijving versturen</button></div>
     </form>
@@ -404,8 +404,8 @@ section{position:relative;}
   var SB_URL='https://bmvxlxclcwiyrfemqiwx.supabase.co';
   var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
   var MAX=5*1024*1024;
-  var OKTYPES=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  var OKEXT=['.pdf','.doc','.docx'];
+  var OKTYPES=['application/pdf'];
+  var OKEXT=['.pdf'];
   var btn=f.querySelector('button[type=submit]');
   var origLabel=btn?btn.textContent:'';
   function endsWithAny(s,arr){for(var i=0;i<arr.length;i++){if(s.length>=arr[i].length&&s.slice(-arr[i].length)===arr[i])return true;}return false;}
@@ -443,7 +443,7 @@ section{position:relative;}
     if(!file){finish('');return;}
     if(file.size>MAX){fail('Je cv is te groot (max 5 MB). Kies een kleiner bestand of laat het cv weg.');return;}
     var nm=file.name.toLowerCase();
-    if(!endsWithAny(nm,OKEXT)&&OKTYPES.indexOf(file.type)===-1){fail('Alleen PDF, DOC of DOCX wordt geaccepteerd.');return;}
+    if(!endsWithAny(nm,OKEXT)&&OKTYPES.indexOf(file.type)===-1){fail('Alleen PDF wordt geaccepteerd.');return;}
     if(btn){btn.textContent='Cv uploaden…';}
     try{
       var sb=window.supabase.createClient(SB_URL,SB_ANON);
