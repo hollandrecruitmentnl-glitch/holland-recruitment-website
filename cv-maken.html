@@ -72,8 +72,22 @@ textarea{resize:vertical;min-height:78px;}
 #cv-doc .cv-item .cv-meta{font-size:13px;color:#5C6178;margin:1px 0 4px;}
 #cv-doc .cv-item p{font-size:14px;line-height:1.55;color:#3a3d55;}
 #cv-doc .cv-foot{margin-top:34px;border-top:1px solid #ECE5D6;padding-top:12px;font-size:11.5px;color:#9a9a9a;}
+/* ============ FOOTER ============ */
+.footer{background:var(--ink);color:#9aa0c4;padding:60px 0 28px;margin-top:60px;}
+.footer .wrap-f{max-width:var(--maxw);margin:0 auto;padding:0 26px;}
+.footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:36px;padding-bottom:38px;border-bottom:1px solid rgba(255,255,255,.1);}
+.footer .brand b{color:#fff;}
+.footer .brand b span{color:var(--lime);}
+.footer-about{font-size:14px;margin-top:14px;max-width:280px;color:#9aa0c4;}
+.footer-about a{color:#9aa0c4;text-decoration:none;}
+.footer-about a:hover{color:var(--lime);}
+.footer-col h4{font-family:'Poppins',sans-serif;font-size:13.5px;color:#fff;font-weight:700;margin-bottom:13px;}
+.footer-col a{display:block;font-size:14px;padding:5px 0;color:#9aa0c4;text-decoration:none;transition:color .15s;}
+.footer-col a:hover{color:var(--lime);}
+.footer-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:22px;font-size:12.7px;color:#6f7596;}
+@media(max-width:940px){.footer-top{grid-template-columns:1fr 1fr;}}
 @media(max-width:960px){.nav-links{display:none;}.nav-btn{display:none;}.burger{display:block;}.wrap-nav{padding:0 16px;}}
-@media(max-width:560px){.grid2{grid-template-columns:1fr;}.wrap{padding:28px 16px 60px;}#cv-doc{padding:40px 34px;}}
+@media(max-width:560px){.grid2{grid-template-columns:1fr;}.wrap{padding:28px 16px 60px;}#cv-doc{padding:40px 34px;}.footer-top{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -362,6 +376,64 @@ textarea{resize:vertical;min-height:78px;}
   });
 })();
 </script>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap-f">
+    <div class="footer-top">
+      <div>
+        <div class="brand">
+          <svg class="logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="120" rx="34" fill="#3551E6"/>
+            <rect x="34" y="31" width="17" height="58" rx="5.5" fill="#fff"/>
+            <rect x="69" y="31" width="17" height="58" rx="5.5" fill="#fff"/>
+            <rect x="45" y="51.5" width="30" height="17" rx="5.5" fill="#D6F24E"/>
+          </svg>
+          <b>Holland<span>.</span></b>
+        </div>
+        <p class="footer-about">AI-gedreven uitzenden voor de logistiek. Slimme matching, persoonlijke service — zodat werkgevers sneller mensen vinden en werkzoekenden sneller aan de slag zijn.</p>
+        <p class="footer-about" style="margin-top:12px;"><a href="mailto:info@holland-recruitment.nl">info@holland-recruitment.nl</a><br><a href="mailto:sales@holland-recruitment.nl">sales@holland-recruitment.nl</a></p>
+      </div>
+      <div class="footer-col">
+        <h4>Functies</h4>
+        <a href="/functie-orderpicker.html">Orderpicker</a>
+        <a href="/functie-magazijnmedewerker.html">Magazijnmedewerker</a>
+        <a href="/functie-heftruckchauffeur.html">Heftruckchauffeur</a>
+        <a href="/functie-reachtruckchauffeur.html">Reachtruckchauffeur</a>
+        <a href="/functie-inpakker.html">Inpakker</a>
+        <a href="/functie-productiemedewerker.html">Productiemedewerker</a>
+        <a href="/functie-expeditiemedewerker.html">Expeditiemedewerker</a>
+        <a href="/functie-logistiek-medewerker.html">Logistiek medewerker</a>
+      </div>
+      <div class="footer-col">
+        <h4>Regio's</h4>
+        <a href="/uitzendbureau-logistiek-rotterdam.html">Rotterdam</a>
+        <a href="/uitzendbureau-logistiek-amsterdam.html">Amsterdam</a>
+        <a href="/uitzendbureau-logistiek-utrecht.html">Utrecht</a>
+        <a href="/uitzendbureau-logistiek-den-haag.html">Den Haag</a>
+        <a href="/uitzendbureau-logistiek-leiden.html">Leiden</a>
+        <a href="/uitzendbureau-logistiek-hoofddorp.html">Hoofddorp</a>
+        <a href="/uitzendbureau-logistiek-almere.html">Almere</a>
+        <a href="/uitzendbureau-logistiek-dordrecht.html">Dordrecht</a>
+      </div>
+      <div class="footer-col">
+        <h4>Pagina's</h4>
+        <a href="/voor-werkgevers.html">Voor werkgevers</a>
+        <a href="/voor-werknemers.html">Voor werknemers</a>
+        <a href="/inschrijven.html">Inschrijven</a>
+        <a href="/hoe-het-werkt.html">Hoe het werkt</a>
+        <a href="/over-ons.html">Over ons</a>
+        <a href="/kenniscentrum.html">Kenniscentrum</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <span>&copy; 2026 Holland Recruitment BV &middot; KvK 96618914</span>
+      <span><a href="/privacyverklaring.html" style="color:inherit;text-decoration:underline;">Privacyverklaring</a> &middot; <a href="/voorwaarden.html" style="color:inherit;text-decoration:underline;">Voorwaarden</a></span>
+    </div>
+  </div>
+</footer>
+
 <script>(function(){try{var K='hr_herkomst';if(!sessionStorage.getItem(K)){var q=new URLSearchParams(location.search),c=q.get('utm_campaign'),s=q.get('utm_source'),L='';if(c){L='Campagne: '+c;}else if(s){L='Campagne: '+s;}else{var r=document.referrer||'',h='';if(r){try{h=new URL(r).hostname.replace(/^www[.]/,'');}catch(e){}}if(!r){L='Direct / geen verwijzing';}else if(h===location.hostname.replace(/^www[.]/,'')){L='';}else if(/google[.]|bing[.]|duckduckgo[.]|yahoo[.]|ecosia[.]/.test(h)){L='Zoekmachine: '+h;}else if(/linkedin[.]|facebook[.]|instagram[.]|twitter[.]|youtube[.]|tiktok[.]/.test(h)||h==='t.co'||h==='x.com'){L='Social: '+h;}else{L='Verwijzing: '+h;}}if(L){sessionStorage.setItem(K,L);}}}catch(e){}})();window.hrHerkomst=function(){try{return sessionStorage.getItem('hr_herkomst')||'Direct / geen verwijzing';}catch(e){return 'Direct / geen verwijzing';}};</script>
 <script>(function(){var b=document.getElementById("burger"),m=document.getElementById("mm");if(b&&m){b.addEventListener("click",function(){m.style.display=m.style.display==="block"?"none":"block";});m.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){m.style.display="none";});});}})();</script>
 <script defer src="/_vercel/insights/script.js"></script>
