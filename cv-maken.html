@@ -11,17 +11,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--blue:#3551E6;--ink:#15183A;--cream:#FBF6EC;--lime:#D6F24E;--line:#ECE5D6;--muted:#5C6178;}
+:root{--blue:#3551E6;--ink:#15183A;--cream:#FBF6EC;--lime:#D6F24E;--line:#ECE5D6;--muted:#5C6178;--white:#FFFFFF;--r-pill:100px;--maxw:1180px;}
 body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;font-size:16px;}
-.bar{background:#fff;border-bottom:1px solid var(--line);}
-.bar-in{max-width:1000px;margin:0 auto;padding:15px 22px;display:flex;align-items:center;gap:12px;}
-.logo{width:34px;height:34px;}
-.brand{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;}
-.brand span{color:var(--blue);}
-.bar-links{margin-left:auto;display:flex;gap:20px;align-items:center;}
-.bar-links a{font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;}
-.bar-links a:hover{color:var(--blue);}
-.bar-links a.cta{background:var(--blue);color:#fff;padding:8px 16px;border-radius:100px;}
+.nav-outer{position:sticky;top:0;z-index:70;padding:14px 0;}
+.wrap-nav{max-width:var(--maxw);margin:0 auto;padding:0 26px;}
+.nav{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--line);border-radius:var(--r-pill);padding:11px 11px 11px 22px;box-shadow:0 6px 22px rgba(21,24,58,.07);}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink);text-decoration:none;}
+.brand .logo{width:38px;height:38px;flex:none;}
+.brand b{font-family:'Poppins',sans-serif;font-weight:800;font-size:18.5px;letter-spacing:-.02em;}
+.brand b span{color:var(--blue);}
+.nav-links{display:flex;align-items:center;gap:21px;}
+.nav-links a{font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;transition:color .15s;white-space:nowrap;}
+.nav-links a:hover{color:var(--blue);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-btn{font-family:'Poppins',sans-serif;font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:var(--r-pill);cursor:pointer;border:2px solid transparent;transition:all .16s ease;white-space:nowrap;text-decoration:none;}
+.nav-btn-blue{background:var(--blue);color:#fff;box-shadow:0 10px 24px rgba(53,81,230,.32);}
+.nav-btn-line{background:transparent;color:var(--ink);border-color:var(--ink);}
+.burger{display:none;background:none;border:0;cursor:pointer;padding:9px;}
+.burger span{display:block;width:23px;height:2.4px;background:var(--ink);border-radius:3px;margin:5px 0;}
+.mobile-menu{display:none;margin:10px 26px 0;background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:10px;}
+.mobile-menu a{display:block;font-family:'Poppins',sans-serif;font-weight:600;padding:13px 16px;border-radius:14px;color:var(--ink);text-decoration:none;}
 .wrap{max-width:720px;margin:0 auto;padding:38px 22px 70px;}
 .tag{display:inline-block;background:#E9ECFF;color:var(--blue);font-family:'Poppins',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:7px 13px;border-radius:100px;margin-bottom:15px;}
 h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(1.9rem,4vw,2.5rem);line-height:1.15;letter-spacing:-.02em;margin-bottom:12px;}
@@ -63,20 +72,38 @@ textarea{resize:vertical;min-height:78px;}
 #cv-doc .cv-item .cv-meta{font-size:13px;color:#5C6178;margin:1px 0 4px;}
 #cv-doc .cv-item p{font-size:14px;line-height:1.55;color:#3a3d55;}
 #cv-doc .cv-foot{margin-top:34px;border-top:1px solid #ECE5D6;padding-top:12px;font-size:11.5px;color:#9a9a9a;}
-@media(max-width:640px){.bar-links{display:none;}}
+@media(max-width:960px){.nav-links{display:none;}.nav-btn{display:none;}.burger{display:block;}.wrap-nav{padding:0 16px;}}
 @media(max-width:560px){.grid2{grid-template-columns:1fr;}.wrap{padding:28px 16px 60px;}#cv-doc{padding:40px 34px;}}
 </style>
 </head>
 <body>
-<div class="bar"><div class="bar-in">
-  <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="34" fill="#3551E6"/><rect x="34" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="69" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="45" y="51.5" width="30" height="17" rx="5.5" fill="#D6F24E"/></svg>
-  <a href="/" class="brand">Holland<span>.</span></a>
-  <div class="bar-links">
-    <a href="/voor-werknemers.html">Voor werknemers</a>
+<div class="nav-outer"><div class="wrap-nav"><nav class="nav">
+  <a href="/" class="brand" aria-label="Holland Recruitment">
+    <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="34" fill="#3551E6"/><rect x="34" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="69" y="31" width="17" height="58" rx="5.5" fill="#fff"/><rect x="45" y="51.5" width="30" height="17" rx="5.5" fill="#D6F24E"/></svg>
+    <b>Holland<span>.</span></b>
+  </a>
+  <div class="nav-links">
     <a href="/voor-werkgevers.html">Voor werkgevers</a>
+    <a href="/voor-werknemers.html">Voor werknemers</a>
+    <a href="/cv-maken.html">Gratis cv maken</a>
     <a href="/hoe-het-werkt.html">Hoe het werkt</a>
-    <a href="/inschrijven.html" class="cta">Inschrijven</a>
   </div>
+  <div class="nav-right">
+    <a href="/inschrijven.html" class="nav-btn nav-btn-line">Inschrijven</a>
+    <a href="/#formulier" class="nav-btn nav-btn-blue">Personeel aanvragen</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mm">
+  <a href="/voor-werkgevers.html">Voor werkgevers</a>
+  <a href="/voor-werknemers.html">Voor werknemers</a>
+  <a href="/cv-maken.html">Gratis cv maken</a>
+  <a href="/hoe-het-werkt.html">Hoe het werkt</a>
+  <a href="/over-ons.html">Over ons</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/inschrijven.html" style="color:#3551E6;">Inschrijven &rarr;</a>
+  <a href="/#formulier" style="color:#3551E6;">Personeel aanvragen &rarr;</a>
+</div>
 </div></div>
 
 <div class="wrap">
@@ -336,6 +363,7 @@ textarea{resize:vertical;min-height:78px;}
 })();
 </script>
 <script>(function(){try{var K='hr_herkomst';if(!sessionStorage.getItem(K)){var q=new URLSearchParams(location.search),c=q.get('utm_campaign'),s=q.get('utm_source'),L='';if(c){L='Campagne: '+c;}else if(s){L='Campagne: '+s;}else{var r=document.referrer||'',h='';if(r){try{h=new URL(r).hostname.replace(/^www[.]/,'');}catch(e){}}if(!r){L='Direct / geen verwijzing';}else if(h===location.hostname.replace(/^www[.]/,'')){L='';}else if(/google[.]|bing[.]|duckduckgo[.]|yahoo[.]|ecosia[.]/.test(h)){L='Zoekmachine: '+h;}else if(/linkedin[.]|facebook[.]|instagram[.]|twitter[.]|youtube[.]|tiktok[.]/.test(h)||h==='t.co'||h==='x.com'){L='Social: '+h;}else{L='Verwijzing: '+h;}}if(L){sessionStorage.setItem(K,L);}}}catch(e){}})();window.hrHerkomst=function(){try{return sessionStorage.getItem('hr_herkomst')||'Direct / geen verwijzing';}catch(e){return 'Direct / geen verwijzing';}};</script>
+<script>(function(){var b=document.getElementById("burger"),m=document.getElementById("mm");if(b&&m){b.addEventListener("click",function(){m.style.display=m.style.display==="block"?"none":"block";});m.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){m.style.display="none";});});}})();</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wvk55mww7c");</script>
 <script>(function(){if(document.querySelector('.hr-ask'))return;var s=document.createElement('style');s.textContent='.hr-ask{position:fixed;bottom:22px;right:22px;z-index:9999;display:inline-flex;align-items:center;gap:10px;background:#3551E6;color:#fff;text-decoration:none;padding:14px 22px;border-radius:100px;font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(53,81,230,0.30);transition:all .18s ease;cursor:pointer;}.hr-ask:hover{background:#2A41C2;transform:translateY(-2px);box-shadow:0 12px 28px rgba(53,81,230,0.40);}.hr-ask svg{width:20px;height:20px;}@media(max-width:640px){.hr-ask{bottom:16px;right:16px;padding:12px 18px;font-size:14px;}.hr-ask svg{width:18px;height:18px;}}';document.head.appendChild(s);var a=document.createElement('a');a.className='hr-ask';a.href='mailto:info@holland-recruitment.nl?subject=Vraag%20via%20de%20website';a.setAttribute('aria-label','Stel een vraag');a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Vraag?</span>';a.addEventListener('click',function(){try{window.clarity&&window.clarity("event","vraag-click");}catch(e){}});document.body.appendChild(a);})();</script>
