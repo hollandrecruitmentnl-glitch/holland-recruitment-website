@@ -322,39 +322,26 @@ section{position:relative;}
 }
 </style>
 <style>
-/* Form-specifieke uitbreidingen */
 .usp-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:30px 0 50px;}
 .usp-card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:22px 26px;}
 .usp-card .n{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--blue);letter-spacing:-.02em;}
 .usp-card .l{font-size:14px;color:var(--muted);margin-top:4px;}
-
 .b2b-form-card{background:#fff;border:1.5px solid var(--line);border-radius:30px;box-shadow:var(--shadow);padding:46px;}
 .b2b-section{margin-bottom:34px;}
 .b2b-section-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .b2b-section-title::before{content:"";display:inline-block;width:28px;height:2px;background:var(--lime);border-radius:1px;}
-
 .b2b-row{display:grid;gap:18px;margin-bottom:18px;}
 .b2b-row.r2{grid-template-columns:1fr 1fr;}
 .b2b-row.r3{grid-template-columns:1fr 1fr 1fr;}
 .b2b-row.r21{grid-template-columns:2fr 1fr;}
-
 .b2b-field label{display:block;font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;color:var(--ink);margin-bottom:7px;}
 .b2b-field .req{color:var(--coral);font-weight:700;}
 .b2b-field .hint{font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;}
-.b2b-field input,.b2b-field select,.b2b-field textarea{
-  width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:13px;
-  font-family:'Inter',sans-serif;font-size:15.5px;color:var(--ink);background:#fff;
-  transition:border-color .15s,box-shadow .15s;
-}
-.b2b-field input:focus,.b2b-field select:focus,.b2b-field textarea:focus{
-  outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(53,81,230,.1);
-}
+.b2b-field input,.b2b-field select,.b2b-field textarea{width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:13px;font-family:'Inter',sans-serif;font-size:15.5px;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;}
+.b2b-field input:focus,.b2b-field select:focus,.b2b-field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(53,81,230,.1);}
 .b2b-field input::placeholder,.b2b-field textarea::placeholder{color:#94a3b8;}
-.b2b-field select{cursor:pointer;appearance:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%235C6178' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
-  background-repeat:no-repeat;background-position:right 16px center;padding-right:36px;}
+.b2b-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%235C6178' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 16px center;padding-right:36px;}
 .b2b-field textarea{min-height:100px;resize:vertical;}
-
 .b2b-consent{background:var(--cream);border:1.5px solid var(--line);border-radius:18px;padding:22px;margin-top:26px;}
 .b2b-consent .crow{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
 .b2b-consent .crow:last-child{margin-bottom:0;}
@@ -362,10 +349,8 @@ section{position:relative;}
 .b2b-consent label{font-size:13.5px;color:var(--muted);line-height:1.5;cursor:pointer;}
 .b2b-consent label a{color:var(--blue);text-decoration:underline;}
 .b2b-consent label .strong{color:var(--ink);font-weight:600;}
-
 .b2b-submit-row{margin-top:34px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
 .b2b-submit-info{font-size:13px;color:var(--muted);flex:1;min-width:220px;}
-
 .b2b-success,.b2b-error{display:none;padding:46px;text-align:center;border-radius:30px;}
 .b2b-success{background:#fff;border:2px solid var(--lime);}
 .b2b-error{background:#FFE8E8;border:2px solid #f87171;color:#991b1b;}
@@ -376,15 +361,9 @@ section{position:relative;}
 .b2b-success .next{background:var(--blue-soft);padding:20px 26px;border-radius:14px;margin-top:30px;text-align:left;max-width:520px;margin-left:auto;margin-right:auto;}
 .b2b-success .next strong{color:var(--blue);font-family:'Poppins',sans-serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase;}
 .b2b-success .next p{margin-top:10px;font-size:14.5px;color:var(--ink);}
-
 .loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-@media (max-width:720px){
-  .usp-strip{grid-template-columns:1fr;}
-  .b2b-row.r2,.b2b-row.r3,.b2b-row.r21{grid-template-columns:1fr;}
-  .b2b-form-card{padding:32px 24px;}
-}
+@media (max-width:720px){.usp-strip{grid-template-columns:1fr;}.b2b-row.r2,.b2b-row.r3,.b2b-row.r21{grid-template-columns:1fr;}.b2b-form-card{padding:32px 24px;}}
 </style>
 </head>
 <body>
@@ -406,13 +385,30 @@ section{position:relative;}
         <a href="/cv-maken.html">Gratis cv maken</a>
         <a href="/hoe-het-werkt.html">Hoe het werkt</a>
       </div>
+      <div class="nav-right">
+        <a href="/inschrijven.html" class="btn btn-line nav-cta">Inschrijven</a>
+        <a href="/#formulier" class="btn btn-blue nav-cta">Personeel aanvragen</a>
+        <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+    <div class="mobile-menu" id="mm">
+      <a href="/voor-werkgevers.html">Voor werkgevers</a>
+      <a href="/voor-werknemers.html">Voor werknemers</a>
+      <a href="/cv-maken.html">Gratis cv maken</a>
+      <a href="/hoe-het-werkt.html">Hoe het werkt</a>
+      <a href="/over-ons.html">Over ons</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/inschrijven.html" style="color:var(--blue);">Inschrijven &rarr;</a>
+      <a href="/#formulier" style="color:var(--blue);">Personeel aanvragen &rarr;</a>
+    </div>
+  </div>
+</div>
 
 <section class="sec" style="padding-bottom:30px;">
   <div class="wrap"><div style="max-width:760px;">
     <div class="tag reveal"><span class="dot"></span> Voor werkgevers</div>
     <h1 class="reveal d1" style="font-size:clamp(2.4rem,4.8vw,3.7rem);margin:22px 0 18px;">Personeel nodig?<br><span class="hl"><span>Plaats je aanvraag.</span></span></h1>
     <p class="reveal d2" style="font-size:1.12rem;color:var(--muted);">Geen telefoonrondes, geen offertes-pingpong. Vul het formulier — onze <strong style="color:var(--ink);">AI-matching</strong> levert binnen 24 uur een shortlist van geschikte kandidaten.</p>
-
     <div class="usp-strip reveal d3">
       <div class="usp-card"><div class="n">&lt;24u</div><div class="l">Eerste shortlist na aanvraag</div></div>
       <div class="usp-card"><div class="n">Transparant</div><div class="l">Helder uurtarief, geen verrassingen</div></div>
@@ -426,51 +422,23 @@ section{position:relative;}
     <div class="b2b-form-card reveal" id="form-card">
       <h2 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1.7rem;color:var(--ink);letter-spacing:-.025em;margin-bottom:6px;">Vertel ons over je aanvraag</h2>
       <p style="font-size:14.5px;color:var(--muted);margin-bottom:32px;">Hoe meer details, hoe scherper onze match. Velden met <span style="color:var(--coral);font-weight:700;">*</span> zijn verplicht.</p>
-
       <form id="b2b-form" novalidate>
-        <div class="b2b-section">
-          <div class="b2b-section-title">Bedrijf</div>
+        <div class="b2b-section"><div class="b2b-section-title">Bedrijf</div>
           <div class="b2b-row r2">
             <div class="b2b-field"><label>Bedrijfsnaam <span class="req">*</span></label><input type="text" name="company_name" required placeholder="Bijv. Logistics BV"></div>
             <div class="b2b-field"><label>KvK nummer <span class="hint">(optioneel)</span></label><input type="text" name="kvk_number" placeholder="12345678" pattern="[0-9]{8}" maxlength="8"></div>
           </div>
           <div class="b2b-row r2">
-            <div class="b2b-field"><label>Sector <span class="req">*</span></label>
-              <select name="sector" required>
-                <option value="">Kies een sector...</option>
-                <option value="logistiek">Logistiek</option>
-                <option value="warehousing">Warehousing / Magazijn</option>
-                <option value="horeca">Horeca</option>
-                <option value="housekeeping">Housekeeping / Schoonmaak</option>
-                <option value="technisch">Technisch / Installatie</option>
-                <option value="klantenservice">Klantenservice</option>
-                <option value="administratief">Administratief</option>
-                <option value="zorg">Zorg</option>
-                <option value="overig">Overig</option>
-              </select>
-            </div>
-            <div class="b2b-field"><label>Bedrijfsgrootte <span class="hint">(optioneel)</span></label>
-              <select name="company_size_range">
-                <option value="">—</option>
-                <option value="1-10">1-10 medewerkers</option>
-                <option value="11-50">11-50 medewerkers</option>
-                <option value="51-200">51-200 medewerkers</option>
-                <option value="201-1000">201-1000 medewerkers</option>
-                <option value="1000+">1000+ medewerkers</option>
-              </select>
-            </div>
+            <div class="b2b-field"><label>Sector <span class="req">*</span></label><select name="sector" required><option value="">Kies een sector...</option><option value="logistiek">Logistiek</option><option value="warehousing">Warehousing / Magazijn</option><option value="horeca">Horeca</option><option value="housekeeping">Housekeeping / Schoonmaak</option><option value="technisch">Technisch / Installatie</option><option value="klantenservice">Klantenservice</option><option value="administratief">Administratief</option><option value="zorg">Zorg</option><option value="overig">Overig</option></select></div>
+            <div class="b2b-field"><label>Bedrijfsgrootte <span class="hint">(optioneel)</span></label><select name="company_size_range"><option value="">—</option><option value="1-10">1-10 medewerkers</option><option value="11-50">11-50 medewerkers</option><option value="51-200">51-200 medewerkers</option><option value="201-1000">201-1000 medewerkers</option><option value="1000+">1000+ medewerkers</option></select></div>
           </div>
           <div class="b2b-row r21">
             <div class="b2b-field"><label>Vestiging stad <span class="req">*</span></label><input type="text" name="location_city" required placeholder="Bijv. Rotterdam"></div>
             <div class="b2b-field"><label>Postcode <span class="hint">(optioneel)</span></label><input type="text" name="location_postal_code" placeholder="1234 AB" maxlength="8"></div>
           </div>
-          <div class="b2b-row">
-            <div class="b2b-field"><label>Website <span class="hint">(optioneel)</span></label><input type="url" name="website" placeholder="https://..."></div>
-          </div>
+          <div class="b2b-row"><div class="b2b-field"><label>Website <span class="hint">(optioneel)</span></label><input type="url" name="website" placeholder="https://..."></div></div>
         </div>
-
-        <div class="b2b-section">
-          <div class="b2b-section-title">Contactpersoon</div>
+        <div class="b2b-section"><div class="b2b-section-title">Contactpersoon</div>
           <div class="b2b-row r2">
             <div class="b2b-field"><label>Voornaam <span class="req">*</span></label><input type="text" name="contact_first_name" required placeholder="Voornaam"></div>
             <div class="b2b-field"><label>Achternaam <span class="req">*</span></label><input type="text" name="contact_last_name" required placeholder="Achternaam"></div>
@@ -479,13 +447,9 @@ section{position:relative;}
             <div class="b2b-field"><label>E-mail <span class="req">*</span></label><input type="email" name="contact_email" required placeholder="naam@bedrijf.nl" autocomplete="email"></div>
             <div class="b2b-field"><label>Telefoon <span class="req">*</span></label><input type="tel" name="contact_phone" required placeholder="06-12345678" autocomplete="tel"></div>
           </div>
-          <div class="b2b-row">
-            <div class="b2b-field"><label>Functie / rol <span class="hint">(optioneel)</span></label><input type="text" name="contact_role" placeholder="Bijv. HR Manager, Owner"></div>
-          </div>
+          <div class="b2b-row"><div class="b2b-field"><label>Functie / rol <span class="hint">(optioneel)</span></label><input type="text" name="contact_role" placeholder="Bijv. HR Manager, Owner"></div></div>
         </div>
-
-        <div class="b2b-section">
-          <div class="b2b-section-title">Vacature</div>
+        <div class="b2b-section"><div class="b2b-section-title">Vacature</div>
           <div class="b2b-row r21">
             <div class="b2b-field"><label>Functietitel <span class="req">*</span></label><input type="text" name="vacancy_title" required placeholder="Bijv. Orderpicker, Magazijnmedewerker"></div>
             <div class="b2b-field"><label>Aantal mensen <span class="req">*</span></label><input type="number" name="headcount_needed" required min="1" max="500" value="1"></div>
@@ -497,69 +461,33 @@ section{position:relative;}
           <div class="b2b-row r3">
             <div class="b2b-field"><label>Uren min <span class="hint">(per week)</span></label><input type="number" name="hours_per_week_min" min="0" max="60" placeholder="32"></div>
             <div class="b2b-field"><label>Uren max <span class="hint">(per week)</span></label><input type="number" name="hours_per_week_max" min="0" max="60" placeholder="40"></div>
-            <div class="b2b-field"><label>Werktijden</label>
-              <select name="shift_pattern">
-                <option value="">—</option>
-                <option value="dag">Dag</option>
-                <option value="avond">Avond</option>
-                <option value="nacht">Nacht</option>
-                <option value="weekend">Weekend</option>
-                <option value="flex">Flexibel</option>
-                <option value="24/7">24/7 ploegen</option>
-                <option value="overig">Overig</option>
-              </select>
-            </div>
+            <div class="b2b-field"><label>Werktijden</label><select name="shift_pattern"><option value="">—</option><option value="dag">Dag</option><option value="avond">Avond</option><option value="nacht">Nacht</option><option value="weekend">Weekend</option><option value="flex">Flexibel</option><option value="24/7">24/7 ploegen</option><option value="overig">Overig</option></select></div>
           </div>
           <div class="b2b-row r3">
             <div class="b2b-field"><label>Uurtarief min <span class="hint">€/uur</span></label><input type="number" name="hourly_rate_min" step="0.50" min="0" placeholder="14.50"></div>
             <div class="b2b-field"><label>Uurtarief max <span class="hint">€/uur</span></label><input type="number" name="hourly_rate_max" step="0.50" min="0" placeholder="18.00"></div>
-            <div class="b2b-field"><label>Urgentie</label>
-              <select name="urgency">
-                <option value="normal" selected>Normaal</option>
-                <option value="low">Laag — geen haast</option>
-                <option value="high">Hoog — graag snel</option>
-                <option value="critical">Kritiek — vandaag/morgen</option>
-              </select>
-            </div>
+            <div class="b2b-field"><label>Urgentie</label><select name="urgency"><option value="normal" selected>Normaal</option><option value="low">Laag — geen haast</option><option value="high">Hoog — graag snel</option><option value="critical">Kritiek — vandaag/morgen</option></select></div>
           </div>
-          <div class="b2b-row">
-            <div class="b2b-field"><label>Vereisten <span class="hint">(certificaten, talen, ervaring)</span></label><textarea name="requirements_text" placeholder="Bijv. VCA basis, Nederlands B1, minimaal 1 jaar magazijnervaring, eigen vervoer"></textarea></div>
-          </div>
-          <div class="b2b-row">
-            <div class="b2b-field"><label>Aanvullende informatie <span class="hint">(optioneel)</span></label><textarea name="notes" placeholder="Wat moeten we nog meer weten? Werkprocessen, cultuur, korte termijn of langdurig..."></textarea></div>
-          </div>
+          <div class="b2b-row"><div class="b2b-field"><label>Vereisten <span class="hint">(certificaten, talen, ervaring)</span></label><textarea name="requirements_text" placeholder="Bijv. VCA basis, Nederlands B1, minimaal 1 jaar magazijnervaring, eigen vervoer"></textarea></div></div>
+          <div class="b2b-row"><div class="b2b-field"><label>Aanvullende informatie <span class="hint">(optioneel)</span></label><textarea name="notes" placeholder="Wat moeten we nog meer weten? Werkprocessen, cultuur, korte termijn of langdurig..."></textarea></div></div>
         </div>
-
         <div class="b2b-consent">
-          <div class="crow">
-            <input type="checkbox" name="avg_consent" id="avg_consent" required>
-            <label for="avg_consent"><span class="strong">Ik geef toestemming voor verwerking van deze gegevens</span> voor het uitvoeren van mijn aanvraag, conform de <a href="/privacyverklaring.html" target="_blank">privacyverklaring</a> van Holland Recruitment. <span class="req" style="color:var(--coral);font-weight:700;">*</span></label>
-          </div>
-          <div class="crow">
-            <input type="checkbox" name="marketing_opt_in" id="marketing_opt_in">
-            <label for="marketing_opt_in">Ja, ik wil op de hoogte blijven van nieuwe diensten en sectorinzichten van Holland Recruitment (max 1× per maand).</label>
-          </div>
+          <div class="crow"><input type="checkbox" name="avg_consent" id="avg_consent" required><label for="avg_consent"><span class="strong">Ik geef toestemming voor verwerking van deze gegevens</span> voor het uitvoeren van mijn aanvraag, conform de <a href="/privacyverklaring.html" target="_blank">privacyverklaring</a> van Holland Recruitment. <span style="color:var(--coral);font-weight:700;">*</span></label></div>
+          <div class="crow"><input type="checkbox" name="marketing_opt_in" id="marketing_opt_in"><label for="marketing_opt_in">Ja, ik wil op de hoogte blijven van nieuwe diensten en sectorinzichten van Holland Recruitment (max 1× per maand).</label></div>
         </div>
-
         <div class="b2b-submit-row">
           <div class="b2b-submit-info">Onze AI-matcher analyseert je aanvraag direct. Je krijgt binnen enkele minuten een bevestigingsmail met eerste inzichten.</div>
           <button type="submit" class="btn btn-blue" id="submit-btn">Verstuur aanvraag &rarr;</button>
         </div>
-
         <input type="hidden" name="source" value="website-form">
       </form>
     </div>
-
     <div class="b2b-form-card b2b-success" id="success-state">
       <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h2>Aanvraag ontvangen</h2>
       <p>Bedankt! We hebben je aanvraag binnen. Onze AI-matcher analyseert deze nu en verstuurt jou binnen enkele minuten een bevestigingsmail met eerste inzichten.</p>
-      <div class="next">
-        <strong>Wat gebeurt er nu</strong>
-        <p><strong>Stap 1:</strong> Bevestigingsmail in je inbox<br><strong>Stap 2:</strong> Binnen 24u eerste shortlist van geschikte kandidaten<br><strong>Stap 3:</strong> Persoonlijk gesprek of direct presenteren — jij kiest</p>
-      </div>
+      <div class="next"><strong>Wat gebeurt er nu</strong><p><strong>Stap 1:</strong> Bevestigingsmail in je inbox<br><strong>Stap 2:</strong> Binnen 24u eerste shortlist van geschikte kandidaten<br><strong>Stap 3:</strong> Persoonlijk gesprek of direct presenteren — jij kiest</p></div>
     </div>
-
     <div class="b2b-form-card b2b-error" id="error-state">
       <h2 style="font-family:'Poppins',sans-serif;color:#991b1b;">Er ging iets mis</h2>
       <p id="error-message" style="color:#991b1b;margin-top:10px;"></p>
@@ -630,12 +558,9 @@ if (burger && mm) {
   burger.addEventListener('click', function(){ mm.style.display = mm.style.display === 'block' ? 'none' : 'block'; });
   mm.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ mm.style.display = 'none'; }); });
 }
-var io = new IntersectionObserver(function(es){
-  es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, { threshold: 0.14 });
+var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.14 });
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-// B2B form handler
 const WEBHOOK_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/employer-intake';
 const form = document.getElementById('b2b-form');
 const submitBtn = document.getElementById('submit-btn');
@@ -643,48 +568,25 @@ const formCard = document.getElementById('form-card');
 const successState = document.getElementById('success-state');
 const errorState = document.getElementById('error-state');
 const errorMsg = document.getElementById('error-message');
-
 if (form) form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!form.checkValidity()) { form.reportValidity(); return; }
-
   const email = form.contact_email.value.toLowerCase();
-  if (email.includes('reloadvisor')) {
-    errorMsg.textContent = 'Dit e-mailadres lijkt op een testadres — gebruik je echte zakelijke e-mail.';
-    formCard.style.display = 'none'; errorState.style.display = 'block';
-    window.scrollTo({ top: errorState.offsetTop - 40, behavior: 'smooth' });
-    return;
-  }
-
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="loading"></span>Versturen...';
-
-  const formData = new FormData(form);
-  const data = {};
-  for (const [key, value] of formData.entries()) {
-    if (value === '' || value === null) continue;
-    data[key] = value;
-  }
-  data.avg_consent = form.avg_consent.checked;
-  data.marketing_opt_in = form.marketing_opt_in.checked;
-  data.submitted_at = new Date().toISOString();
-  data.page_url = window.location.href;
-
+  if (email.includes('reloadvisor')) { errorMsg.textContent = 'Gebruik je echte zakelijke e-mail (niet reloadvisor).'; formCard.style.display = 'none'; errorState.style.display = 'block'; window.scrollTo({top:errorState.offsetTop-40,behavior:'smooth'}); return; }
+  submitBtn.disabled = true; submitBtn.innerHTML = '<span class="loading"></span>Versturen...';
+  const formData = new FormData(form); const data = {};
+  for (const [key, value] of formData.entries()) { if (value === '' || value === null) continue; data[key] = value; }
+  data.avg_consent = form.avg_consent.checked; data.marketing_opt_in = form.marketing_opt_in.checked;
+  data.submitted_at = new Date().toISOString(); data.page_url = window.location.href;
   try {
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
+    const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     if (!response.ok) throw new Error('Server respons ' + response.status);
-    formCard.style.display = 'none';
-    successState.style.display = 'block';
-    window.scrollTo({ top: successState.offsetTop - 40, behavior: 'smooth' });
+    formCard.style.display = 'none'; successState.style.display = 'block';
+    window.scrollTo({top:successState.offsetTop-40,behavior:'smooth'});
   } catch (err) {
-    errorMsg.textContent = 'Verzenden mislukt: ' + (err.message || 'onbekende fout') + '. Probeer het later opnieuw of mail info@holland-recruitment.nl rechtstreeks.';
+    errorMsg.textContent = 'Verzenden mislukt: ' + (err.message || 'onbekend') + '. Probeer opnieuw of mail info@holland-recruitment.nl.';
     formCard.style.display = 'none'; errorState.style.display = 'block';
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = 'Verstuur aanvraag &rarr;';
+    submitBtn.disabled = false; submitBtn.innerHTML = 'Verstuur aanvraag &rarr;';
   }
 });
 </script>
