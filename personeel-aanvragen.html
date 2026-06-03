@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Plaats je aanvraag voor uitzendkrachten bij Holland Recruitment — AI-gedreven platform voor logistiek, warehousing, horeca en meer.">
+<meta name="robots" content="index,follow">
+<title>Personeel aanvragen — Holland Recruitment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --royal: #3551E6;
+  --royal-dark: #2334AE;
+  --lime: #D6F24E;
+  --coral: #FF7A59;
+  --cream: #FBF6EC;
+  --navy: #15183A;
+  --ink-soft: #5C6178;
+  --line: #ECE5D6;
+  --blue-soft: #E9ECFF;
+  --white: #FFFFFF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* HEADER */
+.topbar { background: var(--white); border-bottom: 1px solid var(--line); }
+.topbar-inner { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--navy); }
+.logo { width: 40px; height: 40px; background: var(--royal); border-radius: 11px; position: relative; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 5px; height: 20px; background: #fff; border-radius: 1.5px; top: 10px; }
+.logo::before { left: 11px; } .logo::after { right: 11px; }
+.logo > span { position: absolute; width: 10px; height: 5px; background: var(--lime); border-radius: 1.5px; top: 17px; left: 15px; }
+.brand-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+.topbar-cta { font-size: 13px; color: var(--ink-soft); }
+.topbar-cta a { color: var(--royal); text-decoration: none; font-weight: 600; }
+
+/* HERO */
+.hero { padding: 56px 24px 40px; max-width: 760px; margin: 0 auto; text-align: center; }
+.hero-badge { display: inline-block; background: var(--navy); color: var(--lime); padding: 7px 14px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; margin-bottom: 20px; }
+.hero h1 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 44px; line-height: 1.1; color: var(--navy); letter-spacing: -1.2px; margin-bottom: 18px; }
+.hero p { font-size: 18px; color: var(--ink-soft); max-width: 560px; margin: 0 auto; }
+.hero strong { color: var(--navy); }
+
+/* USP STRIP */
+.usp-strip { max-width: 900px; margin: 0 auto 48px; padding: 0 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.usp { background: var(--white); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 20px; text-align: left; }
+.usp-num { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 22px; color: var(--royal); }
+.usp-label { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+@media (max-width: 720px) { .usp-strip { grid-template-columns: 1fr; } .hero h1 { font-size: 32px; } .hero { padding: 32px 20px 24px; } }
+
+/* FORM CARD */
+.form-wrap { max-width: 820px; margin: 0 auto 64px; padding: 0 24px; }
+.form-card { background: var(--white); border: 1.5px solid var(--line); border-radius: 22px; padding: 40px; box-shadow: 0 14px 40px rgba(21,24,58,0.04); }
+.form-card h2 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 24px; color: var(--navy); letter-spacing: -0.4px; margin-bottom: 6px; }
+.form-card .lead { font-size: 14px; color: var(--ink-soft); margin-bottom: 32px; }
+
+.section { margin-bottom: 32px; }
+.section-title { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--royal); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.section-title::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--lime); border-radius: 1px; }
+
+.row { display: grid; gap: 16px; margin-bottom: 16px; }
+.row.r-2 { grid-template-columns: 1fr 1fr; }
+.row.r-3 { grid-template-columns: 1fr 1fr 1fr; }
+.row.r-21 { grid-template-columns: 2fr 1fr; }
+@media (max-width: 640px) { .row.r-2, .row.r-3, .row.r-21 { grid-template-columns: 1fr; } .form-card { padding: 28px 22px; } }
+
+label { display: block; }
+.label-text { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+.req { color: var(--coral); font-weight: 700; }
+.hint { font-size: 11px; color: var(--ink-soft); font-weight: 400; margin-left: 4px; }
+
+input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--navy);
+  background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--royal); box-shadow: 0 0 0 4px rgba(53,81,230,0.1); }
+input::placeholder, textarea::placeholder { color: #94a3b8; }
+select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%235C6178' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+textarea { min-height: 100px; resize: vertical; }
+
+.consent { background: var(--cream); border: 1.5px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 24px; }
+.consent-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.consent-row:last-child { margin-bottom: 0; }
+.consent-row input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--royal); flex-shrink: 0; cursor: pointer; }
+.consent-row label { font-size: 13px; color: var(--ink-soft); line-height: 1.5; cursor: pointer; }
+.consent-row label a { color: var(--royal); text-decoration: underline; }
+.consent-row .req-text { color: var(--navy); font-weight: 600; }
+
+.submit-row { margin-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.submit-info { font-size: 12px; color: var(--ink-soft); flex: 1; min-width: 200px; }
+button[type="submit"] {
+  background: var(--royal);
+  color: var(--white);
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  box-shadow: 0 6px 18px rgba(53,81,230,0.25);
+}
+button[type="submit"]:hover { background: var(--royal-dark); }
+button[type="submit"]:active { transform: translateY(1px); }
+button[type="submit"]:disabled { background: var(--ink-soft); cursor: not-allowed; box-shadow: none; }
+
+/* STATES */
+.success, .error { padding: 40px; text-align: center; border-radius: 22px; display: none; }
+.success { background: var(--white); border: 2px solid var(--lime); }
+.error { background: #FFE8E8; border: 2px solid #f87171; color: #991b1b; }
+.success-icon { width: 64px; height: 64px; background: var(--lime); border-radius: 50%; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center; }
+.success h2 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 26px; color: var(--navy); margin-bottom: 10px; letter-spacing: -0.5px; }
+.success p { color: var(--ink-soft); max-width: 480px; margin: 0 auto 8px; }
+.success .next { background: var(--blue-soft); padding: 18px 24px; border-radius: 12px; margin-top: 28px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
+.success .next strong { color: var(--royal); font-family: 'Poppins', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* FOOT */
+.foot { text-align: center; padding: 32px 24px; font-size: 13px; color: var(--ink-soft); border-top: 1px solid var(--line); margin-top: 40px; }
+.foot a { color: var(--royal); text-decoration: none; }
+
+.loading { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">
+      <div class="logo"><span></span></div>
+      <div class="brand-name">Holland Recruitment</div>
+    </a>
+    <div class="topbar-cta">Werknemer? <a href="/inschrijven.html">Inschrijven</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="hero-badge">VOOR WERKGEVERS</span>
+  <h1>Personeel nodig?<br>Plaats je aanvraag.</h1>
+  <p>Geen telefoonrondes, geen offertes-pingpong. Vul het formulier in — onze <strong>AI-matching</strong> levert binnen 24 uur een shortlist van geschikte kandidaten.</p>
+</section>
+
+<div class="usp-strip">
+  <div class="usp"><div class="usp-num">&lt;24u</div><div class="usp-label">Eerste shortlist na aanvraag</div></div>
+  <div class="usp-num-block usp"><div class="usp-num">Transparant</div><div class="usp-label">Helder uurtarief, geen verrassingen</div></div>
+  <div class="usp"><div class="usp-num">ABU-norm</div><div class="usp-label">Compliant en EU AI Act klaar</div></div>
+</div>
+
+<div class="form-wrap">
+  <div class="form-card" id="form-card">
+    <h2>Vertel ons over je aanvraag</h2>
+    <p class="lead">Hoe meer details, hoe scherper onze match. Velden met <span class="req">*</span> zijn verplicht.</p>
+
+    <form id="b2b-form" novalidate>
+
+      <div class="section">
+        <div class="section-title">Bedrijf</div>
+        <div class="row r-2">
+          <label>
+            <div class="label-text">Bedrijfsnaam <span class="req">*</span></div>
+            <input type="text" name="company_name" required placeholder="Bijv. Logistics BV">
+          </label>
+          <label>
+            <div class="label-text">KvK nummer <span class="hint">(optioneel)</span></div>
+            <input type="text" name="kvk_number" placeholder="12345678" pattern="[0-9]{8}" maxlength="8">
+          </label>
+        </div>
+        <div class="row r-2">
+          <label>
+            <div class="label-text">Sector <span class="req">*</span></div>
+            <select name="sector" required>
+              <option value="">Kies een sector...</option>
+              <option value="logistiek">Logistiek</option>
+              <option value="warehousing">Warehousing / Magazijn</option>
+              <option value="horeca">Horeca</option>
+              <option value="housekeeping">Housekeeping / Schoonmaak</option>
+              <option value="technisch">Technisch / Installatie</option>
+              <option value="klantenservice">Klantenservice</option>
+              <option value="administratief">Administratief</option>
+              <option value="zorg">Zorg</option>
+              <option value="overig">Overig</option>
+            </select>
+          </label>
+          <label>
+            <div class="label-text">Bedrijfsgrootte <span class="hint">(optioneel)</span></div>
+            <select name="company_size_range">
+              <option value="">—</option>
+              <option value="1-10">1-10 medewerkers</option>
+              <option value="11-50">11-50 medewerkers</option>
+              <option value="51-200">51-200 medewerkers</option>
+              <option value="201-1000">201-1000 medewerkers</option>
+              <option value="1000+">1000+ medewerkers</option>
+            </select>
+          </label>
+        </div>
+        <div class="row r-21">
+          <label>
+            <div class="label-text">Vestiging stad <span class="req">*</span></div>
+            <input type="text" name="location_city" required placeholder="Bijv. Rotterdam">
+          </label>
+          <label>
+            <div class="label-text">Postcode <span class="hint">(optioneel)</span></div>
+            <input type="text" name="location_postal_code" placeholder="1234 AB" maxlength="8">
+          </label>
+        </div>
+        <div class="row">
+          <label>
+            <div class="label-text">Website <span class="hint">(optioneel)</span></div>
+            <input type="url" name="website" placeholder="https://...">
+          </label>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Contactpersoon</div>
+        <div class="row r-2">
+          <label>
+            <div class="label-text">Voornaam <span class="req">*</span></div>
+            <input type="text" name="contact_first_name" required placeholder="Voornaam">
+          </label>
+          <label>
+            <div class="label-text">Achternaam <span class="req">*</span></div>
+            <input type="text" name="contact_last_name" required placeholder="Achternaam">
+          </label>
+        </div>
+        <div class="row r-2">
+          <label>
+            <div class="label-text">E-mail <span class="req">*</span></div>
+            <input type="email" name="contact_email" required placeholder="naam@bedrijf.nl" autocomplete="email">
+          </label>
+          <label>
+            <div class="label-text">Telefoon <span class="req">*</span></div>
+            <input type="tel" name="contact_phone" required placeholder="06-12345678" autocomplete="tel">
+          </label>
+        </div>
+        <div class="row">
+          <label>
+            <div class="label-text">Functie / rol <span class="hint">(optioneel)</span></div>
+            <input type="text" name="contact_role" placeholder="Bijv. HR Manager, Owner">
+          </label>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Vacature</div>
+        <div class="row r-21">
+          <label>
+            <div class="label-text">Functietitel <span class="req">*</span></div>
+            <input type="text" name="vacancy_title" required placeholder="Bijv. Orderpicker, Magazijnmedewerker">
+          </label>
+          <label>
+            <div class="label-text">Aantal mensen <span class="req">*</span></div>
+            <input type="number" name="headcount_needed" required min="1" max="500" value="1">
+          </label>
+        </div>
+        <div class="row r-2">
+          <label>
+            <div class="label-text">Werklocatie stad <span class="hint">(zelfde als bedrijfsstad?)</span></div>
+            <input type="text" name="vacancy_city" placeholder="Vul in als anders">
+          </label>
+          <label>
+            <div class="label-text">Startdatum <span class="hint">(optioneel)</span></div>
+            <input type="date" name="start_date">
+          </label>
+        </div>
+        <div class="row r-3">
+          <label>
+            <div class="label-text">Uren min <span class="hint">(per week)</span></div>
+            <input type="number" name="hours_per_week_min" min="0" max="60" placeholder="32">
+          </label>
+          <label>
+            <div class="label-text">Uren max <span class="hint">(per week)</span></div>
+            <input type="number" name="hours_per_week_max" min="0" max="60" placeholder="40">
+          </label>
+          <label>
+            <div class="label-text">Werktijden</div>
+            <select name="shift_pattern">
+              <option value="">—</option>
+              <option value="dag">Dag</option>
+              <option value="avond">Avond</option>
+              <option value="nacht">Nacht</option>
+              <option value="weekend">Weekend</option>
+              <option value="flex">Flexibel</option>
+              <option value="24/7">24/7 ploegen</option>
+              <option value="overig">Overig</option>
+            </select>
+          </label>
+        </div>
+        <div class="row r-3">
+          <label>
+            <div class="label-text">Uurtarief min <span class="hint">€/uur</span></div>
+            <input type="number" name="hourly_rate_min" step="0.50" min="0" placeholder="14.50">
+          </label>
+          <label>
+            <div class="label-text">Uurtarief max <span class="hint">€/uur</span></div>
+            <input type="number" name="hourly_rate_max" step="0.50" min="0" placeholder="18.00">
+          </label>
+          <label>
+            <div class="label-text">Urgentie</div>
+            <select name="urgency">
+              <option value="normal" selected>Normaal</option>
+              <option value="low">Laag — geen haast</option>
+              <option value="high">Hoog — graag snel</option>
+              <option value="critical">Kritiek — vandaag/morgen</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>
+            <div class="label-text">Vereisten <span class="hint">(certificaten, talen, ervaring)</span></div>
+            <textarea name="requirements_text" placeholder="Bijv. VCA basis, Nederlands B1, minimaal 1 jaar magazijnervaring, eigen vervoer"></textarea>
+          </label>
+        </div>
+        <div class="row">
+          <label>
+            <div class="label-text">Aanvullende informatie <span class="hint">(optioneel)</span></div>
+            <textarea name="notes" placeholder="Wat moeten we nog meer weten? Werkprocessen, cultuur, korte termijn of langdurig..."></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="consent">
+        <div class="consent-row">
+          <input type="checkbox" name="avg_consent" id="avg_consent" required>
+          <label for="avg_consent">
+            <span class="req-text">Ik geef toestemming voor verwerking van deze gegevens</span> voor het uitvoeren van mijn aanvraag, conform de <a href="/privacy" target="_blank">privacyverklaring</a> van Holland Recruitment. <span class="req">*</span>
+          </label>
+        </div>
+        <div class="consent-row">
+          <input type="checkbox" name="marketing_opt_in" id="marketing_opt_in">
+          <label for="marketing_opt_in">
+            Ja, ik wil op de hoogte blijven van nieuwe diensten en sectorinzichten van Holland Recruitment (max 1× per maand).
+          </label>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <div class="submit-info">Onze AI-matcher analyseert je aanvraag direct. Je krijgt binnen enkele minuten een bevestigingsmail met eerste inzichten.</div>
+        <button type="submit" id="submit-btn">Verstuur aanvraag →</button>
+      </div>
+
+      <input type="hidden" name="source" value="website-form">
+    </form>
+  </div>
+
+  <div class="form-card success" id="success-state">
+    <div class="success-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#15183A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <h2>Aanvraag ontvangen</h2>
+    <p>Bedankt! We hebben je aanvraag binnen. Onze AI-matcher analyseert deze nu en verstuurt jou binnen enkele minuten een bevestigingsmail met eerste inzichten.</p>
+    <div class="next">
+      <strong>Wat gebeurt er nu</strong>
+      <p style="margin-top: 8px; font-size: 14px; color: var(--navy);">
+        <strong>Stap 1:</strong> Bevestigingsmail in je inbox<br>
+        <strong>Stap 2:</strong> Binnen 24u eerste shortlist van geschikte kandidaten<br>
+        <strong>Stap 3:</strong> Persoonlijk gesprek of direct presenteren — jij kiest
+      </p>
+    </div>
+  </div>
+
+  <div class="form-card error" id="error-state">
+    <h2 style="font-family: 'Poppins', sans-serif; color: #991b1b;">Er ging iets mis</h2>
+    <p id="error-message" style="color: #991b1b; margin-top: 10px;"></p>
+    <button onclick="location.reload()" style="background: #991b1b; margin-top: 20px;">Probeer opnieuw</button>
+  </div>
+</div>
+
+<footer class="foot">
+  Liever bellen? +31 (0)10 XXX XXXX · <a href="mailto:info@holland-recruitment.nl">info@holland-recruitment.nl</a><br>
+  © Holland Recruitment BV — ABU-genormeerd uitzendbureau · KvK XXXXXXXX
+</footer>
+
+<script>
+const WEBHOOK_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/employer-intake';
+
+const form = document.getElementById('b2b-form');
+const submitBtn = document.getElementById('submit-btn');
+const formCard = document.getElementById('form-card');
+const successState = document.getElementById('success-state');
+const errorState = document.getElementById('error-state');
+const errorMsg = document.getElementById('error-message');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // Safety: anti reloadvisor (defensieve check)
+  const email = form.contact_email.value.toLowerCase();
+  if (email.includes('reloadvisor')) {
+    errorMsg.textContent = 'Dit e-mailadres lijkt op een testadres — gebruik je echte zakelijke e-mail.';
+    formCard.style.display = 'none';
+    errorState.style.display = 'block';
+    window.scrollTo({ top: errorState.offsetTop - 40, behavior: 'smooth' });
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading"></span>Versturen...';
+
+  // Collect form data
+  const formData = new FormData(form);
+  const data = {};
+  for (const [key, value] of formData.entries()) {
+    if (value === '' || value === null) continue;
+    data[key] = value;
+  }
+  data.avg_consent = form.avg_consent.checked;
+  data.marketing_opt_in = form.marketing_opt_in.checked;
+  data.submitted_at = new Date().toISOString();
+  data.page_url = window.location.href;
+
+  try {
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) throw new Error('Server respons ' + response.status);
+
+    formCard.style.display = 'none';
+    successState.style.display = 'block';
+    window.scrollTo({ top: successState.offsetTop - 40, behavior: 'smooth' });
+  } catch (err) {
+    console.error('Submission error:', err);
+    errorMsg.textContent = 'Verzenden mislukt: ' + (err.message || 'onbekende fout') + '. Probeer het later opnieuw of mail info@holland-recruitment.nl rechtstreeks.';
+    formCard.style.display = 'none';
+    errorState.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Verstuur aanvraag →';
+  }
+});
+</script>
+
+</body>
+</html>
