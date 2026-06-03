@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personeel aanvragen via AI-chat — Holland Recruitment</title>
+<meta name="description" content="Vraag binnen 2 minuten personeel aan via onze AI-chat. Directe pricing-advies op basis van NL markttarieven. Holland Recruitment uitzendbureau.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #3551E6;
+  --navy: #15183A;
+  --cream: #FBF6EC;
+  --lime: #D6F24E;
+  --coral: #FF7A59;
+  --grey: #6B7280;
+  --light-grey: #E5E7EB;
+  --green: #10B981;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  -webkit-font-smoothing: antialiased;
+}
+
+.chat-app {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  box-shadow: 0 0 60px rgba(21,24,58,0.06);
+}
+
+/* Header */
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--light-grey);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.avatar {
+  width: 44px; height: 44px;
+  background: var(--blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-family: 'Poppins';
+  font-size: 18px;
+  position: relative;
+}
+.avatar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 12px; height: 12px;
+  background: var(--green);
+  border: 2px solid white;
+  border-radius: 50%;
+}
+.header-info {
+  flex: 1;
+}
+.header-name {
+  font-family: 'Poppins';
+  font-weight: 700;
+  font-size: 16px;
+}
+.header-status {
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 500;
+}
+.toggle-form {
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--light-grey);
+}
+.toggle-form:hover {
+  background: var(--cream);
+}
+
+/* AVG banner */
+.avg-banner {
+  margin: 16px 20px 0;
+  padding: 16px;
+  background: var(--cream);
+  border-radius: 12px;
+  border-left: 4px solid var(--blue);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.avg-banner.hidden { display: none; }
+.avg-banner b { font-family: 'Poppins'; }
+.avg-banner a { color: var(--blue); }
+.btn-consent {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: 'Inter';
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.btn-consent:hover { background: #2940c8; }
+
+/* Messages */
+.messages {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.msg {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.msg.assistant {
+  background: var(--cream);
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+}
+.msg.user {
+  background: var(--blue);
+  color: white;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+.msg.typing {
+  background: var(--cream);
+  padding: 16px;
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+}
+.dot {
+  width: 8px; height: 8px;
+  background: var(--grey);
+  border-radius: 50%;
+  animation: blink 1.4s infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+}
+
+/* Input */
+.input-area {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--light-grey);
+  background: white;
+  position: sticky;
+  bottom: 0;
+}
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: end;
+}
+.chat-input {
+  flex: 1;
+  font-family: 'Inter';
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--light-grey);
+  border-radius: 22px;
+  resize: none;
+  outline: none;
+  max-height: 120px;
+  min-height: 44px;
+  background: var(--cream);
+}
+.chat-input:focus { border-color: var(--blue); background: white; }
+.btn-send {
+  background: var(--blue);
+  color: white;
+  border: none;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.btn-send:disabled { background: var(--light-grey); cursor: not-allowed; }
+.btn-send:hover:not(:disabled) { background: #2940c8; }
+
+/* Submit button */
+.submit-area {
+  margin: 12px 0 0;
+  padding: 12px;
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-radius: 12px;
+  display: none;
+  text-align: center;
+}
+.submit-area.visible { display: block; }
+.submit-area p {
+  font-size: 13px;
+  color: #047857;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.btn-submit {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-submit:hover { background: #059669; }
+.btn-submit:disabled { background: var(--grey); cursor: wait; }
+
+/* Success screen */
+.success {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 16px;
+}
+.success.visible { display: flex; }
+.success-icon {
+  width: 80px; height: 80px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+}
+.success h2 {
+  font-family: 'Poppins';
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--navy);
+}
+.success p {
+  font-size: 15px;
+  color: var(--grey);
+  max-width: 400px;
+  line-height: 1.5;
+}
+.success .quote-box {
+  background: var(--cream);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 12px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 400px;
+}
+.success .quote-box .rate {
+  font-family: 'Poppins';
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--blue);
+}
+
+/* Footer note */
+.footer-note {
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--grey);
+  border-top: 1px solid var(--light-grey);
+}
+.footer-note a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="chat-app">
+
+  <div class="chat-header">
+    <div class="avatar">S</div>
+    <div class="header-info">
+      <div class="header-name">Sanne · Holland Recruitment</div>
+      <div class="header-status">● Online · reageert direct</div>
+    </div>
+    <a href="/personeel-aanvragen.html" class="toggle-form">Liever invullen</a>
+  </div>
+
+  <div class="avg-banner" id="avgBanner">
+    <div>
+      <b>Privacy & AVG</b><br>
+      We gebruiken AI om je aanvraag snel te verwerken. Je gegevens worden alleen gebruikt voor deze aanvraag.
+      Lees onze <a href="/privacyverklaring.html" target="_blank">privacyverklaring</a>.
+    </div>
+    <button class="btn-consent" id="consentBtn">Akkoord, laten we beginnen</button>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="submit-area" id="submitArea">
+    <p>Alle info verzameld. Verstuur je aanvraag?</p>
+    <button class="btn-submit" id="submitBtn">Verstuur aanvraag</button>
+  </div>
+
+  <div class="input-area" id="inputArea">
+    <div class="input-row">
+      <textarea class="chat-input" id="chatInput" placeholder="Typ je bericht..." rows="1" disabled></textarea>
+      <button class="btn-send" id="sendBtn" disabled>→</button>
+    </div>
+  </div>
+
+  <div class="success" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Aanvraag verstuurd!</h2>
+    <p id="successMessage">Je krijgt binnen 24 uur de eerste kandidaat-suggesties in je mailbox.</p>
+    <div class="quote-box" id="quoteBox" style="display:none;"></div>
+    <a href="/" style="margin-top:24px;color:var(--blue);text-decoration:none;font-weight:600;">← Terug naar home</a>
+  </div>
+
+  <div class="footer-note">
+    Holland Recruitment BV · KvK 96618914 · <a href="/over-onze-ai.html">Hoe werkt onze AI?</a>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// Configuration
+// ============================================================
+const WEBHOOK_MESSAGE = 'https://hollandrecruitment.app.n8n.cloud/webhook/chat-message';
+const WEBHOOK_SUBMIT  = 'https://hollandrecruitment.app.n8n.cloud/webhook/chat-submit';
+
+// Session ID — persistent in this session
+const SESSION_ID = (function() {
+  let id = sessionStorage.getItem('hr_chat_session_id');
+  if (!id) {
+    id = 'chat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+    sessionStorage.setItem('hr_chat_session_id', id);
+  }
+  return id;
+})();
+
+// ============================================================
+// State
+// ============================================================
+let consentGiven = false;
+let readyForSubmit = false;
+let collectedData = {};
+
+// ============================================================
+// DOM references
+// ============================================================
+const $messages = document.getElementById('messages');
+const $input    = document.getElementById('chatInput');
+const $sendBtn  = document.getElementById('sendBtn');
+const $consentBtn = document.getElementById('consentBtn');
+const $avgBanner = document.getElementById('avgBanner');
+const $submitArea = document.getElementById('submitArea');
+const $submitBtn = document.getElementById('submitBtn');
+const $successScreen = document.getElementById('successScreen');
+const $inputArea = document.getElementById('inputArea');
+
+// ============================================================
+// Helpers
+// ============================================================
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  $messages.appendChild(div);
+  $messages.scrollTop = $messages.scrollHeight;
+}
+function showTyping() {
+  removeTyping();
+  const div = document.createElement('div');
+  div.className = 'msg typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  $messages.appendChild(div);
+  $messages.scrollTop = $messages.scrollHeight;
+}
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+async function sendMessage(text, opts = {}) {
+  if (!text.trim() && !opts.give_consent) return;
+
+  if (text.trim()) addMessage('user', text.trim());
+  $input.value = '';
+  $input.style.height = '44px';
+  $sendBtn.disabled = true;
+  $input.disabled = true;
+  showTyping();
+
+  try {
+    const res = await fetch(WEBHOOK_MESSAGE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: SESSION_ID,
+        message: text.trim() || '[consent given]',
+        source_url: window.location.href,
+        give_consent: !!opts.give_consent
+      })
+    });
+    removeTyping();
+
+    if (!res.ok) {
+      addMessage('assistant', 'Er ging iets mis. Probeer het zo opnieuw of vul ons formulier in.');
+      return;
+    }
+    const data = await res.json();
+    if (data.response) addMessage('assistant', data.response);
+    collectedData = data.collected_data || collectedData;
+    if (data.ready_for_submit) {
+      readyForSubmit = true;
+      $submitArea.classList.add('visible');
+    }
+  } catch (e) {
+    removeTyping();
+    addMessage('assistant', 'Verbinding mislukt. Probeer opnieuw of vul ons formulier in.');
+  } finally {
+    $input.disabled = false;
+    $sendBtn.disabled = false;
+    $input.focus();
+  }
+}
+
+async function submitIntake() {
+  $submitBtn.disabled = true;
+  $submitBtn.textContent = 'Verzenden...';
+  try {
+    const res = await fetch(WEBHOOK_SUBMIT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: SESSION_ID })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      $submitBtn.disabled = false;
+      $submitBtn.textContent = 'Verstuur aanvraag';
+      alert('Er ging iets mis: ' + (data.error || 'onbekende fout'));
+      return;
+    }
+    // Show success screen
+    $inputArea.style.display = 'none';
+    $submitArea.style.display = 'none';
+    $messages.style.display = 'none';
+    $successScreen.classList.add('visible');
+
+    if (data.quote && data.quote.found) {
+      const q = data.quote;
+      const box = document.getElementById('quoteBox');
+      box.style.display = 'block';
+      box.innerHTML = '<div style="color:var(--grey);margin-bottom:6px;">Verwacht klanttarief</div>' +
+        '<div class="rate">€' + (q.recommended_rates.target || 0).toFixed(2) + '/uur</div>' +
+        '<div style="color:var(--grey);font-size:12px;margin-top:4px;">' +
+        'Op basis van NL marktdata · sector ' + q.sector + '</div>';
+    }
+  } catch (e) {
+    $submitBtn.disabled = false;
+    $submitBtn.textContent = 'Verstuur aanvraag';
+    alert('Verbinding mislukt');
+  }
+}
+
+// ============================================================
+// Event handlers
+// ============================================================
+$consentBtn.addEventListener('click', async function() {
+  $avgBanner.classList.add('hidden');
+  consentGiven = true;
+  $input.disabled = false;
+  $sendBtn.disabled = false;
+  // Trigger first AI greeting via give_consent payload
+  await sendMessage('', { give_consent: true });
+});
+
+$input.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if ($input.value.trim()) sendMessage($input.value);
+  }
+});
+$input.addEventListener('input', function() {
+  $input.style.height = '44px';
+  $input.style.height = Math.min(120, $input.scrollHeight) + 'px';
+});
+$sendBtn.addEventListener('click', function() {
+  if ($input.value.trim()) sendMessage($input.value);
+});
+$submitBtn.addEventListener('click', submitIntake);
+
+// ============================================================
+// Anti-reloadvisor safety check on any text containing email
+// ============================================================
+const originalSendMessage = sendMessage;
+window.sendMessage = function(text, opts) {
+  if (text && /reloadvisor/i.test(text)) {
+    addMessage('assistant', 'Hmm, dat e-mailadres herken ik als test-adres. Gebruik je echte zakelijke e-mail.');
+    return;
+  }
+  return originalSendMessage(text, opts);
+};
+</script>
+
+</body>
+</html>
