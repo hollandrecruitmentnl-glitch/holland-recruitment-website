@@ -60,6 +60,22 @@
 .nav-outer + .wrap.hub-head, .nav-outer ~ .wrap.hub-head{padding-top:60px!important;}
 body > .wrap.hub-head:first-of-type{padding-top:60px!important;}
 
+
+/* === Final fixes: desktop spacing + mobile burger === */
+.nav-outer{margin-bottom:30px!important;}
+.wrap.hub-head{padding-top:30px!important;}
+.article-body, .article, main{padding-top:30px;}
+
+@media(max-width:760px){
+  .nav-outer .nav-links{display:none!important;}
+  .nav-outer .burger{display:flex!important;align-items:center;justify-content:center;width:46px;height:46px;background:var(--cream-pill,#FBF6EC)!important;border-radius:50%!important;border:1.5px solid var(--line-pill,#ECE5D6)!important;}
+  .nav-outer .nav-right .btn{display:none!important;}
+  .nav-outer .nav{padding-right:14px!important;}
+  .nav-outer .mobile-menu.open{display:block!important;}
+  .nav-outer .mobile-menu.open a{display:block;padding:14px 18px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--ink-pill,#15183A);border-bottom:1px solid var(--line-pill,#ECE5D6);}
+  .nav-outer .mobile-menu.open a:last-child{border-bottom:0;}
+}
+
 </style>
 </head>
 <body>
@@ -164,5 +180,19 @@ body > .wrap.hub-head:first-of-type{padding-top:60px!important;}
 </footer>
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wvk55mww7c");</script>
+
+<script>
+(function(){
+  var burger = document.querySelector('.nav-outer .burger');
+  var menu = document.querySelector('.nav-outer .mobile-menu');
+  if(burger && menu){
+    burger.addEventListener('click', function(e){
+      e.preventDefault();
+      menu.classList.toggle('open');
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
