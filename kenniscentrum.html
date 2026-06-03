@@ -50,6 +50,16 @@
 .footer-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:24px;font-size:13px;}
 @media(max-width:760px){.nav-outer .nav-links,.nav-outer .nav-right .btn{display:none!important;}.nav-outer .burger{display:flex!important;}.footer-top{grid-template-columns:1fr;}}
 
+
+/* Override conflicts with old page CSS */
+.nav-outer .nav a.btn-line{background:#fff!important;color:#15183A!important;border:2px solid #15183A!important;text-decoration:none!important;}
+.nav-outer .nav a.btn-line:hover{background:#15183A!important;color:#fff!important;}
+.nav-outer .nav a.btn-blue{background:#3551E6!important;color:#fff!important;border:2px solid #3551E6!important;text-decoration:none!important;}
+.nav-outer .nav a.btn-blue:hover{background:#2334AE!important;}
+.nav-outer .nav .nav-cta{padding:12px 22px!important;font-size:14.5px!important;font-family:'Poppins',sans-serif!important;font-weight:700!important;}
+.nav-outer + .wrap.hub-head, .nav-outer ~ .wrap.hub-head{padding-top:60px!important;}
+body > .wrap.hub-head:first-of-type{padding-top:60px!important;}
+
 </style>
 </head>
 <body>
