@@ -359,6 +359,12 @@ section{position:relative;}
     </div>
   </div>
 </div>
+
+<nav aria-label="Breadcrumbs" style="background:var(--cream);padding:14px 0;border-bottom:1px solid var(--line);">
+  <div class="wrap" style="font-size:13px;font-family:Inter,sans-serif;">
+    <a href="/" style="color:var(--muted);text-decoration:none;">Home</a> <span style="color:var(--muted);">/</span> <span style="color:var(--muted);">Functies</span> <span style="color:var(--muted);">/</span> <span style="color:var(--ink);font-weight:600;">Productiemedewerker</span>
+  </div>
+</nav>
 <section class="sec" style="padding-bottom:24px;">
   <div class="wrap"><div style="max-width:730px;">
     <div class="tag reveal"><span class="dot"></span> Functie · Logistiek</div>
@@ -478,6 +484,17 @@ section{position:relative;}
       <span><a href="/privacyverklaring.html" style="color:inherit;text-decoration:underline;">Privacyverklaring</a> · <a href="/voorwaarden.html" style="color:inherit;text-decoration:underline;">Voorwaarden</a></span>
     </div>
   </div>
+<style>
+.trust-badges{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;padding:28px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:24px;}
+.trust-badge{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#9aa0c4;font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;}
+.trust-badge svg{width:14px;height:14px;flex-shrink:0;}
+</style>
+<div class="trust-badges">
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>EU AI Act traject — gereed 2 aug 2026</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>AVG-compliant met audit trail</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>KvK 96618914</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Traject naar ABU-norm 2026</div>
+</div>
 </footer>
 <script>
 document.documentElement.className = 'js';
@@ -506,6 +523,30 @@ document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
     if(!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
     if(href === path || (path === '/' && href === '/')) a.classList.add('current');
   });
+})();
+</script>
+<style>
+.sticky-cta-mobile{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:var(--blue);color:#fff;padding:14px 24px;border-radius:100px;box-shadow:0 12px 30px rgba(53,81,230,.32);font-family:Poppins,sans-serif;font-weight:700;font-size:14px;text-decoration:none;display:none;align-items:center;gap:8px;}
+.sticky-cta-mobile.show{display:inline-flex;animation:slideUp .35s ease;}
+.sticky-cta-mobile svg{width:16px;height:16px;}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,30px);}to{opacity:1;transform:translate(-50%,0);}}
+@media (min-width:769px){.sticky-cta-mobile{display:none !important;}}
+@media (max-width:768px){body.hide-question-bubble #question-bubble,body.hide-question-bubble .question-bubble,body.hide-question-bubble .qa-floating,body.hide-question-bubble .floating-question{display:none !important;}}
+</style>
+<a href="/personeel-aanvragen.html" class="sticky-cta-mobile" id="sticky-cta-mobile">
+  Personeel aanvragen
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+</a>
+<script>
+(function(){
+  document.body.classList.add('hide-question-bubble');
+  var cta = document.getElementById('sticky-cta-mobile');
+  var shown = false;
+  function check(){
+    if(window.scrollY > 400 && !shown){ cta.classList.add('show'); shown = true; }
+    else if(window.scrollY < 200 && shown){ cta.classList.remove('show'); shown = false; }
+  }
+  window.addEventListener('scroll', check, {passive: true});
 })();
 </script>
 </body>

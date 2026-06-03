@@ -404,6 +404,12 @@ section{position:relative;}
   </div>
 </div>
 
+
+<nav aria-label="Breadcrumbs" style="background:var(--cream);padding:14px 0;border-bottom:1px solid var(--line);">
+  <div class="wrap" style="font-size:13px;font-family:Inter,sans-serif;">
+    <a href="/" style="color:var(--muted);text-decoration:none;">Home</a> <span style="color:var(--muted);">/</span> <span style="color:var(--ink);font-weight:600;">Personeel aanvragen</span>
+  </div>
+</nav>
 <section class="sec" style="padding-bottom:30px;">
   <div class="wrap"><div style="max-width:760px;">
     <div class="tag reveal"><span class="dot"></span> Voor werkgevers</div>
@@ -592,6 +598,17 @@ section{position:relative;}
       <span><a href="/privacyverklaring.html" style="color:inherit;text-decoration:underline;">Privacyverklaring</a> · <a href="/voorwaarden.html" style="color:inherit;text-decoration:underline;">Voorwaarden</a></span>
     </div>
   </div>
+<style>
+.trust-badges{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;padding:28px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:24px;}
+.trust-badge{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#9aa0c4;font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;}
+.trust-badge svg{width:14px;height:14px;flex-shrink:0;}
+</style>
+<div class="trust-badges">
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>EU AI Act traject — gereed 2 aug 2026</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>AVG-compliant met audit trail</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>KvK 96618914</div>
+  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Traject naar ABU-norm 2026</div>
+</div>
 </footer>
 <script>
 document.documentElement.className = 'js';
@@ -642,6 +659,97 @@ if (form) form.addEventListener('submit', async (e) => {
     var href = a.getAttribute('href');
     if(!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
     if(href === path || (path === '/' && href === '/')) a.classList.add('current');
+  });
+})();
+</script>
+<style>
+.form-progress{display:flex;gap:6px;margin-bottom:32px;padding:0 4px;}
+.form-progress-step{flex:1;height:5px;background:var(--line);border-radius:3px;transition:background .3s;}
+.form-progress-step.done{background:var(--blue);}
+.form-progress-step.active{background:linear-gradient(90deg,var(--blue) 0%,var(--blue) 50%,var(--line) 50%);}
+.form-progress-label{display:flex;justify-content:space-between;font-family:Poppins,sans-serif;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;}
+.form-progress-label span.current{color:var(--blue);}
+</style>
+<script>
+(function(){
+  var form = document.getElementById('b2b-form');
+  if(!form) return;
+  var sections = form.querySelectorAll('.b2b-section');
+  if(sections.length < 2) return;
+  var labels = ['Bedrijf', 'Contact', 'Vacature', 'Akkoord'];
+  var progDiv = document.createElement('div');
+  progDiv.innerHTML = '<div class="form-progress-label"><span class="current">1. '+labels[0]+'</span><span>2. '+labels[1]+'</span><span>3. '+labels[2]+'</span><span>'+(labels[3]||'')+'</span></div><div class="form-progress"><div class="form-progress-step active"></div><div class="form-progress-step"></div><div class="form-progress-step"></div><div class="form-progress-step"></div></div>';
+  form.insertBefore(progDiv, form.firstChild);
+  var steps = progDiv.querySelectorAll('.form-progress-step');
+  var lbls = progDiv.querySelectorAll('.form-progress-label span');
+  function updateProgress(){
+    var filled = 0;
+    sections.forEach(function(sec, i){
+      var inputs = sec.querySelectorAll('input[required], select[required]');
+      var allFilled = inputs.length > 0;
+      inputs.forEach(function(inp){ if(!inp.value || inp.value === '') allFilled = false; });
+      if(allFilled) filled = i + 1;
+    });
+    var consent = form.querySelector('input[name="avg_consent"]');
+    if(filled === sections.length && consent && consent.checked) filled = 4;
+    steps.forEach(function(s, i){
+      s.classList.remove('done', 'active');
+      if(i < filled) s.classList.add('done');
+      else if(i === filled) s.classList.add('active');
+    });
+    lbls.forEach(function(l, i){
+      l.classList.remove('current');
+      if(i === filled) l.classList.add('current');
+    });
+  }
+  form.addEventListener('input', updateProgress);
+  form.addEventListener('change', updateProgress);
+  setTimeout(updateProgress, 100);
+})();
+</script>
+<style>
+.field-error{color:#dc2626;font-size:12px;margin-top:6px;font-family:Inter,sans-serif;font-weight:500;display:none;}
+.b2b-field.has-error input,.b2b-field.has-error select,.b2b-field.has-error textarea{border-color:#dc2626 !important;}
+.b2b-field.has-error .field-error{display:block;}
+.b2b-field.has-success input,.b2b-field.has-success select{border-color:var(--blue);}
+</style>
+<script>
+(function(){
+  var form = document.getElementById('b2b-form');
+  if(!form) return;
+  var messages = {
+    company_name: 'Vul de naam van je bedrijf in',
+    contact_first_name: 'Wat is je voornaam?',
+    contact_last_name: 'Wat is je achternaam?',
+    contact_email: 'Vul een geldig e-mailadres in (bv. naam@bedrijf.nl)',
+    contact_phone: 'Vul een Nederlands telefoonnummer in',
+    vacancy_title: 'Welke functietitel zoek je?',
+    headcount_needed: 'Hoeveel medewerkers zoek je?',
+    location_city: 'In welke stad?',
+    sector: 'Kies een sector',
+    avg_consent: 'Toestemming voor verwerking is verplicht (AVG)'
+  };
+  form.querySelectorAll('[name]').forEach(function(input){
+    var name = input.getAttribute('name');
+    var errSpan = document.createElement('span');
+    errSpan.className = 'field-error';
+    errSpan.textContent = messages[name] || 'Vul dit veld in';
+    if(input.type !== 'checkbox') {
+      var field = input.closest('.b2b-field') || input.parentNode;
+      field.appendChild(errSpan);
+    }
+    input.addEventListener('invalid', function(e){
+      e.preventDefault();
+      var field = input.closest('.b2b-field');
+      if(field) field.classList.add('has-error');
+    });
+    input.addEventListener('input', function(){
+      var field = input.closest('.b2b-field');
+      if(field && input.checkValidity()){
+        field.classList.remove('has-error');
+        field.classList.add('has-success');
+      }
+    });
   });
 })();
 </script>
