@@ -377,6 +377,12 @@ section{position:relative;}
           </a>
           <a href="/inschrijven.html" class="btn btn-line">Ik zoek werk</a>
         </div>
+        <div class="reveal d3" style="margin:-12px 0 22px;font-size:14px;">
+          <a href="/personeel-aanvragen-chat.html" style="color:var(--blue);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Liever direct chatten? Praat met Sanne in 2 minuten →
+          </a>
+        </div>
         <div class="hero-trust reveal d4">
           <span><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Geen risico — wij zijn de juridische werkgever</span>
           <span><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Verloning volledig volgens cao</span>
@@ -768,12 +774,12 @@ document.querySelectorAll('.qa').forEach(function(qa){
 
 /* finder widget */
 var data = {
-  'Orderpicker':       {uur:'€14,80', dagen:'24 uur'},
-  'Magazijnmedewerker':{uur:'€14,80', dagen:'24 uur'},
-  'Heftruckchauffeur': {uur:'€16,20', dagen:'48 uur'},
-  'Reachtruckchauffeur':{uur:'€16,90', dagen:'48 uur'},
-  'Inpakker':          {uur:'€14,40', dagen:'24 uur'},
-  'Logistiek medewerker':{uur:'€15,30', dagen:'36 uur'}
+  'Orderpicker':       {uur:'€14,80', klant:'€24,50', dagen:'24 uur'},
+  'Magazijnmedewerker':{uur:'€14,80', klant:'€23,50', dagen:'24 uur'},
+  'Heftruckchauffeur': {uur:'€16,20', klant:'€26,50', dagen:'48 uur'},
+  'Reachtruckchauffeur':{uur:'€16,90', klant:'€27,50', dagen:'48 uur'},
+  'Inpakker':          {uur:'€14,40', klant:'€22,00', dagen:'24 uur'},
+  'Logistiek medewerker':{uur:'€15,30', klant:'€23,50', dagen:'36 uur'}
 };
 function runFinder(){
   var f = document.getElementById('f-func').value;
@@ -791,7 +797,8 @@ function runFinder(){
       '<div class="frl-sub">Op basis van de huidige vraag in deze regio.</div>' +
       '<div class="fr-stats">' +
         '<div class="fr-stat"><b>' + d.dagen + '</b><span>indicatieve levertijd</span></div>' +
-        '<div class="fr-stat"><b>vanaf ' + d.uur + '</b><span>indicatie uurloon (cao)</span></div>' +
+        '<div class="fr-stat"><b>vanaf ' + d.klant + '</b><span>klanttarief / uur (all-in)</span></div>' +
+        '<div class="fr-stat" style="background:#FBF6EC;"><b>vanaf ' + d.uur + '</b><span>brutoloon werknemer (CAO)</span></div>' +
       '</div>' +
     '</div>';
 }
