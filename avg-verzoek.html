@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Inschrijven als werkzoekende — Holland Recruitment</title>
-<meta name="description" content="Schrijf je gratis in bij Holland Recruitment en vind werk in de logistiek. Vul je profiel in — wij matchen je aan werk dat bij je past." />
-<link rel="canonical" href="https://www.holland-recruitment.nl/inschrijven.html" />
+<title>AVG-verzoek — Holland Recruitment</title>
+<meta name="description" content="Dien een AVG-verzoek in: inzage, correctie, verwijdering, export. Onze privacy officer behandelt binnen 30 dagen conform AVG art. 12." />
+<link rel="canonical" href="https://www.holland-recruitment.nl/avg-verzoek.html" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj48cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgcng9IjM0IiBmaWxsPSIjMzU1MUU2Ii8+PHJlY3QgeD0iMzQiIHk9IjMxIiB3aWR0aD0iMTciIGhlaWdodD0iNTgiIHJ4PSI1LjUiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2OSIgeT0iMzEiIHdpZHRoPSIxNyIgaGVpZ2h0PSI1OCIgcng9IjUuNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQ1IiB5PSI1MS41IiB3aWR0aD0iMzAiIGhlaWdodD0iMTciIHJ4PSI1LjUiIGZpbGw9IiNENkYyNEUiLz48L3N2Zz4=" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -321,6 +321,20 @@ section{position:relative;}
   .workers{margin:0 14px;border-radius:30px;}
 }
 </style>
+<style>
+.avg-form-card{background:#fff;border:1.5px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:40px;}
+.avg-type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:24px;}
+.avg-type-card{background:var(--cream);border:1.5px solid var(--line);border-radius:12px;padding:14px 18px;cursor:pointer;transition:all .15s;}
+.avg-type-card:hover{border-color:var(--blue);}
+.avg-type-card input[type="radio"]{display:none;}
+.avg-type-card input[type="radio"]:checked + .avg-type-content{color:var(--blue);}
+.avg-type-card.selected{border-color:var(--blue);background:var(--blue-soft);}
+.avg-type-card .l{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px;}
+.avg-type-card .d{font-size:12px;color:var(--muted);line-height:1.4;}
+.avg-success,.avg-error{display:none;padding:40px;text-align:center;border-radius:24px;}
+.avg-success{background:#fff;border:2px solid var(--lime);}
+.avg-error{background:#FFE8E8;border:2px solid #f87171;color:#991b1b;}
+</style>
 </head>
 <body>
 <div class="nav-outer">
@@ -362,125 +376,111 @@ section{position:relative;}
 
 <nav aria-label="Breadcrumbs" style="background:var(--cream);padding:14px 0;border-bottom:1px solid var(--line);">
   <div class="wrap" style="font-size:13px;font-family:Inter,sans-serif;">
-    <a href="/" style="color:var(--muted);text-decoration:none;">Home</a> <span style="color:var(--muted);">/</span> <span style="color:var(--ink);font-weight:600;">Inschrijven</span>
+    <a href="/" style="color:var(--muted);text-decoration:none;">Home</a> <span style="color:var(--muted);">/</span> <span style="color:var(--ink);font-weight:600;">Contact</span>
   </div>
 </nav>
-<section class="sec" style="padding-bottom:24px;">
-  <div class="wrap"><div style="max-width:730px;">
-    <div class="tag reveal"><span class="dot"></span> Voor werknemers</div>
-    <h1 class="reveal d1" style="font-size:clamp(2.3rem,4.6vw,3.5rem);margin:20px 0 16px;">Schrijf je in en vind werk in de logistiek.</h1>
-    <p class="reveal d2" style="font-size:1.12rem;color:var(--muted);">Vul je profiel in — twee minuten werk. Hoe completer je profiel, hoe beter we je kunnen matchen aan werk dat bij je past.</p>
-    
+
+
+<section class="sec" style="padding-bottom:30px;">
+  <div class="wrap"><div style="max-width:760px;">
+    <div class="tag reveal"><span class="dot"></span> Privacy & rechten</div>
+    <h1 class="reveal d1" style="font-size:clamp(2.2rem,4.5vw,3.4rem);margin:22px 0 18px;">Uw AVG-verzoek</h1>
+    <p class="reveal d2" style="font-size:1.1rem;color:var(--muted);">U heeft het recht om uw gegevens in te zien, te corrigeren of te laten verwijderen. Wij behandelen elk verzoek binnen 30 dagen conform AVG art. 12.</p>
   </div></div>
-</section><section class="sec" style="padding-top:10px;">
-  <div class="wrap"><div style="max-width:720px;">
-    <h3 style="font-size:1.3rem;color:var(--ink);margin-bottom:4px;">Jouw profiel</h3>
-    <p style="color:var(--muted);font-size:.97rem;margin-bottom:18px;">Gratis en vrijblijvend. We nemen meestal binnen één werkdag contact met je op.</p>
-    <form id="form-kandidaat" novalidate>
-      <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
-      <input type="hidden" name="subject" value="Nieuwe kandidaat-inschrijving via de website">
-      <input type="checkbox" name="botcheck" style="display:none">
-      <div class="frm-grid">
-        <div class="frm-field"><label>Voornaam *</label><input type="text" name="voornaam" required></div>
-        <div class="frm-field"><label>Achternaam *</label><input type="text" name="achternaam" required></div>
-        <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
-        <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
-        <div class="frm-field"><label>Woonplaats *</label><input type="text" name="woonplaats" required></div>
-        <div class="frm-field"><label>Welk werk zoek je? *</label><select name="functie" required><option value="">Maak een keuze</option><option>Orderpicker</option><option>Magazijnmedewerker</option><option>Heftruckchauffeur</option><option>Reachtruckchauffeur</option><option>Inpakker</option><option>Productiemedewerker</option><option>Logistiek medewerker</option><option>Sta open voor alles</option></select></div>
-        <div class="frm-field"><label>Werkervaring *</label><select name="ervaring" required><option value="">Maak een keuze</option><option>Geen ervaring</option><option>Minder dan 1 jaar</option><option>1 – 3 jaar</option><option>3 – 5 jaar</option><option>Meer dan 5 jaar</option></select></div>
-        <div class="frm-field"><label>Beschikbaarheid *</label><select name="beschikbaarheid" required><option value="">Maak een keuze</option><option>Fulltime</option><option>Parttime</option><option>Alleen weekend</option><option>Flexibel / oproep</option></select></div>
-        <div class="frm-field full"><label>Certificaten</label><input type="text" name="certificaten" placeholder="bijv. heftruckcertificaat, reachtruckcertificaat, VCA, rijbewijs B"></div>
-        <div class="frm-field full"><label>Toelichting</label><textarea name="toelichting" placeholder="Vertel kort iets over jezelf, je ervaring of wat je zoekt."></textarea></div>
-        <div class="frm-field full"><label>Cv uploaden <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="file" name="cv" accept=".pdf,application/pdf" style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">PDF &middot; max 5 MB &middot; een cv is niet verplicht, maar helpt ons je sneller te matchen. Heb je geen pdf? Maak er gratis &eacute;&eacute;n via onze cv-tool.</span></div>
-      </div>
-      
-        <div class="frm-field full" style="margin-top:8px;">
-          <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);cursor:pointer;font-weight:500;">
-            <input type="checkbox" name="avg_consent" required style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;">
-            <span><strong>Ik geef toestemming voor verwerking van mijn gegevens</strong> voor het uitvoeren van mijn inschrijving, conform de <a href="/privacyverklaring.html" target="_blank" style="color:var(--blue);">privacyverklaring</a>. <span style="color:var(--coral);font-weight:700;">*</span></span>
+</section>
+
+<section class="sec" style="padding-top:10px;padding-bottom:80px;">
+  <div class="wrap" style="max-width:760px;">
+    <div class="avg-form-card reveal" id="avg-form-card">
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:1.5rem;color:var(--ink);margin-bottom:8px;">Welk recht wilt u uitoefenen?</h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">Kies één van onderstaande rechten conform AVG art. 15-22.</p>
+
+      <form id="avg-form" novalidate>
+        <div class="avg-type-grid">
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="access" required>
+            <div class="avg-type-content">
+              <div class="l">Inzage</div>
+              <div class="d">Bekijk welke data wij van u hebben (art. 15)</div>
+            </div>
           </label>
-        </div>
-        <div class="frm-field full" style="margin-top:6px;">
-          <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);cursor:pointer;">
-            <input type="checkbox" name="marketing_opt_in" style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;">
-            <span>Ik wil op de hoogte blijven van nieuwe vacatures via mail (max 1× per week).</span>
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="rectification">
+            <div class="avg-type-content">
+              <div class="l">Correctie</div>
+              <div class="d">Onjuiste gegevens laten aanpassen (art. 16)</div>
+            </div>
+          </label>
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="erasure">
+            <div class="avg-type-content">
+              <div class="l">Verwijdering</div>
+              <div class="d">Alle gegevens laten wissen (art. 17)</div>
+            </div>
+          </label>
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="portability">
+            <div class="avg-type-content">
+              <div class="l">Export</div>
+              <div class="d">Data overzetten naar andere partij (art. 20)</div>
+            </div>
+          </label>
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="objection">
+            <div class="avg-type-content">
+              <div class="l">Bezwaar</div>
+              <div class="d">Tegen verwerking (art. 21)</div>
+            </div>
+          </label>
+          <label class="avg-type-card">
+            <input type="radio" name="request_type" value="ai_decision">
+            <div class="avg-type-content">
+              <div class="l">AI-beslissing</div>
+              <div class="d">Menselijke beoordeling van AI-output (art. 22)</div>
+            </div>
           </label>
         </div>
 
-          <div class="frm-foot"><button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Inschrijving versturen</button></div>
-    </form>
-    <div class="frm-success" id="ok-kandidaat">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <h3>Bedankt voor je inschrijving!</h3>
-      <p>We hebben je profiel ontvangen en nemen binnen één werkdag contact met je op.</p>
+        <h3 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--ink);margin:24px 0 12px;">Uw gegevens</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Naam *</label><input type="text" name="requester_name" required style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:Inter,sans-serif;font-size:15px;"></div>
+          <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">E-mailadres *</label><input type="email" name="requester_email" required style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:Inter,sans-serif;font-size:15px;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Telefoonnummer</label><input type="tel" name="requester_phone" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:Inter,sans-serif;font-size:15px;"></div>
+          <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Uw rol</label><select name="requester_role" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:Inter,sans-serif;font-size:15px;"><option value="candidate">Kandidaat / werkzoekende</option><option value="employer_contact">Contactpersoon werkgever</option><option value="other">Anders</option></select></div>
+        </div>
+        <div style="margin-bottom:24px;">
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Toelichting (optioneel)</label>
+          <textarea name="request_details" placeholder="Hier kunt u uw verzoek toelichten of specifieke gegevens noemen..." style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:Inter,sans-serif;font-size:15px;min-height:100px;resize:vertical;"></textarea>
+        </div>
+
+        <div style="background:var(--cream);border-left:3px solid var(--blue);border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:13px;color:var(--muted);">
+          <strong style="color:var(--ink);">Wat gebeurt er na verzending</strong><br>
+          • Wij bellen u binnen 5 werkdagen voor identiteitsverificatie<br>
+          • Uw verzoek wordt binnen 30 dagen behandeld (AVG art. 12)<br>
+          • U ontvangt schriftelijk bericht zodra het verzoek is afgerond
+        </div>
+
+        <button type="submit" id="avg-submit" class="btn btn-blue" style="width:100%;justify-content:center;">Verzoek versturen &rarr;</button>
+        <input type="hidden" name="source" value="website-form">
+      </form>
     </div>
-  </div></div>
+
+    <div class="avg-form-card avg-success" id="avg-success">
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;color:var(--ink);margin-bottom:12px;">Verzoek ontvangen</h2>
+      <p style="color:var(--muted);">Wij nemen binnen 5 werkdagen telefonisch contact met u op voor identiteitsverificatie. Uw verzoek wordt binnen 30 dagen behandeld.</p>
+      <p style="font-size:12px;color:var(--muted);margin-top:14px;">Referentie: <span id="ref-id" style="font-family:monospace;">—</span></p>
+    </div>
+
+    <div class="avg-form-card avg-error" id="avg-error">
+      <h2 style="font-family:'Poppins',sans-serif;color:#991b1b;">Er ging iets mis</h2>
+      <p id="avg-error-msg" style="color:#991b1b;margin-top:10px;"></p>
+      <button onclick="location.reload()" class="btn btn-ink" style="margin-top:20px;">Probeer opnieuw</button>
+    </div>
+  </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-(function(){
-  var f=document.getElementById('form-kandidaat'); if(!f) return;
-  function val(n){var el=f.elements[n];return el?(el.value||'').trim():'';}
-  var SB_URL='https://bmvxlxclcwiyrfemqiwx.supabase.co';
-  var SB_ANON='sb_publishable_aceWD64RxJ_QL_Y45LKJqQ_PkuuId_r';
-  var MAX=5*1024*1024;
-  var OKTYPES=['application/pdf'];
-  var OKEXT=['.pdf'];
-  var btn=f.querySelector('button[type=submit]');
-  var origLabel=btn?btn.textContent:'';
-  function endsWithAny(s,arr){for(var i=0;i<arr.length;i++){if(s.length>=arr[i].length&&s.slice(-arr[i].length)===arr[i])return true;}return false;}
-  function fail(msg){if(btn){btn.disabled=false;btn.textContent=origLabel;}alert(msg);}
-  function postWebhook(cvPath){
-    try{
-      var p=new URLSearchParams();
-      p.append('first_name',val('voornaam'));
-      p.append('last_name',val('achternaam'));
-      p.append('email',val('email'));
-      p.append('phone',val('telefoon'));
-      p.append('city',val('woonplaats'));
-      p.append('preferred_roles',val('functie'));
-      p.append('availability',val('beschikbaarheid'));
-      p.append('certificates',val('certificaten'));
-      p.append('notes','Ervaring: '+val('ervaring')+' | Toelichting: '+val('toelichting'));
-      p.append('cv_path',cvPath||'');
-      p.append('source',(window.hrHerkomst?window.hrHerkomst():'Direct / geen verwijzing'));
-      fetch('https://hollandrecruitment.app.n8n.cloud/webhook/kandidaat',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
-    }catch(e){}
-  }
-  function finish(cvPath){
-    postWebhook(cvPath);
-    var fd=new FormData(f); fd.delete('cv');
-    fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Accept':'application/json'},body:fd})
-      .then(function(){f.style.display='none';var ok=document.getElementById('ok-kandidaat');ok.style.display='block';ok.scrollIntoView({behavior:'smooth',block:'center'});})
-      .catch(function(){fail('Er ging iets mis. Controleer je verbinding en probeer opnieuw.');});
-  }
-  f.addEventListener('submit',function(ev){
-    ev.preventDefault();
-    if(!f.checkValidity()){f.reportValidity();return;}
-    if(btn){btn.disabled=true;btn.textContent='Bezig met versturen…';}
-    var fileEl=f.elements['cv'];
-    var file=(fileEl&&fileEl.files&&fileEl.files[0])?fileEl.files[0]:null;
-    if(!file){finish('');return;}
-    if(file.size>MAX){fail('Je cv is te groot (max 5 MB). Kies een kleiner bestand of laat het cv weg.');return;}
-    var nm=file.name.toLowerCase();
-    if(!endsWithAny(nm,OKEXT)&&OKTYPES.indexOf(file.type)===-1){fail('Alleen PDF wordt geaccepteerd.');return;}
-    if(btn){btn.textContent='Cv uploaden…';}
-    try{
-      var sb=window.supabase.createClient(SB_URL,SB_ANON);
-      var dot=nm.lastIndexOf('.');
-      var ext=dot>-1?nm.slice(dot):'.pdf';
-      var safe=(val('voornaam')+'-'+val('achternaam')).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+/,'').replace(/-+$/,'')||'kandidaat';
-      var path='cv/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+safe+ext;
-      sb.storage.from('kandidaat-documenten').upload(path,file,{contentType:file.type||'application/octet-stream'})
-        .then(function(res){
-          if(res&&res.error){fail('Het cv kon niet worden geupload. Probeer het opnieuw of laat het cv weg.');return;}
-          finish(path);
-        })
-        .catch(function(){fail('Het cv kon niet worden geupload. Probeer het opnieuw of laat het cv weg.');});
-    }catch(e){fail('Er ging iets mis bij het uploaden. Probeer het opnieuw.');}
-  });
-})();
-</script>
+
 <footer class="footer">
   <div class="wrap">
     <div class="footer-top">
@@ -547,58 +547,56 @@ section{position:relative;}
   <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Traject naar ABU-norm 2026</div>
 </div>
 </footer>
+
 <script>
 document.documentElement.className = 'js';
 var burger = document.getElementById('burger'), mm = document.getElementById('mm');
-if (burger && mm) {
-  burger.addEventListener('click', function(){ mm.style.display = mm.style.display === 'block' ? 'none' : 'block'; });
-  mm.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ mm.style.display = 'none'; }); });
-}
-var io = new IntersectionObserver(function(es){
-  es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, { threshold: 0.14 });
-document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
-</script>
-<script>(function(){try{var K='hr_herkomst';if(!sessionStorage.getItem(K)){var q=new URLSearchParams(location.search),c=q.get('utm_campaign'),s=q.get('utm_source'),L='';if(c){L='Campagne: '+c;}else if(s){L='Campagne: '+s;}else{var r=document.referrer||'',h='';if(r){try{h=new URL(r).hostname.replace(/^www[.]/,'');}catch(e){}}if(!r){L='Direct / geen verwijzing';}else if(h===location.hostname.replace(/^www[.]/,'')){L='';}else if(/google[.]|bing[.]|duckduckgo[.]|yahoo[.]|ecosia[.]/.test(h)){L='Zoekmachine: '+h;}else if(/linkedin[.]|facebook[.]|instagram[.]|twitter[.]|youtube[.]|tiktok[.]/.test(h)||h==='t.co'||h==='x.com'){L='Social: '+h;}else{L='Verwijzing: '+h;}}if(L){sessionStorage.setItem(K,L);}}}catch(e){}})();window.hrHerkomst=function(){try{return sessionStorage.getItem('hr_herkomst')||'Direct / geen verwijzing';}catch(e){return 'Direct / geen verwijzing';}};</script>
-<script defer src="/_vercel/insights/script.js"></script>
-<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wvk55mww7c");</script>
-<script>(function(){if(document.querySelector('.hr-ask'))return;var s=document.createElement('style');s.textContent='.hr-ask{position:fixed;bottom:22px;right:22px;z-index:9999;display:inline-flex;align-items:center;gap:10px;background:#3551E6;color:#fff;text-decoration:none;padding:14px 22px;border-radius:100px;font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(53,81,230,0.30);transition:all .18s ease;cursor:pointer;}.hr-ask:hover{background:#2A41C2;transform:translateY(-2px);box-shadow:0 12px 28px rgba(53,81,230,0.40);}.hr-ask svg{width:20px;height:20px;}@media(max-width:640px){.hr-ask{bottom:16px;right:16px;padding:12px 18px;font-size:14px;}.hr-ask svg{width:18px;height:18px;}}';document.head.appendChild(s);var a=document.createElement('a');a.className='hr-ask';a.href='mailto:info@holland-recruitment.nl?subject=Vraag%20via%20de%20website';a.setAttribute('aria-label','Stel een vraag');a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Vraag?</span>';a.addEventListener('click',function(){try{window.clarity&&window.clarity('event','vraag-click');}catch(e){}});document.body.appendChild(a);})();</script>
+if (burger && mm) burger.addEventListener('click', function(){ mm.style.display = mm.style.display === 'block' ? 'none' : 'block'; });
+var io = new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})}, {threshold:0.14});
+document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
 
-<style>.nav-links a.current,.mobile-menu a.current{color:var(--blue) !important;font-weight:700;}</style>
-<script>
-(function(){
-  var path = window.location.pathname;
-  if(path === '/' || path.endsWith('/index.html')) path = '/';
-  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(function(a){
-    var href = a.getAttribute('href');
-    if(!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-    if(href === path || (path === '/' && href === '/')) a.classList.add('current');
+// Selected radio styling
+document.querySelectorAll('input[name="request_type"]').forEach(function(r){
+  r.addEventListener('change', function(){
+    document.querySelectorAll('.avg-type-card').forEach(function(c){c.classList.remove('selected');});
+    r.closest('.avg-type-card').classList.add('selected');
   });
-})();
-</script>
-<style>
-.sticky-cta-mobile{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:var(--lime);color:var(--ink);padding:14px 24px;border-radius:100px;box-shadow:0 12px 30px rgba(53,81,230,.32);font-family:Poppins,sans-serif;font-weight:700;font-size:14px;text-decoration:none;display:none;align-items:center;gap:8px;}
-.sticky-cta-mobile.show{display:inline-flex;animation:slideUp .35s ease;}
-.sticky-cta-mobile svg{width:16px;height:16px;}
-@keyframes slideUp{from{opacity:0;transform:translate(-50%,30px);}to{opacity:1;transform:translate(-50%,0);}}
-@media (min-width:769px){.sticky-cta-mobile{display:none !important;}}
-@media (max-width:768px){body.hide-question-bubble #question-bubble,body.hide-question-bubble .question-bubble,body.hide-question-bubble .qa-floating,body.hide-question-bubble .floating-question{display:none !important;}}
-</style>
-<a href="/inschrijven.html" class="sticky-cta-mobile" id="sticky-cta-mobile">
-  Inschrijven
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-</a>
-<script>
-(function(){
-  document.body.classList.add('hide-question-bubble');
-  var cta = document.getElementById('sticky-cta-mobile');
-  var shown = false;
-  function check(){
-    if(window.scrollY > 400 && !shown){ cta.classList.add('show'); shown = true; }
-    else if(window.scrollY < 200 && shown){ cta.classList.remove('show'); shown = false; }
+});
+
+// AVG webhook
+const AVG_WEBHOOK = 'https://hollandrecruitment.app.n8n.cloud/webhook/avg-rights-request';
+const avgForm = document.getElementById('avg-form');
+const avgCard = document.getElementById('avg-form-card');
+const avgSuccess = document.getElementById('avg-success');
+const avgError = document.getElementById('avg-error');
+const avgErrMsg = document.getElementById('avg-error-msg');
+const refSpan = document.getElementById('ref-id');
+
+avgForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if(!avgForm.checkValidity()){ avgForm.reportValidity(); return; }
+  const btn = document.getElementById('avg-submit');
+  btn.disabled = true; btn.textContent = 'Versturen...';
+  const fd = new FormData(avgForm);
+  const data = {};
+  for(const [k,v] of fd.entries()){ if(v) data[k] = v; }
+  data.submitted_at = new Date().toISOString();
+  data.page_url = window.location.href;
+  try {
+    const resp = await fetch(AVG_WEBHOOK, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+    });
+    if(!resp.ok) throw new Error('Server respons ' + resp.status);
+    const result = await resp.json();
+    if(result.request_id && refSpan) refSpan.textContent = result.request_id.substring(0,8);
+    avgCard.style.display = 'none'; avgSuccess.style.display = 'block';
+    window.scrollTo({top:avgSuccess.offsetTop-40, behavior:'smooth'});
+  } catch(err) {
+    avgErrMsg.textContent = 'Verzenden mislukt: ' + err.message + '. Mail rechtstreeks naar privacy@holland-recruitment.nl';
+    avgCard.style.display = 'none'; avgError.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Verzoek versturen →';
   }
-  window.addEventListener('scroll', check, {passive: true});
-})();
+});
 </script>
 </body>
 </html>
