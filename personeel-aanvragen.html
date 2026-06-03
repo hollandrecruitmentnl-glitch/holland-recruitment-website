@@ -416,6 +416,16 @@ section{position:relative;}
     </div>
   </div></div>
 </section>
+    <div class="scroll-hint reveal" style="text-align:center;margin-top:40px;">
+      <a href="#form-card" style="display:inline-flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:13px;font-family:'Poppins',sans-serif;font-weight:500;letter-spacing:.05em;">
+        <span>Scroll naar het formulier</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:scrollHint 2s ease-in-out infinite;">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </a>
+    </div>
+    <style>@keyframes scrollHint{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}</style>
+
 
 <section class="sec" style="padding-top:10px;padding-bottom:80px;">
   <div class="wrap" style="max-width:880px;">
@@ -621,6 +631,19 @@ if (form) form.addEventListener('submit', async (e) => {
     submitBtn.disabled = false; submitBtn.innerHTML = 'Verstuur aanvraag &rarr;';
   }
 });
+</script>
+
+<style>.nav-links a.current,.mobile-menu a.current{color:var(--blue) !important;font-weight:700;}</style>
+<script>
+(function(){
+  var path = window.location.pathname;
+  if(path === '/' || path.endsWith('/index.html')) path = '/';
+  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(function(a){
+    var href = a.getAttribute('href');
+    if(!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if(href === path || (path === '/' && href === '/')) a.classList.add('current');
+  });
+})();
 </script>
 </body>
 </html>
