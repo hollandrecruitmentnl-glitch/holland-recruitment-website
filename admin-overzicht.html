@@ -187,6 +187,8 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="werkgevers" onclick="switchTab('werkgevers')">Werkgevers <span class="count" id="c-co">·</span></button>
       <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">Alerts <span class="count" id="c-alert">·</span></button>
       <button class="tab" data-tab="emails" onclick="switchTab('emails')">Emails <span class="count" id="c-email">·</span></button>
+      <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
+      <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
 
     <!-- View: Overzicht -->
@@ -299,6 +301,26 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-emails" class="list"></div>
     </div>
 
+    <!-- View: Brain -->
+    <div id="view-brain" class="view">
+      <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
+
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">🎨 Brand-feiten</h2>
+      <div id="brain-brand-list" class="list"></div>
+
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--blue);">📚 Claude's geheugen — recent geleerd</h2>
+      <div id="brain-learnings-list" class="list"></div>
+    </div>
+
+    <!-- View: System Health -->
+    <div id="view-health" class="view">
+      <div class="stats" id="health-stats-cards" style="margin-bottom:22px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">📊 Database tellers</h2>
+      <div id="health-db-grid" class="stats"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--blue);">⏱ Laatste 24 uur</h2>
+      <div id="health-activity-grid" class="stats"></div>
+    </div>
+
     <!-- View: Alerts -->
     <div id="view-alerts" class="view">
       <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:4px 0 12px;color:var(--red);">🛑 Margin alerts</h2>
@@ -367,7 +389,7 @@ var state = {
   alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
   emails: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -482,7 +504,101 @@ function loadTab(t){
     });
   } else if(t==='emails'){
     loadEmails();
+  } else if(t==='brain'){
+    loadBrain();
+  } else if(t==='health'){
+    loadSystemHealth();
   }
+}
+
+function loadBrain(){
+  document.getElementById('brain-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('brain-brand-list').innerHTML = '<div class="loader"></div>';
+  document.getElementById('brain-learnings-list').innerHTML = '<div class="loader"></div>';
+  Promise.all([api('brain-overview'), api('list-brand-facts'), api('list-learnings', { limit: 20 })])
+    .then(function(res){
+      var ov = res[0] || {};
+      var brand = extractItems(res[1]);
+      var learn = extractItems(res[2]);
+      state.loaded.brain = true;
+      document.getElementById('c-brain').textContent = (ov.learnings_total || 0);
+      // Stats
+      var cards = [
+        { label:'Brand-feiten', val: ov.brand_facts_count || 0, sub:'aantal categorieen: '+Object.keys(ov.brand_categories||{}).length, cls:'' },
+        { label:'Learnings totaal', val: ov.learnings_total || 0, sub:'in claude_learnings', cls:'' },
+        { label:'High-confidence (4-5)', val: (ov.learnings_top||[]).length, sub:'meest betrouwbaar', cls:'ok' }
+      ];
+      document.getElementById('brain-stats-cards').innerHTML = cards.map(function(c){
+        return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+      }).join('');
+      // Brand facts grouped per category
+      var byCat = {};
+      brand.forEach(function(b){ (byCat[b.category]=byCat[b.category]||[]).push(b); });
+      var brandHtml = '';
+      Object.keys(byCat).sort().forEach(function(cat){
+        brandHtml += '<div class="card" style="cursor:default;"><div class="title" style="text-transform:uppercase;font-size:13px;color:var(--blue);letter-spacing:.05em;margin-bottom:10px;">'+esc(cat)+'</div><dl style="display:grid;grid-template-columns:160px 1fr;gap:6px 14px;font-size:14px;">';
+        byCat[cat].forEach(function(b){
+          brandHtml += '<dt style="color:var(--muted);">'+esc(b.key)+'</dt><dd>'+esc(b.value)+'</dd>';
+        });
+        brandHtml += '</dl></div>';
+      });
+      document.getElementById('brain-brand-list').innerHTML = brandHtml || '<div class="empty">Nog geen brand-feiten.</div>';
+      // Learnings
+      if(!learn.length){
+        document.getElementById('brain-learnings-list').innerHTML = '<div class="empty">Nog geen learnings opgeslagen.</div>';
+      } else {
+        document.getElementById('brain-learnings-list').innerHTML = learn.map(function(l){
+          var conf = '⭐'.repeat(l.confidence||0);
+          return '<div class="card" style="cursor:default;"><div class="top"><div><div class="title">'+esc(l.problem)+'</div>'
+            +'<div class="sub">'+esc(l.topic)+(l.tags && l.tags.length?' · '+l.tags.map(esc).join(', '):'')+'</div></div>'
+            +'<div class="right"><span class="badge b-active">'+conf+'</span></div></div>'
+            +'<div class="summary"><b>✓ Oplossing:</b> '+esc(l.solution)+'</div>'
+            +(l.outcome?'<div class="meta"><span><b>Uitkomst:</b> '+esc(l.outcome)+'</span></div>':'')
+            +'<div class="meta"><span>'+fmtDateTime(l.created_at)+(l.used_count>0?' · gebruikt '+l.used_count+'×':'')+'</span></div></div>';
+        }).join('');
+      }
+    });
+}
+
+function loadSystemHealth(){
+  document.getElementById('health-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  api('system-health').then(function(d){
+    if(!d){ document.getElementById('health-stats-cards').innerHTML = '<div class="err">Kon system-health niet ophalen.</div>'; return; }
+    state.loaded.health = true;
+    var a = d.alerts || {};
+    var db = d.database || {};
+    var act = d.recent_activity || {};
+    var headlineCards = [
+      { label:'Kritieke alerts', val: a.critical_alerts || 0, sub:'margin + monitor combined', cls:(a.critical_alerts>0?'alert':'ok') },
+      { label:'Wachtende matches', val: a.pending_matches || 0, sub:'AI voorstellen', cls:(a.pending_matches>0?'warn':'') },
+      { label:'Open AVG', val: a.open_avg_requests || 0, sub:'compliance-deadline 30 dagen', cls:(a.open_avg_requests>0?'warn':'') },
+      { label:'Open margin alerts', val: a.open_margin_alerts || 0, sub:'check Margin Agent', cls:(a.open_margin_alerts>0?'warn':'') }
+    ];
+    document.getElementById('health-stats-cards').innerHTML = headlineCards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    var dbCards = [
+      { label:'Kandidaten', val: db.candidates_total || 0 },
+      { label:'Werkgevers', val: db.companies_total || 0 },
+      { label:'Vacatures', val: db.vacancies_total || 0 },
+      { label:'Matches', val: db.matches_total || 0 },
+      { label:'Plaatsingen', val: db.placements_total || 0 },
+      { label:'Email events', val: db.email_events_total || 0 },
+      { label:'Chat-berichten', val: db.chat_messages_total || 0 }
+    ];
+    document.getElementById('health-db-grid').innerHTML = dbCards.map(function(c){
+      return '<div class="stat"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div></div>';
+    }).join('');
+    var actCards = [
+      { label:'Nieuwe kandidaten', val: act.new_candidates_24h || 0, sub:'laatste 24u', cls:'' },
+      { label:'Nieuwe vacatures', val: act.new_vacancies_24h || 0, sub:'laatste 24u', cls:'' },
+      { label:'Emails verstuurd', val: act.emails_sent_24h || 0, sub:'laatste 24u', cls:'' },
+      { label:'Chats gestart', val: act.chats_started_24h || 0, sub:'laatste 24u', cls:'' }
+    ];
+    document.getElementById('health-activity-grid').innerHTML = actCards.map(function(c){
+      return '<div class="stat"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+  });
 }
 
 function loadEmails(){
