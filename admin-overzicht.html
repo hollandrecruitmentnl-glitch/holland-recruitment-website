@@ -4,25 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Admin Overzicht — Holland Recruitment</title>
+<title>Admin Dashboard — Holland Recruitment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#3551E6;--blue-deep:#2334AE;--lime:#D6F24E;--coral:#FF7A59;--ink:#15183A;--muted:#5C6178;--cream:#FBF6EC;--line:#ECE5D6;--green:#10B981;--amber:#F59E0B;--red:#DC2626;}
+:root{--blue:#3551E6;--blue-deep:#2334AE;--blue-soft:#E9ECFF;--lime:#D6F24E;--coral:#FF7A59;--ink:#15183A;--muted:#5C6178;--cream:#FBF6EC;--line:#ECE5D6;--green:#10B981;--green-soft:#DCF5E3;--amber:#F59E0B;--amber-soft:#FFF1D6;--red:#DC2626;--red-soft:#FEE2E2;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.5;}
-.wrap{max-width:1240px;margin:0 auto;padding:0 24px;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.5;}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px;}
 a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
 
 /* Login screen */
 .login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
 .login-card{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:36px;max-width:380px;width:100%;box-shadow:0 18px 48px rgba(21,24,58,.13);}
 .login-card h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:8px;}
 .login-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
-.login-card input{width:100%;padding:14px 18px;border:1.5px solid var(--line);border-radius:14px;font-family:'Inter',sans-serif;font-size:16px;margin-bottom:14px;}
+.login-card input{width:100%;padding:14px 18px;border:1.5px solid var(--line);border-radius:14px;font-size:16px;margin-bottom:14px;}
 .login-card input:focus{outline:none;border-color:var(--blue);}
-.login-card button{width:100%;background:var(--blue);color:#fff;border:0;padding:14px;border-radius:14px;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;cursor:pointer;}
+.login-card button{width:100%;background:var(--blue);color:#fff;border:0;padding:14px;border-radius:14px;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;}
 .login-card button:hover{background:var(--blue-deep);}
 .login-card .err{color:var(--red);font-size:13px;margin-bottom:12px;display:none;}
 .login-card .err.show{display:block;}
@@ -30,222 +31,965 @@ a{color:inherit;text-decoration:none;}
 /* Dashboard */
 .dash{display:none;padding:24px 0 60px;}
 .dash.visible{display:block;}
-.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
 .dash-head h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.7rem;}
 .dash-head .actions{display:flex;gap:10px;align-items:center;}
 .dash-head .stamp{color:var(--muted);font-size:13px;}
-.btn-refresh{background:#fff;border:1.5px solid var(--line);padding:9px 16px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
-.btn-refresh:hover{background:var(--cream);}
-.btn-logout{color:var(--red);font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;background:none;border:0;cursor:pointer;}
+.btn{background:#fff;border:1.5px solid var(--line);padding:9px 16px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;color:var(--ink);}
+.btn:hover{background:var(--cream);}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-deep);}
+.btn-danger{background:#fff;border-color:var(--red);color:var(--red);}
+.btn-danger:hover{background:var(--red-soft);}
+.btn-success{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-success:hover{background:#0B8C68;}
+.btn-logout{color:var(--red);font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;background:none;border:0;}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+.tab{background:#fff;border:1.5px solid var(--line);padding:10px 18px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;color:var(--muted);position:relative;}
+.tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.tab .count{background:var(--blue-soft);color:var(--blue);padding:2px 8px;border-radius:99px;font-size:11px;margin-left:6px;font-weight:700;}
+.tab.active .count{background:rgba(255,255,255,.2);color:#fff;}
 
 /* Stat cards */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:32px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:26px;}
 .stat{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:18px;}
-.stat .label{font-size:12px;color:var(--muted);font-family:'Poppins',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;}
+.stat .label{font-size:11.5px;color:var(--muted);font-family:'Poppins',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;}
 .stat .val{font-family:'Poppins',sans-serif;font-weight:800;font-size:2.1rem;line-height:1;color:var(--ink);}
 .stat .sub{font-size:12px;color:var(--muted);margin-top:4px;}
 .stat.alert{border-color:var(--red);background:#FEF2F2;}
 .stat.alert .val{color:var(--red);}
 .stat.warn{border-color:var(--amber);background:#FFFBEB;}
 .stat.warn .val{color:var(--amber);}
-.stat.good{border-color:var(--green);background:#ECFDF5;}
-.stat.good .val{color:var(--green);}
+.stat.ok{border-color:var(--green);background:#F0FDF4;}
+.stat.ok .val{color:var(--green);}
 
-/* Section */
-.section{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;margin-bottom:24px;}
-.section h2{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
-.section h2 .count{font-size:13px;color:var(--muted);font-weight:500;}
-.list{display:flex;flex-direction:column;gap:10px;}
-.row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--cream);border-radius:12px;gap:10px;}
-.row .info{flex:1;min-width:0;}
-.row .info b{font-family:'Poppins',sans-serif;font-weight:700;font-size:14.5px;display:block;}
-.row .info span{font-size:13px;color:var(--muted);display:block;margin-top:2px;}
-.row .badge{background:#fff;border:1.5px solid var(--line);padding:5px 12px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:700;font-size:12px;color:var(--blue);white-space:nowrap;}
-.row .badge.high{background:#ECFDF5;border-color:var(--green);color:var(--green);}
-.row .badge.med{background:#FFFBEB;border-color:var(--amber);color:var(--amber);}
-.empty{padding:30px;text-align:center;color:var(--muted);font-size:14px;}
+/* Toolbar (filter/search) */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.toolbar input,.toolbar select{font-family:inherit;font-size:14px;border:1.5px solid var(--line);border-radius:11px;padding:10px 14px;background:#fff;color:var(--ink);}
+.toolbar input{flex:1;min-width:220px;}
+.toolbar select{min-width:140px;}
 
-@media(max-width:760px){.dash-head h1{font-size:1.4rem;}.stat .val{font-size:1.7rem;}}
+/* Lists */
+.list{display:flex;flex-direction:column;gap:11px;}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:18px 20px;cursor:pointer;transition:border-color .15s ease,transform .12s ease;}
+.card:hover{border-color:var(--blue);}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+.card .title{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.05rem;}
+.card .sub{color:var(--muted);font-size:13px;margin-top:3px;}
+.card .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.card .meta{display:flex;gap:18px;font-size:12.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap;}
+.card .meta b{color:var(--ink);font-weight:600;}
+.card .summary{background:var(--cream);border-radius:10px;padding:11px 14px;font-size:13.5px;margin-top:10px;color:#3a3d55;white-space:pre-wrap;}
+.card .notitie{background:var(--blue-soft);border:1px solid #D9DEFF;border-radius:10px;padding:10px 13px;font-size:13px;margin-top:10px;color:#2c3055;}
+.card .actions-row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;align-items:center;}
+.card .actions-row button,.card .actions-row a.btn{padding:7px 14px;font-size:12.5px;}
+
+/* Badges */
+.badge{font-family:'Poppins',sans-serif;font-weight:700;font-size:11px;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em;display:inline-block;}
+.b-new{background:var(--blue-soft);color:var(--blue);}
+.b-pending{background:var(--amber-soft);color:#9a6b00;}
+.b-active{background:var(--green-soft);color:#1f7a3d;}
+.b-done{background:#EBE3FF;color:#6b3fc4;}
+.b-rejected{background:var(--red-soft);color:var(--red);}
+.b-neutral{background:#EEE;color:#777;}
+
+/* Score */
+.score{font-family:'Poppins',sans-serif;font-weight:800;width:54px;height:54px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;flex-shrink:0;}
+.score small{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.7;margin-top:3px;}
+.s-hi{background:var(--green-soft);color:#1f7a3d;}.s-mid{background:var(--amber-soft);color:#9a6b00;}.s-lo{background:var(--red-soft);color:#b03b3b;}.s-none{background:#F0EEE8;color:#9a9a9a;}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(21,24,58,.55);display:none;align-items:flex-start;justify-content:center;padding:24px;z-index:50;overflow-y:auto;}
+.modal-bg.show{display:flex;}
+.modal{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:0;margin:30px 0;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.modal .mhead{padding:22px 28px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.modal .mhead h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.3rem;}
+.modal .mhead .msub{color:var(--muted);font-size:13.5px;margin-top:4px;}
+.modal .mclose{background:none;border:0;font-size:28px;color:var(--muted);line-height:1;padding:0 4px;}
+.modal .mbody{padding:22px 28px;}
+.modal .mbody h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin:18px 0 10px;}
+.modal .mbody h4:first-child{margin-top:0;}
+.modal .mbody dl{display:grid;grid-template-columns:140px 1fr;gap:8px 16px;font-size:14px;}
+.modal .mbody dt{color:var(--muted);font-weight:500;}
+.modal .mbody dd{font-weight:500;}
+.modal .mbody dd a{color:var(--blue);font-weight:600;}
+.modal .mfoot{padding:16px 28px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;}
+.modal textarea{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical;min-height:120px;margin-top:6px;}
+
+/* Chat transcript */
+.chat-msgs{max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--cream);border-radius:13px;}
+.chat-msg{padding:10px 14px;border-radius:12px;max-width:85%;font-size:14px;}
+.chat-msg.user{background:#fff;border:1px solid var(--line);align-self:flex-start;}
+.chat-msg.assistant{background:var(--blue);color:#fff;align-self:flex-end;}
+.chat-msg.system{background:#FEF3C7;align-self:center;font-style:italic;font-size:12.5px;color:#92400E;}
+.chat-msg.tool{background:#F3F4F6;border:1px dashed #ccc;align-self:center;font-size:12px;font-family:monospace;color:#444;}
+.chat-msg-time{font-size:10.5px;opacity:.6;margin-top:4px;}
+
+/* Loader / messages */
+.loader{display:flex;justify-content:center;padding:40px;}
+.loader::before{content:"";width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.empty{padding:50px 24px;text-align:center;color:var(--muted);background:#fff;border:1.5px dashed var(--line);border-radius:14px;}
+.err{background:#FEF2F2;color:var(--red);padding:14px 18px;border-radius:11px;font-size:14px;margin-bottom:14px;}
+
+/* Tab views */
+.view{display:none;}
+.view.active{display:block;}
+
+/* Hub mobile */
+@media (max-width:760px){
+  .stat{padding:14px;}
+  .stat .val{font-size:1.5rem;}
+  .modal{margin:0;border-radius:0;min-height:100vh;}
+  .modal .mbody dl{grid-template-columns:1fr;}
+  .modal .mbody dt{margin-top:4px;}
+}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div class="login" id="loginScreen">
+<!-- ============ LOGIN ============ -->
+<div id="login" class="login">
   <div class="login-card">
-    <h1>Admin Overzicht</h1>
-    <p>Holland Recruitment — interne snapshot van alle activiteit</p>
-    <div class="err" id="loginErr">Onjuiste PIN</div>
-    <input type="password" id="pinInput" placeholder="PIN" autocomplete="off">
-    <button id="loginBtn">Inloggen</button>
+    <h1>Admin Dashboard</h1>
+    <p>Holland Recruitment — interne tooling. Voer je toegangscode in.</p>
+    <div id="login-err" class="err">Onjuiste code. Probeer opnieuw.</div>
+    <form id="login-form">
+      <input type="password" id="login-pin" placeholder="Toegangscode" autocomplete="off" required>
+      <button type="submit">Inloggen</button>
+    </form>
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="dash" id="dashboard">
+<!-- ============ DASHBOARD ============ -->
+<div id="dash" class="dash">
   <div class="wrap">
-
     <div class="dash-head">
       <div>
-        <h1>Admin Overzicht</h1>
+        <h1>Admin Dashboard</h1>
         <div class="stamp" id="stamp"></div>
       </div>
       <div class="actions">
-        <button class="btn-refresh" id="refreshBtn">↻ Refresh</button>
-        <button class="btn-logout" id="logoutBtn">Uitloggen</button>
+        <button class="btn" onclick="refreshActive()">↻ Vernieuwen</button>
+        <button class="btn-logout" onclick="logout()">Uitloggen</button>
       </div>
     </div>
 
-    <!-- Stat cards -->
-    <div class="stats" id="statsGrid"></div>
-
-    <!-- Recent vacancies -->
-    <div class="section">
-      <h2>Recente vacatures <span class="count" id="vacCount"></span></h2>
-      <div class="list" id="vacList"></div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="overzicht" onclick="switchTab('overzicht')">Overzicht</button>
+      <button class="tab" data-tab="vacatures" onclick="switchTab('vacatures')">Vacatures <span class="count" id="c-vac">·</span></button>
+      <button class="tab" data-tab="kandidaten" onclick="switchTab('kandidaten')">Kandidaten <span class="count" id="c-cand">·</span></button>
+      <button class="tab" data-tab="chats" onclick="switchTab('chats')">B2B Chats <span class="count" id="c-chat">·</span></button>
+      <button class="tab" data-tab="matches" onclick="switchTab('matches')">Matches <span class="count" id="c-mat">·</span></button>
+      <button class="tab" data-tab="werkgevers" onclick="switchTab('werkgevers')">Werkgevers <span class="count" id="c-co">·</span></button>
+      <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">Alerts <span class="count" id="c-alert">·</span></button>
     </div>
 
-    <!-- Recent candidates -->
-    <div class="section">
-      <h2>Recente kandidaten (met AVG-consent) <span class="count" id="candCount"></span></h2>
-      <div class="list" id="candList"></div>
+    <!-- View: Overzicht -->
+    <div id="view-overzicht" class="view active">
+      <div class="stats" id="snapshot-stats"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1.1rem;margin:8px 0 14px;">Recente activiteit</h2>
+      <div id="snapshot-recent"></div>
     </div>
 
-    <!-- Pending matches -->
-    <div class="section">
-      <h2>Wachtende match-suggesties <span class="count" id="matchCount"></span></h2>
-      <div class="list" id="matchList"></div>
+    <!-- View: Vacatures -->
+    <div id="view-vacatures" class="view">
+      <div class="toolbar">
+        <input type="search" id="f-vac-search" placeholder="Zoek op titel, stad, bedrijf…" oninput="renderVacatures()">
+        <select id="f-vac-status" onchange="renderVacatures()">
+          <option value="">Alle statussen</option>
+          <option value="open">Open</option>
+          <option value="active">Actief</option>
+          <option value="filled">Gevuld</option>
+          <option value="closed">Gesloten</option>
+        </select>
+      </div>
+      <div id="list-vacatures" class="list"></div>
     </div>
 
+    <!-- View: Kandidaten -->
+    <div id="view-kandidaten" class="view">
+      <div class="toolbar">
+        <input type="search" id="f-cand-search" placeholder="Zoek op naam, stad…" oninput="renderKandidaten()">
+        <select id="f-cand-status" onchange="renderKandidaten()">
+          <option value="">Alle statussen</option>
+          <option value="new">Nieuw</option>
+          <option value="screening">Gescreend</option>
+          <option value="available">Beschikbaar</option>
+          <option value="placed">Geplaatst</option>
+          <option value="inactive">Inactief</option>
+        </select>
+        <select id="f-cand-cv" onchange="renderKandidaten()">
+          <option value="">Alle (cv + zonder cv)</option>
+          <option value="yes">Met CV</option>
+          <option value="no">Zonder CV</option>
+        </select>
+        <select id="f-cand-sort" onchange="renderKandidaten()">
+          <option value="new">Nieuwste eerst</option>
+          <option value="score">Hoogste score</option>
+        </select>
+      </div>
+      <div id="list-kandidaten" class="list"></div>
+    </div>
+
+    <!-- View: Chats -->
+    <div id="view-chats" class="view">
+      <div class="toolbar">
+        <input type="search" id="f-chat-search" placeholder="Zoek op bedrijf, contact…" oninput="renderChats()">
+        <select id="f-chat-status" onchange="renderChats()">
+          <option value="">Alle statussen</option>
+          <option value="in_progress">In gesprek</option>
+          <option value="completed">Voltooid</option>
+          <option value="abandoned">Verlaten</option>
+        </select>
+      </div>
+      <div id="list-chats" class="list"></div>
+    </div>
+
+    <!-- View: Matches -->
+    <div id="view-matches" class="view">
+      <div class="toolbar">
+        <input type="search" id="f-mat-search" placeholder="Zoek op kandidaat of vacature…" oninput="renderMatches()">
+        <select id="f-mat-status" onchange="renderMatches()">
+          <option value="">Alle statussen</option>
+          <option value="suggested">Voorgesteld (AI)</option>
+          <option value="in_review">In review</option>
+          <option value="approved">Goedgekeurd</option>
+          <option value="rejected">Afgewezen</option>
+          <option value="converted">Geplaatst</option>
+        </select>
+      </div>
+      <div id="list-matches" class="list"></div>
+    </div>
+
+    <!-- View: Werkgevers -->
+    <div id="view-werkgevers" class="view">
+      <div class="toolbar">
+        <input type="search" id="f-co-search" placeholder="Zoek op bedrijf, sector…" oninput="renderWerkgevers()">
+      </div>
+      <div id="list-werkgevers" class="list"></div>
+    </div>
+
+    <!-- View: Alerts -->
+    <div id="view-alerts" class="view">
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:4px 0 12px;color:var(--red);">🛑 Margin alerts</h2>
+      <div id="list-margin" class="list"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--amber);">⚠️ Monitor findings</h2>
+      <div id="list-monitor" class="list"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--blue);">📋 AVG verzoeken</h2>
+      <div id="list-avg" class="list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ DETAIL MODAL ============ -->
+<div id="modal" class="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhead">
+      <div>
+        <h3 id="modal-title">—</h3>
+        <div class="msub" id="modal-sub"></div>
+      </div>
+      <button class="mclose" onclick="closeModal()">×</button>
+    </div>
+    <div class="mbody" id="modal-body"></div>
+    <div class="mfoot" id="modal-foot"></div>
+  </div>
+</div>
+
+<!-- ============ NOTITIE MODAL (oude feature behouden) ============ -->
+<div id="notitie-modal" class="modal-bg" onclick="if(event.target===this)closeNotitie()">
+  <div class="modal" style="max-width:540px;">
+    <div class="mhead">
+      <div>
+        <h3>Toelichting van de recruiter</h3>
+        <div class="msub">Voor <b id="notitie-naam">—</b>. Deze tekst verschijnt op de presentatie-cv.</div>
+      </div>
+      <button class="mclose" onclick="closeNotitie()">×</button>
+    </div>
+    <div class="mbody">
+      <textarea id="notitie-text" placeholder="Bijv. Betrouwbare, gemotiveerde indruk tijdens het gesprek. Heeft eigen vervoer en kan per direct starten."></textarea>
+    </div>
+    <div class="mfoot">
+      <button class="btn" onclick="closeNotitie()">Annuleren</button>
+      <button class="btn btn-primary" id="notitie-save" onclick="saveNotitie()">Opslaan</button>
+    </div>
   </div>
 </div>
 
 <script>
-const WEBHOOK = 'https://hollandrecruitment.app.n8n.cloud/webhook/admin-data';
+/* ============ CONFIG ============ */
+var API_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/admin-data';
+var BESTAND_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/recruiter-bestand';
+var NOTITIE_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/kandidaat-notitie';
+var INTAKE_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/intake-uitnodigen';
+var VOORSTEL_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/werkgever-voorstel';
+var PIN_KEY = 'hr_admin_pin_2026';
 
-const $login = document.getElementById('loginScreen');
-const $dash = document.getElementById('dashboard');
-const $pinInput = document.getElementById('pinInput');
-const $loginErr = document.getElementById('loginErr');
-const $stamp = document.getElementById('stamp');
-const $statsGrid = document.getElementById('statsGrid');
-const $vacList = document.getElementById('vacList');
-const $candList = document.getElementById('candList');
-const $matchList = document.getElementById('matchList');
+var pin = sessionStorage.getItem(PIN_KEY) || '';
+var state = {
+  snapshot: null,
+  vacatures: [],
+  kandidaten: [],
+  chats: [],
+  matches: [],
+  werkgevers: [],
+  alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false },
+  activeTab: 'overzicht',
+  notitieId: null
+};
 
-let currentPin = sessionStorage.getItem('hr_admin_pin');
+/* ============ AUTH ============ */
+document.getElementById('login-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var p = document.getElementById('login-pin').value.trim();
+  if(!p){ showLoginErr(); return; }
+  api('snapshot').then(function(d){
+    if(d && !d.error && (d.snapshot || d.generated_at)){
+      pin = p;
+      sessionStorage.setItem(PIN_KEY, pin);
+      showDash(); loadTab('overzicht');
+    } else showLoginErr();
+  }).catch(function(){ showLoginErr(); });
+  // Test PIN by trying a snapshot — override fetch with the entered pin
+  pin = p;
+});
 
-async function login(pin) {
-  const data = await fetchData(pin);
-  if (data) {
-    currentPin = pin;
-    sessionStorage.setItem('hr_admin_pin', pin);
-    $login.style.display = 'none';
-    $dash.classList.add('visible');
-    render(data);
-  } else {
-    $loginErr.classList.add('show');
+function showLoginErr(){ document.getElementById('login-err').classList.add('show'); pin=''; sessionStorage.removeItem(PIN_KEY); }
+function showDash(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('dash').classList.add('visible');
+}
+function logout(){ sessionStorage.removeItem(PIN_KEY); location.reload(); }
+
+if(pin){
+  // Auto-attempt with stored PIN
+  api('snapshot').then(function(d){
+    if(d && !d.error && (d.snapshot || d.generated_at)){ showDash(); loadTab('overzicht'); }
+    else { logout(); }
+  }).catch(function(){ logout(); });
+}
+
+/* ============ API ============ */
+function api(action, params){
+  return fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'X-Admin-Pin': pin },
+    body: JSON.stringify({ action: action, params: params || {} })
+  }).then(function(r){ return r.ok ? r.json() : r.json().then(function(d){ d._http=r.status; return d; }); });
+}
+
+/* ============ HELPERS ============ */
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(s){ if(!s) return '—'; var d=new Date(s); if(isNaN(d)) return '—'; return d.toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}); }
+function fmtDateTime(s){ if(!s) return '—'; var d=new Date(s); if(isNaN(d)) return '—'; return d.toLocaleString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function fmtEur(n){ if(n==null) return '€—'; return '€'+Number(n).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function scoreClass(s){ if(s==null) return 's-none'; return s>=70?'s-hi':(s>=45?'s-mid':'s-lo'); }
+function badgeClass(s){
+  var map = {
+    'new':'b-new','open':'b-new','suggested':'b-new','received':'b-new','in_progress':'b-new',
+    'screening':'b-pending','pending':'b-pending','in_review':'b-pending','warning':'b-pending',
+    'active':'b-active','available':'b-active','completed':'b-active','approved':'b-active','filled':'b-active',
+    'placed':'b-done','converted':'b-done','done':'b-done',
+    'rejected':'b-rejected','closed':'b-rejected','expired':'b-rejected','critical':'b-rejected','abandoned':'b-rejected'
+  };
+  return map[s] || 'b-neutral';
+}
+function badgeLabel(s){
+  var map={
+    'new':'Nieuw','open':'Open','suggested':'AI voorstel','received':'Ontvangen','in_progress':'In gesprek',
+    'screening':'Gescreend','pending':'In behandeling','in_review':'In review','warning':'Warning',
+    'active':'Actief','available':'Beschikbaar','completed':'Voltooid','approved':'Goedgekeurd','filled':'Gevuld',
+    'placed':'Geplaatst','converted':'Geplaatst','done':'Afgehandeld',
+    'rejected':'Afgewezen','closed':'Gesloten','expired':'Verlopen','critical':'Kritiek','abandoned':'Verlaten'
+  };
+  return map[s] || (s||'—');
+}
+
+/* ============ TABS ============ */
+function switchTab(t){
+  state.activeTab = t;
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===t); });
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.getElementById('view-'+t).classList.add('active');
+  if(!state.loaded[t]) loadTab(t);
+}
+function refreshActive(){ state.loaded[state.activeTab]=false; loadTab(state.activeTab); }
+function loadTab(t){
+  var box = document.getElementById('view-'+t);
+  if(t==='overzicht'){
+    box.querySelector('#snapshot-stats').innerHTML = '<div class="loader"></div>';
+    api('snapshot').then(function(d){ state.snapshot=d; state.loaded.overzicht=true; renderSnapshot(); });
+  } else if(t==='vacatures'){
+    document.getElementById('list-vacatures').innerHTML = '<div class="loader"></div>';
+    api('list-vacancies').then(function(d){ state.vacatures=Array.isArray(d)?d:[]; state.loaded.vacatures=true; updateCounts(); renderVacatures(); });
+  } else if(t==='kandidaten'){
+    document.getElementById('list-kandidaten').innerHTML = '<div class="loader"></div>';
+    api('list-candidates').then(function(d){ state.kandidaten=Array.isArray(d)?d:[]; state.loaded.kandidaten=true; updateCounts(); renderKandidaten(); });
+  } else if(t==='chats'){
+    document.getElementById('list-chats').innerHTML = '<div class="loader"></div>';
+    api('list-chats').then(function(d){ state.chats=Array.isArray(d)?d:[]; state.loaded.chats=true; updateCounts(); renderChats(); });
+  } else if(t==='matches'){
+    document.getElementById('list-matches').innerHTML = '<div class="loader"></div>';
+    api('list-matches').then(function(d){ state.matches=Array.isArray(d)?d:[]; state.loaded.matches=true; updateCounts(); renderMatches(); });
+  } else if(t==='werkgevers'){
+    document.getElementById('list-werkgevers').innerHTML = '<div class="loader"></div>';
+    api('list-companies').then(function(d){ state.werkgevers=Array.isArray(d)?d:[]; state.loaded.werkgevers=true; updateCounts(); renderWerkgevers(); });
+  } else if(t==='alerts'){
+    document.getElementById('list-margin').innerHTML = '<div class="loader"></div>';
+    api('list-alerts').then(function(d){
+      state.alerts = d || { margin_alerts:[],monitor_findings:[],avg_requests:[] };
+      state.loaded.alerts=true; updateCounts(); renderAlerts();
+    });
   }
 }
 
-async function fetchData(pin) {
-  try {
-    const res = await fetch(WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Pin': pin },
-      body: JSON.stringify({})
-    });
-    if (res.status === 401) return null;
-    return await res.json();
-  } catch(e) { return null; }
+function updateCounts(){
+  document.getElementById('c-vac').textContent = state.vacatures.length || '·';
+  document.getElementById('c-cand').textContent = state.kandidaten.length || '·';
+  document.getElementById('c-chat').textContent = state.chats.length || '·';
+  document.getElementById('c-mat').textContent = state.matches.length || '·';
+  document.getElementById('c-co').textContent = state.werkgevers.length || '·';
+  var aTotal = (state.alerts.margin_alerts||[]).length + (state.alerts.monitor_findings||[]).length + (state.alerts.avg_requests||[]).length;
+  document.getElementById('c-alert').textContent = aTotal || '·';
 }
 
-function fmtDate(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' }) + ' ' + d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-}
-function fmtEur(n) { return '€' + (parseFloat(n)||0).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:0}); }
-
-function render(data) {
-  const s = data.snapshot || {};
-  $stamp.textContent = 'Laatst bijgewerkt: ' + fmtDate(data.generated_at);
-
-  const stats = [
-    {label:'Open vacatures',val:s.open_vacancies||0,sub:'+' + (s.new_vacancies_7d||0) + ' afgelopen 7d'},
-    {label:'Actieve klanten',val:s.active_companies||0,sub:'+' + (s.new_companies_7d||0) + ' afgelopen 7d'},
-    {label:'Kandidaten',val:s.candidates_with_consent||0,sub:'+' + (s.new_candidates_7d||0) + ' afgelopen 7d'},
-    {label:'B2B chats',val:s.chats_completed||0,sub:s.chats_in_progress + ' lopend · +' + (s.new_chats_7d||0) + ' nieuw 7d'},
-    {label:'Wachtende matches',val:s.pending_matches||0,cls:(s.pending_matches>0?'warn':null),sub:'AI voorstellen om te reviewen'},
-    {label:'Actieve plaatsingen',val:s.active_placements||0,cls:(s.active_placements>0?'good':null),sub:'Marge: ' + fmtEur(s.total_margin_eur)},
-    {label:'Margin alerts',val:(s.open_critical_alerts||0)+(s.open_warning_alerts||0),cls:(s.open_critical_alerts>0?'alert':(s.open_warning_alerts>0?'warn':null)),sub:s.open_critical_alerts + ' kritiek · ' + s.open_warning_alerts + ' warning'},
-    {label:'AVG verzoeken',val:s.open_avg_requests||0,cls:(s.avg_due_soon>0?'warn':null),sub:s.avg_due_soon + ' verlopen binnen 7d'},
-    {label:'Monitor findings',val:(s.monitor_critical||0)+(s.monitor_warning||0),cls:(s.monitor_critical>0?'alert':(s.monitor_warning>0?'warn':null)),sub:s.monitor_critical + ' kritiek · ' + s.monitor_warning + ' warning'}
+/* ============ RENDER: Overzicht ============ */
+function renderSnapshot(){
+  var d = state.snapshot;
+  if(!d || !d.snapshot){
+    document.getElementById('snapshot-stats').innerHTML = '<div class="err">Kon snapshot niet laden.</div>';
+    return;
+  }
+  var s = d.snapshot;
+  document.getElementById('stamp').textContent = 'Laatst bijgewerkt: ' + fmtDateTime(d.generated_at || s.snapshot_at);
+  var critAlerts = (s.open_critical_alerts||0) + (s.monitor_critical||0);
+  var warnAlerts = (s.open_warning_alerts||0) + (s.monitor_warning||0);
+  var cards = [
+    { label:'Open vacatures', val:s.open_vacancies||0, sub:'+'+(s.new_vacancies_7d||0)+' afgelopen 7d', cls:'' },
+    { label:'Actieve klanten', val:s.active_companies||0, sub:'+'+(s.new_companies_7d||0)+' afgelopen 7d', cls:'' },
+    { label:'Kandidaten met consent', val:s.candidates_with_consent||0, sub:'+'+(s.new_candidates_7d||0)+' afgelopen 7d', cls:'' },
+    { label:'B2B chats', val:s.chats_completed||0, sub:(s.chats_in_progress||0)+' lopend · +'+(s.new_chats_7d||0)+' nieuw 7d', cls:'' },
+    { label:'Wachtende matches', val:s.pending_matches||0, sub:'AI voorstellen om te reviewen', cls:s.pending_matches>0?'warn':'' },
+    { label:'Actieve plaatsingen', val:s.active_placements||0, sub:'Marge: '+fmtEur(s.total_margin_eur), cls:s.active_placements>0?'ok':'' },
+    { label:'Margin alerts', val:(s.open_critical_alerts||0)+(s.open_warning_alerts||0), sub:(s.open_critical_alerts||0)+' kritiek · '+(s.open_warning_alerts||0)+' warning', cls:s.open_critical_alerts>0?'alert':(s.open_warning_alerts>0?'warn':'') },
+    { label:'AVG verzoeken', val:s.open_avg_requests||0, sub:(s.avg_due_soon||0)+' verlopen binnen 7d', cls:s.avg_due_soon>0?'alert':'' },
+    { label:'Monitor findings', val:(s.monitor_critical||0)+(s.monitor_warning||0), sub:(s.monitor_critical||0)+' kritiek · '+(s.monitor_warning||0)+' warning', cls:s.monitor_critical>0?'alert':(s.monitor_warning>0?'warn':'') }
   ];
-  $statsGrid.innerHTML = stats.map(st => '<div class="stat ' + (st.cls||'') + '"><div class="label">' + st.label + '</div><div class="val">' + st.val + '</div><div class="sub">' + st.sub + '</div></div>').join('');
+  document.getElementById('snapshot-stats').innerHTML = cards.map(function(c){
+    return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+  }).join('');
 
-  // Recent vacancies
-  const vacs = data.recent_vacancies || [];
-  document.getElementById('vacCount').textContent = vacs.length + ' getoond';
-  $vacList.innerHTML = vacs.length === 0 ? '<div class="empty">Geen recente vacatures.</div>' :
-    vacs.map(v => '<div class="row"><div class="info"><b>' + (v.headcount_needed||1) + '× ' + (v.title||'?') + '</b><span>' + (v.company_name||'?') + ' · ' + (v.city||'?') + ' · ' + (v.sector||'?') + ' · ' + fmtDate(v.created_at) + '</span></div><span class="badge">' + (v.source||'?') + '</span></div>').join('');
-
-  // Recent candidates
-  const cands = data.recent_candidates || [];
-  document.getElementById('candCount').textContent = cands.length + ' getoond';
-  $candList.innerHTML = cands.length === 0 ? '<div class="empty">Geen kandidaten met AVG-consent.</div>' :
-    cands.map(c => {
-      const tags = [];
-      if (c.has_cv) tags.push('CV');
-      if (c.has_screening) tags.push('Gescreend');
-      return '<div class="row"><div class="info"><b>' + (c.first_name||'') + ' ' + (c.last_name||'') + '</b><span>' + (c.city||'?') + ' · ' + (c.status||'?') + ' · ' + fmtDate(c.created_at) + '</span></div>' + (tags.length ? '<span class="badge high">' + tags.join(' · ') + '</span>' : '') + '</div>';
-    }).join('');
-
-  // Pending matches
-  const matches = data.pending_matches || [];
-  document.getElementById('matchCount').textContent = matches.length + ' getoond';
-  $matchList.innerHTML = matches.length === 0 ? '<div class="empty">Geen wachtende match-suggesties.</div>' :
-    matches.map(m => {
-      const cls = m.fit_score>=80 ? 'high' : m.fit_score>=60 ? 'med' : '';
-      return '<div class="row"><div class="info"><b>' + (m.candidate_name||'?') + ' → ' + (m.vacancy_title||'?') + '</b><span>' + (m.company_name||'?') + ' · ' + (m.vacancy_city||'?') + ' · ' + fmtDate(m.created_at) + '</span></div><span class="badge ' + cls + '">' + (m.fit_score||0) + '/100</span></div>';
-    }).join('');
+  // Recent activity — pak van snapshot RPC: recent_vacancies, recent_candidates, pending_matches
+  var rec = '';
+  if(d.recent_vacancies && d.recent_vacancies.length){
+    rec += '<h4 style="font-family:Poppins,sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin:14px 0 10px;">Recente vacatures</h4>';
+    rec += '<div class="list">'+d.recent_vacancies.map(function(v){
+      return '<div class="card" onclick="openDetail(\'vacancy\',\''+esc(v.id)+'\')">'
+        +'<div class="top"><div><div class="title">'+(v.headcount_needed?v.headcount_needed+'× ':'')+esc(v.title||'—')+'</div>'
+        +'<div class="sub">'+esc(v.company_name||'Onbekend')+' · '+esc(v.city||'NL')+' · '+esc(v.sector||'')+' · '+fmtDateTime(v.created_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(v.status)+'">'+badgeLabel(v.status)+'</span></div></div></div>';
+    }).join('')+'</div>';
+  }
+  if(d.pending_matches && d.pending_matches.length){
+    rec += '<h4 style="font-family:Poppins,sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin:18px 0 10px;">Wachtende AI-matches</h4>';
+    rec += '<div class="list">'+d.pending_matches.map(function(m){
+      return '<div class="card" onclick="openDetail(\'match\',\''+esc(m.id)+'\')">'
+        +'<div class="top"><div class="score '+scoreClass(m.fit_score)+'">'+(m.fit_score||'–')+'<small>fit</small></div>'
+        +'<div style="flex:1;"><div class="title">'+esc(m.candidate_name||'—')+' → '+esc(m.vacancy_title||'—')+'</div>'
+        +'<div class="sub">'+esc(m.company_name||'')+' · '+esc(m.vacancy_city||'')+'</div></div></div>'
+        +(m.reasoning?'<div class="summary">'+esc(m.reasoning)+'</div>':'')
+        +'<div class="actions-row">'
+        +'<button class="btn btn-success" onclick="event.stopPropagation();matchAction(\''+esc(m.id)+'\',\'approve\',this)">✓ Goedkeuren</button>'
+        +'<button class="btn btn-danger" onclick="event.stopPropagation();matchAction(\''+esc(m.id)+'\',\'reject\',this)">✗ Afwijzen</button>'
+        +'</div></div>';
+    }).join('')+'</div>';
+  }
+  document.getElementById('snapshot-recent').innerHTML = rec || '<div class="empty">Nog geen activiteit. Zodra werkgevers via /personeel-aanvragen of de chat aanvragen indienen, verschijnt het hier.</div>';
 }
 
-document.getElementById('loginBtn').addEventListener('click', () => {
-  const pin = $pinInput.value.trim();
-  if (!pin) return;
-  login(pin);
-});
-$pinInput.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+/* ============ RENDER: Vacatures ============ */
+function renderVacatures(){
+  var q = (document.getElementById('f-vac-search').value||'').toLowerCase().trim();
+  var st = document.getElementById('f-vac-status').value;
+  var lst = state.vacatures.slice();
+  if(st) lst = lst.filter(function(v){return v.status===st;});
+  if(q) lst = lst.filter(function(v){
+    return ((v.title||'')+' '+(v.city||'')+' '+(v.company_name||'')+' '+(v.sector||'')).toLowerCase().indexOf(q)!==-1;
+  });
+  if(!lst.length){ document.getElementById('list-vacatures').innerHTML='<div class="empty">Geen vacatures gevonden.</div>'; return; }
+  document.getElementById('list-vacatures').innerHTML = lst.map(function(v){
+    return '<div class="card" onclick="openDetail(\'vacancy\',\''+esc(v.id)+'\')">'
+      +'<div class="top"><div><div class="title">'+(v.headcount_needed?v.headcount_needed+'× ':'')+esc(v.title||'—')+'</div>'
+      +'<div class="sub">'+esc(v.company_name||'Onbekend bedrijf')+' · '+esc(v.city||'')+' · '+esc(v.sector||'')+'</div></div>'
+      +'<div class="right">'
+      +'<span class="badge '+badgeClass(v.status)+'">'+badgeLabel(v.status)+'</span>'
+      +(v.pending_match_count>0?'<span class="badge b-pending">'+v.pending_match_count+' matches</span>':'')
+      +'</div></div>'
+      +'<div class="meta">'
+      +'<span><b>Tarief:</b> '+(v.hourly_rate_min?fmtEur(v.hourly_rate_min)+'–'+fmtEur(v.hourly_rate_max||v.hourly_rate_min)+'/uur':'—')+'</span>'
+      +'<span><b>Bron:</b> '+esc(v.source||'overig')+'</span>'
+      +'<span><b>Aangevraagd:</b> '+fmtDateTime(v.created_at)+'</span>'
+      +'</div></div>';
+  }).join('');
+}
 
-document.getElementById('refreshBtn').addEventListener('click', async () => {
-  if(!currentPin) return;
-  const data = await fetchData(currentPin);
-  if (data) render(data);
-});
+/* ============ RENDER: Kandidaten ============ */
+function renderKandidaten(){
+  var q = (document.getElementById('f-cand-search').value||'').toLowerCase().trim();
+  var st = document.getElementById('f-cand-status').value;
+  var cv = document.getElementById('f-cand-cv').value;
+  var sort = document.getElementById('f-cand-sort').value;
+  var lst = state.kandidaten.slice();
+  if(st) lst = lst.filter(function(c){return c.status===st;});
+  if(cv==='yes') lst = lst.filter(function(c){return c.has_cv;});
+  if(cv==='no') lst = lst.filter(function(c){return !c.has_cv;});
+  if(q) lst = lst.filter(function(c){return ((c.first_name||'')+' '+(c.last_name||'')+' '+(c.city||'')+' '+(c.email||'')).toLowerCase().indexOf(q)!==-1;});
+  lst.sort(function(a,b){
+    if(sort==='score') return (b.screening_score||0)-(a.screening_score||0);
+    return new Date(b.created_at||0)-new Date(a.created_at||0);
+  });
+  if(!lst.length){ document.getElementById('list-kandidaten').innerHTML='<div class="empty">Geen kandidaten gevonden.</div>'; return; }
+  document.getElementById('list-kandidaten').innerHTML = lst.map(function(c){
+    var sc = c.screening_score;
+    return '<div class="card" onclick="openDetail(\'candidate\',\''+esc(c.id)+'\')">'
+      +'<div class="top">'
+      +'<div class="score '+scoreClass(sc)+'">'+(sc==null?'–':sc)+'<small>'+(c.has_cv?'screening':'geen cv')+'</small></div>'
+      +'<div style="flex:1;min-width:200px;"><div class="title">'+esc(c.first_name||'')+' '+esc(c.last_name||'')+' '+(c.kandidaatnummer?'<span style="font-size:11px;color:var(--muted);">HR-'+esc(c.kandidaatnummer)+'</span>':'')+'</div>'
+      +'<div class="sub">'+[c.city,c.preferred_roles,c.availability].filter(Boolean).map(esc).join(' · ')+'</div></div>'
+      +'<div class="right">'
+      +'<span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span>'
+      +(c.has_cv?'<span class="badge b-active">CV ✓</span>':'<span class="badge b-pending">Geen CV</span>')
+      +(c.match_count>0?'<span class="badge b-new">'+c.match_count+' matches</span>':'')
+      +'</div></div>'
+      +(c.screening_summary?'<div class="summary">'+esc(c.screening_summary)+'</div>':'')
+      +(c.recruiter_notitie?'<div class="notitie"><b>Recruiter:</b> '+esc(c.recruiter_notitie)+'</div>':'')
+      +'<div class="actions-row">'
+      +(c.email?'<a class="btn" href="mailto:'+esc(c.email)+'" onclick="event.stopPropagation()">📧 '+esc(c.email)+'</a>':'')
+      +(c.phone?'<a class="btn" href="tel:'+esc(c.phone)+'" onclick="event.stopPropagation()">📞 '+esc(c.phone)+'</a>':'')
+      +(c.cv_url?'<button class="btn" onclick="event.stopPropagation();openBestand(\''+esc(c.cv_url)+'\')">📄 CV openen</button>':'')
+      +'<button class="btn" onclick="event.stopPropagation();presentatieCv(\''+esc(c.id)+'\')">👁 Presentatie-CV</button>'
+      +'<button class="btn" onclick="event.stopPropagation();openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Toelichting bewerken':'+ Toelichting toevoegen')+'</button>'
+      +'</div></div>';
+  }).join('');
+}
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  currentPin = null;
-  sessionStorage.removeItem('hr_admin_pin');
-  $dash.classList.remove('visible');
-  $login.style.display = 'flex';
-  $pinInput.value = '';
-});
+/* ============ RENDER: B2B Chats ============ */
+function renderChats(){
+  var q = (document.getElementById('f-chat-search').value||'').toLowerCase().trim();
+  var st = document.getElementById('f-chat-status').value;
+  var lst = state.chats.slice();
+  if(st) lst = lst.filter(function(c){return c.status===st;});
+  if(q) lst = lst.filter(function(c){return ((c.company_name||'')+' '+(c.contact_name||'')+' '+(c.contact_email||'')).toLowerCase().indexOf(q)!==-1;});
+  if(!lst.length){ document.getElementById('list-chats').innerHTML='<div class="empty">Geen B2B chats. Zodra werkgevers met Sanne chatten verschijnt het hier.</div>'; return; }
+  document.getElementById('list-chats').innerHTML = lst.map(function(c){
+    return '<div class="card" onclick="openDetail(\'chat\',\''+esc(c.id)+'\')">'
+      +'<div class="top"><div><div class="title">'+esc(c.company_name||c.contact_name||'Anoniem')+'</div>'
+      +'<div class="sub">'+esc(c.contact_email||'—')+' · '+(c.message_count||0)+' berichten</div></div>'
+      +'<div class="right"><span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span>'
+      +(c.vacancy_id?'<span class="badge b-active">→ Vacature</span>':'')+'</div></div>'
+      +'<div class="meta"><span><b>Gestart:</b> '+fmtDateTime(c.started_at)+'</span><span><b>Laatste activiteit:</b> '+fmtDateTime(c.last_activity_at)+'</span></div>'
+      +'</div>';
+  }).join('');
+}
 
-// Auto-login if PIN cached
-if (currentPin) {
-  fetchData(currentPin).then(data => {
-    if (data) {
-      $login.style.display = 'none';
-      $dash.classList.add('visible');
-      render(data);
-    } else {
-      sessionStorage.removeItem('hr_admin_pin');
-      currentPin = null;
+/* ============ RENDER: Matches ============ */
+function renderMatches(){
+  var q = (document.getElementById('f-mat-search').value||'').toLowerCase().trim();
+  var st = document.getElementById('f-mat-status').value;
+  var lst = state.matches.slice();
+  if(st) lst = lst.filter(function(m){return m.status===st;});
+  if(q) lst = lst.filter(function(m){return ((m.candidate_name||'')+' '+(m.vacancy_title||'')+' '+(m.company_name||'')).toLowerCase().indexOf(q)!==-1;});
+  if(!lst.length){ document.getElementById('list-matches').innerHTML='<div class="empty">Geen matches.</div>'; return; }
+  document.getElementById('list-matches').innerHTML = lst.map(function(m){
+    return '<div class="card">'
+      +'<div class="top">'
+      +'<div class="score '+scoreClass(m.fit_score)+'">'+(m.fit_score||'–')+'<small>fit</small></div>'
+      +'<div style="flex:1;min-width:200px;"><div class="title">'+esc(m.candidate_name||'—')+' → '+esc(m.vacancy_title||'—')+'</div>'
+      +'<div class="sub">'+esc(m.company_name||'')+' · '+esc(m.vacancy_city||'')+' · '+fmtDateTime(m.created_at)+'</div></div>'
+      +'<div class="right"><span class="badge '+badgeClass(m.status)+'">'+badgeLabel(m.status)+'</span></div></div>'
+      +(m.reasoning?'<div class="summary">'+esc(m.reasoning)+'</div>':'')
+      +(m.red_flags && m.red_flags.length?'<div class="summary" style="background:#FEF2F2;color:#b03b3b;"><b>⚠ Red flags:</b> '+m.red_flags.map(esc).join(', ')+'</div>':'')
+      +'<div class="actions-row">'
+      +(m.candidate_cv_url?'<button class="btn" onclick="openBestand(\''+esc(m.candidate_cv_url)+'\')">📄 CV</button>':'')
+      +(m.candidate_id?'<button class="btn" onclick="openDetail(\'candidate\',\''+esc(m.candidate_id)+'\')">👤 Kandidaat</button>':'')
+      +(m.vacancy_id?'<button class="btn" onclick="openDetail(\'vacancy\',\''+esc(m.vacancy_id)+'\')">📋 Vacature</button>':'')
+      +(m.status==='suggested' || m.status==='in_review'
+        ? '<button class="btn btn-success" onclick="matchAction(\''+esc(m.id)+'\',\'approve\',this)">✓ Goedkeuren</button>'
+          +'<button class="btn btn-danger" onclick="matchAction(\''+esc(m.id)+'\',\'reject\',this)">✗ Afwijzen</button>'
+          +(m.candidate_id?'<button class="btn" onclick="nodigUit(\''+esc(m.candidate_id)+'\',this)">📨 Uitnodigen</button>':'')
+        : '')
+      +(m.status==='approved' && m.candidate_id && m.vacancy_id?'<button class="btn btn-primary" onclick="voorstellen(\''+esc(m.vacancy_id)+'\',\''+esc(m.candidate_id)+'\',this)">→ Voorstellen aan werkgever</button>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+/* ============ RENDER: Werkgevers ============ */
+function renderWerkgevers(){
+  var q = (document.getElementById('f-co-search').value||'').toLowerCase().trim();
+  var lst = state.werkgevers.slice();
+  if(q) lst = lst.filter(function(c){return ((c.name||'')+' '+(c.sector||'')+' '+(c.contact_name||'')+' '+(c.contact_email||'')).toLowerCase().indexOf(q)!==-1;});
+  if(!lst.length){ document.getElementById('list-werkgevers').innerHTML='<div class="empty">Geen werkgevers.</div>'; return; }
+  document.getElementById('list-werkgevers').innerHTML = lst.map(function(c){
+    return '<div class="card">'
+      +'<div class="top"><div><div class="title">'+esc(c.name||'Onbekend')+'</div>'
+      +'<div class="sub">'+[c.sector,c.city,c.kvk_number?'KvK '+c.kvk_number:''].filter(Boolean).map(esc).join(' · ')+'</div></div>'
+      +'<div class="right">'
+      +(c.open_vacancy_count>0?'<span class="badge b-active">'+c.open_vacancy_count+' open</span>':'')
+      +(c.placement_count>0?'<span class="badge b-done">'+c.placement_count+' plaatsing'+(c.placement_count!==1?'en':'')+'</span>':'')
+      +'</div></div>'
+      +'<div class="meta">'
+      +'<span><b>Contact:</b> '+esc(c.contact_name||'—')+'</span>'
+      +(c.contact_email?'<span><a href="mailto:'+esc(c.contact_email)+'">📧 '+esc(c.contact_email)+'</a></span>':'')
+      +(c.contact_phone?'<span><a href="tel:'+esc(c.contact_phone)+'">📞 '+esc(c.contact_phone)+'</a></span>':'')
+      +(c.website?'<span><a href="'+esc(c.website)+'" target="_blank">🌐 Website</a></span>':'')
+      +'<span><b>Sinds:</b> '+fmtDate(c.created_at)+'</span>'
+      +'</div></div>';
+  }).join('');
+}
+
+/* ============ RENDER: Alerts ============ */
+function renderAlerts(){
+  var a = state.alerts;
+  document.getElementById('list-margin').innerHTML = (a.margin_alerts||[]).length
+    ? a.margin_alerts.map(function(m){
+        return '<div class="card"><div class="top"><div><div class="title">Marge-afwijking — '+esc(m.reason||'—')+'</div>'
+          +'<div class="sub">Huidig: '+fmtEur(m.current_margin)+' · Verwacht: '+fmtEur(m.expected_margin)+'</div></div>'
+          +'<div class="right"><span class="badge '+badgeClass(m.severity)+'">'+badgeLabel(m.severity)+'</span></div></div>'
+          +'<div class="meta"><span><b>Plaatsing:</b> '+esc(m.placement_id||'—')+'</span><span>'+fmtDateTime(m.created_at)+'</span></div></div>';
+      }).join('')
+    : '<div class="empty">Geen open margin alerts.</div>';
+  document.getElementById('list-monitor').innerHTML = (a.monitor_findings||[]).length
+    ? a.monitor_findings.map(function(f){
+        return '<div class="card"><div class="top"><div><div class="title">'+esc(f.summary||f.finding_type||'—')+'</div>'
+          +'<div class="sub">'+esc(f.agent_name||'')+' · '+esc(f.finding_type||'')+'</div></div>'
+          +'<div class="right"><span class="badge '+badgeClass(f.severity)+'">'+badgeLabel(f.severity)+'</span></div></div>'
+          +(f.details?'<div class="summary">'+esc(typeof f.details==='string'?f.details:JSON.stringify(f.details))+'</div>':'')
+          +'<div class="meta"><span>'+fmtDateTime(f.created_at)+'</span></div></div>';
+      }).join('')
+    : '<div class="empty">Geen open monitor findings.</div>';
+  document.getElementById('list-avg').innerHTML = (a.avg_requests||[]).length
+    ? a.avg_requests.map(function(r){
+        return '<div class="card"><div class="top"><div><div class="title">'+esc(r.request_type||'AVG verzoek')+' — '+esc(r.requester_name||'—')+'</div>'
+          +'<div class="sub">'+esc(r.requester_email||'')+' · Ontvangen: '+fmtDateTime(r.received_at)+' · Deadline: '+fmtDate(r.due_at)+'</div></div>'
+          +'<div class="right"><span class="badge '+badgeClass(r.status)+'">'+badgeLabel(r.status)+'</span></div></div></div>';
+      }).join('')
+    : '<div class="empty">Geen open AVG verzoeken.</div>';
+}
+
+/* ============ DETAIL MODAL ============ */
+function openDetail(type,id){
+  var modal = document.getElementById('modal');
+  document.getElementById('modal-title').textContent = 'Laden…';
+  document.getElementById('modal-sub').textContent = '';
+  document.getElementById('modal-body').innerHTML = '<div class="loader"></div>';
+  document.getElementById('modal-foot').innerHTML = '';
+  modal.classList.add('show');
+  api('detail-'+type, { id: id }).then(function(d){
+    if(!d || d.error){ document.getElementById('modal-body').innerHTML = '<div class="err">Niet gevonden.</div>'; return; }
+    if(type==='vacancy') renderVacancyDetail(d);
+    else if(type==='candidate') renderCandidateDetail(d);
+    else if(type==='chat') renderChatDetail(d);
+    else if(type==='match'){
+      // Match: open vacancy detail (matches are inline)
+      api('detail-vacancy', { id: state.matches.find(function(m){return m.id===id;})?.vacancy_id }).then(function(vd){
+        if(vd && !vd.error) renderVacancyDetail(vd);
+      });
     }
   });
 }
-</script>
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 
+function renderVacancyDetail(d){
+  var v = d.vacancy || {};
+  var co = d.company || {};
+  document.getElementById('modal-title').textContent = (v.headcount_needed?v.headcount_needed+'× ':'') + (v.title||'Vacature');
+  document.getElementById('modal-sub').textContent = (co.name||'Onbekend bedrijf') + ' · ' + (v.city||'NL') + ' · ' + (v.sector||'');
+  var body = '<h4>Vacature</h4><dl>'
+    +'<dt>Titel</dt><dd>'+esc(v.title||'—')+'</dd>'
+    +'<dt>Sector</dt><dd>'+esc(v.sector||'—')+'</dd>'
+    +'<dt>Stad</dt><dd>'+esc(v.city||'—')+'</dd>'
+    +'<dt>Aantal nodig</dt><dd>'+(v.headcount_needed||'—')+'</dd>'
+    +'<dt>Uren/week</dt><dd>'+(v.hours_per_week_min||'—')+(v.hours_per_week_max?' - '+v.hours_per_week_max:'')+'</dd>'
+    +'<dt>Uurtarief</dt><dd>'+(v.hourly_rate_min?fmtEur(v.hourly_rate_min)+(v.hourly_rate_max?' – '+fmtEur(v.hourly_rate_max):''):'—')+'</dd>'
+    +'<dt>Startdatum</dt><dd>'+(v.start_date?fmtDate(v.start_date):'—')+'</dd>'
+    +'<dt>Status</dt><dd><span class="badge '+badgeClass(v.status)+'">'+badgeLabel(v.status)+'</span></dd>'
+    +'<dt>Aangevraagd</dt><dd>'+fmtDateTime(v.created_at)+'</dd>'
+    +'</dl>';
+  if(v.description){ body += '<h4>Omschrijving</h4><div class="summary">'+esc(v.description)+'</div>'; }
+  if(co.id){
+    body += '<h4>Bedrijf</h4><dl>'
+      +'<dt>Naam</dt><dd>'+esc(co.name||'—')+'</dd>'
+      +'<dt>KvK</dt><dd>'+esc(co.kvk_number||'—')+'</dd>'
+      +'<dt>Contact</dt><dd>'+esc((co.contact_first_name||'')+' '+(co.contact_last_name||''))+'</dd>'
+      +'<dt>E-mail</dt><dd>'+(co.contact_email?'<a href="mailto:'+esc(co.contact_email)+'">'+esc(co.contact_email)+'</a>':'—')+'</dd>'
+      +'<dt>Telefoon</dt><dd>'+(co.contact_phone?'<a href="tel:'+esc(co.contact_phone)+'">'+esc(co.contact_phone)+'</a>':'—')+'</dd>'
+      +'</dl>';
+  }
+  if(d.chat){
+    body += '<h4>Gekoppelde chat</h4><div class="card" style="cursor:pointer;" onclick="closeModal();openDetail(\'chat\',\''+esc(d.chat.id)+'\')">'
+      +'<div class="top"><div><div class="title">Chat #'+esc(d.chat.session_id||'')+'</div>'
+      +'<div class="sub">'+(d.chat.message_count||0)+' berichten · '+badgeLabel(d.chat.status)+'</div></div></div></div>';
+  }
+  if(d.matches && d.matches.length){
+    body += '<h4>AI Matches ('+d.matches.length+')</h4><div class="list">';
+    d.matches.forEach(function(m){
+      body += '<div class="card"><div class="top">'
+        +'<div class="score '+scoreClass(m.fit_score)+'">'+(m.fit_score||'–')+'<small>fit</small></div>'
+        +'<div style="flex:1;"><div class="title">'+esc(m.candidate_name||'—')+'</div>'
+        +'<div class="sub">'+esc(m.reasoning||'')+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(m.status)+'">'+badgeLabel(m.status)+'</span></div></div>'
+        +(m.status==='suggested' || m.status==='in_review'
+          ? '<div class="actions-row"><button class="btn btn-success" onclick="matchAction(\''+esc(m.id)+'\',\'approve\',this)">✓ Goedkeuren</button>'
+            +'<button class="btn btn-danger" onclick="matchAction(\''+esc(m.id)+'\',\'reject\',this)">✗ Afwijzen</button></div>'
+          : '')
+        +'</div>';
+    });
+    body += '</div>';
+  }
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
+  // Email log async
+  loadEmailLog('vacancy', v.id);
+}
+
+function renderCandidateDetail(d){
+  var c = d.candidate || {};
+  document.getElementById('modal-title').textContent = (c.first_name||'') + ' ' + (c.last_name||'') + (c.kandidaatnummer?' · HR-'+c.kandidaatnummer:'');
+  document.getElementById('modal-sub').textContent = [c.city,c.preferred_roles,c.availability].filter(Boolean).join(' · ');
+  var body = '<h4>Profiel</h4><dl>'
+    +'<dt>Naam</dt><dd>'+esc((c.first_name||'')+' '+(c.last_name||''))+'</dd>'
+    +'<dt>E-mail</dt><dd>'+(c.email?'<a href="mailto:'+esc(c.email)+'">'+esc(c.email)+'</a>':'—')+'</dd>'
+    +'<dt>Telefoon</dt><dd>'+(c.phone?'<a href="tel:'+esc(c.phone)+'">'+esc(c.phone)+'</a>':'—')+'</dd>'
+    +'<dt>Stad</dt><dd>'+esc(c.city||'—')+'</dd>'
+    +'<dt>Status</dt><dd><span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span></dd>'
+    +'<dt>CV</dt><dd>'+(c.cv_url?'<a href="#" onclick="openBestand(\''+esc(c.cv_url)+'\');return false;">📄 Openen</a>':'Geen CV')+'</dd>'
+    +'<dt>AVG consent</dt><dd>'+(c.avg_consent_at?'✓ '+fmtDateTime(c.avg_consent_at):'<span style="color:var(--red);">Nog niet gegeven</span>')+'</dd>'
+    +'<dt>Ingeschreven</dt><dd>'+fmtDateTime(c.created_at)+'</dd>'
+    +'</dl>';
+  if(c.screening_summary){ body += '<h4>AI Screening</h4><div class="summary">'+esc(c.screening_summary)+'</div>'; }
+  if(c.recruiter_notitie){ body += '<h4>Recruiter notitie</h4><div class="notitie">'+esc(c.recruiter_notitie)+'</div>'; }
+  if(d.matches && d.matches.length){
+    body += '<h4>Matches ('+d.matches.length+')</h4><div class="list">';
+    d.matches.forEach(function(m){
+      body += '<div class="card"><div class="top">'
+        +'<div class="score '+scoreClass(m.fit_score)+'">'+(m.fit_score||'–')+'<small>fit</small></div>'
+        +'<div style="flex:1;"><div class="title">'+esc(m.vacancy_title||'—')+' · '+esc(m.company_name||'')+'</div>'
+        +'<div class="sub">'+esc(m.vacancy_city||'')+' · '+fmtDateTime(m.created_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(m.status)+'">'+badgeLabel(m.status)+'</span></div></div></div>';
+    });
+    body += '</div>';
+  }
+  if(d.avg_requests && d.avg_requests.length){
+    body += '<h4>AVG verzoeken</h4><div class="list">';
+    d.avg_requests.forEach(function(r){
+      body += '<div class="card"><div class="top"><div><div class="title">'+esc(r.request_type||'AVG')+'</div>'
+        +'<div class="sub">Ontvangen: '+fmtDateTime(r.received_at)+' · Deadline: '+fmtDate(r.due_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(r.status)+'">'+badgeLabel(r.status)+'</span></div></div></div>';
+    });
+    body += '</div>';
+  }
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-foot').innerHTML = ''
+    + (c.cv_url ? '<button class="btn" onclick="openBestand(\''+esc(c.cv_url)+'\')">📄 CV openen</button>' : '')
+    + '<button class="btn" onclick="presentatieCv(\''+esc(c.id)+'\')">👁 Presentatie-CV</button>'
+    + '<button class="btn btn-primary" onclick="openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Notitie bewerken':'+ Notitie toevoegen')+'</button>'
+    + '<button class="btn" onclick="closeModal()">Sluiten</button>';
+  loadEmailLog('candidate', c.id);
+}
+
+function renderChatDetail(d){
+  var c = d.conversation || {};
+  document.getElementById('modal-title').textContent = (c.company_name||c.contact_name||'B2B Chat');
+  document.getElementById('modal-sub').textContent = (c.contact_email||'—') + ' · ' + badgeLabel(c.status) + ' · ' + fmtDateTime(c.started_at);
+  var body = '<h4>Conversatie</h4><div class="chat-msgs">';
+  (d.messages||[]).forEach(function(m){
+    var cls = m.role==='user'?'user':(m.role==='assistant'?'assistant':(m.role==='tool'?'tool':'system'));
+    var label = m.role==='user'?'Werkgever':(m.role==='assistant'?'Sanne':(m.role==='tool'?'Tool: '+(m.tool_name||''):m.role));
+    body += '<div class="chat-msg '+cls+'"><b>'+esc(label)+':</b><br>'+esc(m.content||'')+'<div class="chat-msg-time">'+fmtDateTime(m.created_at)+'</div></div>';
+  });
+  body += '</div>';
+  if(c.collected_data){
+    body += '<h4>Verzamelde gegevens</h4><div class="summary" style="font-family:monospace;font-size:12px;">'+esc(JSON.stringify(c.collected_data,null,2))+'</div>';
+  }
+  if(d.linked_vacancy){
+    body += '<h4>Aangemaakte vacature</h4><div class="card" style="cursor:pointer;" onclick="closeModal();openDetail(\'vacancy\',\''+esc(d.linked_vacancy.id)+'\')">'
+      +'<div class="top"><div><div class="title">'+esc(d.linked_vacancy.title||'—')+'</div>'
+      +'<div class="sub">'+esc(d.linked_vacancy.sector||'')+' · '+esc(d.linked_vacancy.city||'')+'</div></div></div></div>';
+  }
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
+  loadEmailLog('chat', c.id);
+}
+
+function loadEmailLog(type, id){
+  if(!id) return;
+  api('email-log', { entity_type: type, entity_id: id }).then(function(d){
+    if(!Array.isArray(d) || !d.length) return;
+    var html = '<h4>Verstuurde e-mails ('+d.length+')</h4><div class="list">';
+    d.forEach(function(e){
+      html += '<div class="card" style="cursor:default;"><div class="top"><div><div class="title">'+esc(e.subject||'—')+'</div>'
+        +'<div class="sub">Naar: '+esc(e.to||'—')+' · Template: '+esc(e.template||'—')+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(e.status)+'">'+badgeLabel(e.status)+'</span></div></div>'
+        +'<div class="meta"><span>'+fmtDateTime(e.created_at)+'</span></div></div>';
+    });
+    html += '</div>';
+    document.getElementById('modal-body').insertAdjacentHTML('beforeend', html);
+  });
+}
+
+/* ============ ACTIONS ============ */
+function matchAction(matchId, act, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Bezig…'; }
+  api('match-action', { match_id: matchId, match_action: act }).then(function(d){
+    if(d && d.ok){
+      if(btn){ btn.textContent = act==='approve'?'✓ Goedgekeurd':'✗ Afgewezen'; btn.disabled=true; }
+      // Refresh data
+      state.loaded.matches = false; state.loaded.overzicht = false;
+      if(state.activeTab==='matches' || state.activeTab==='overzicht') loadTab(state.activeTab);
+    } else {
+      if(btn){ btn.disabled=false; btn.textContent=act==='approve'?'✓ Goedkeuren':'✗ Afwijzen'; }
+      alert('Actie mislukt: ' + (d && d.error || 'onbekende fout'));
+    }
+  });
+}
+
+function openBestand(path){
+  if(!path) return;
+  var w = window.open('', '_blank');
+  fetch(BESTAND_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path: path }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.url){ if(w) w.location = d.url; else window.location = d.url; }
+      else { if(w) w.close(); alert('Kon bestand niet openen.'); }
+    })
+    .catch(function(){ if(w) w.close(); alert('Kon bestand niet openen.'); });
+}
+
+function openNotitie(candidateId){
+  var c = state.kandidaten.find(function(x){return x.id===candidateId;});
+  state.notitieId = candidateId;
+  document.getElementById('notitie-naam').textContent = c ? (c.first_name+' '+(c.last_name||'')).trim() : 'kandidaat';
+  document.getElementById('notitie-text').value = c && c.recruiter_notitie ? c.recruiter_notitie : '';
+  document.getElementById('notitie-modal').classList.add('show');
+}
+function closeNotitie(){ document.getElementById('notitie-modal').classList.remove('show'); state.notitieId=null; }
+function saveNotitie(){
+  if(!state.notitieId) return;
+  var tekst = document.getElementById('notitie-text').value;
+  var btn = document.getElementById('notitie-save');
+  btn.disabled = true; btn.textContent = 'Opslaan…';
+  fetch(NOTITIE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ candidate_id: state.notitieId, notitie: tekst }) })
+    .then(function(r){
+      var c = state.kandidaten.find(function(x){return x.id===state.notitieId;});
+      if(c) c.recruiter_notitie = tekst;
+      btn.disabled = false; btn.textContent = 'Opslaan';
+      closeNotitie(); renderKandidaten();
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = 'Opslaan';
+      alert('Opslaan mislukt. Workflow "HR — Kandidaat-notitie" actief?');
+    });
+}
+
+function nodigUit(candidateId, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Bezig…'; }
+  fetch(INTAKE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ candidate_id: candidateId }) })
+    .then(function(){
+      var c = state.kandidaten.find(function(x){return x.id===candidateId;});
+      if(c) c.intake_uitgenodigd_at = new Date().toISOString();
+      if(btn){ btn.textContent='✓ Uitgenodigd'; btn.disabled=true; }
+    })
+    .catch(function(){
+      if(btn){ btn.disabled=false; btn.textContent='📨 Uitnodigen'; }
+      alert('Uitnodiging mislukt. Workflow "HR — Intake-uitnodigen" actief?');
+    });
+}
+
+function voorstellen(vacancyId, candidateId, btn){
+  if(btn){ btn.disabled=true; btn.textContent='Bezig…'; }
+  // Map to old leads payload: lead_id is now vacancy_id; backwards compatibility
+  fetch(VOORSTEL_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ lead_id: vacancyId, vacancy_id: vacancyId, candidate_id: candidateId }) })
+    .then(function(){ if(btn){ btn.textContent='✓ Voorgesteld'; btn.disabled=true; } })
+    .catch(function(){
+      if(btn){ btn.disabled=false; btn.textContent='→ Voorstellen aan werkgever'; }
+      alert('Voorstel mislukt. Workflow "HR — Werkgever-voorstel" actief?');
+    });
+}
+
+/* ============ PRESENTATIE-CV (oude feature behouden) ============ */
+function presentatieCv(id){
+  var c = state.kandidaten.find(function(x){return x.id===id;});
+  if(!c){
+    // Fetch from API
+    api('detail-candidate', { id: id }).then(function(d){
+      if(d && d.candidate) renderPresentatieCv(d.candidate);
+    });
+    return;
+  }
+  renderPresentatieCv(c);
+}
+function renderPresentatieCv(c){
+  var nr = c.kandidaatnummer ? 'HR-'+c.kandidaatnummer : 'HR-—';
+  var voornaam = esc(c.first_name||'Kandidaat');
+  var regio = esc(c.city||'In overleg');
+  var functie = esc(c.preferred_roles||'In overleg');
+  var besch = esc(c.availability||'In overleg');
+  var profiel = esc(c.screening_summary || 'Het profiel van deze kandidaat wordt door onze recruiter persoonlijk toegelicht.');
+  var notitie = esc(c.recruiter_notitie || '');
+  var html = '<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8">'
+    +'<title>Kandidaatprofiel '+nr+' — Holland Recruitment</title>'
+    +'<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">'
+    +'<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></scr'+'ipt>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#EEEAE0;}'
+    +'body{font-family:Inter,sans-serif;color:#15183A;line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'.bar{position:sticky;top:0;z-index:9;background:#15183A;padding:13px 20px;display:flex;gap:10px;align-items:center;justify-content:center;}'
+    +'.bar button{font-family:Poppins,sans-serif;font-weight:700;font-size:13px;border:0;border-radius:100px;padding:10px 20px;cursor:pointer;}'
+    +'.bar .dl{background:#D6F24E;color:#15183A;}.bar .pr{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);}'
+    +'.wrap{padding:26px 16px 40px;}'
+    +'.sheet{max-width:820px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.12);}'
+    +'.hd{background:#3551E6;color:#fff;padding:28px 44px;display:flex;align-items:center;justify-content:space-between;gap:16px;}'
+    +'.hd .brand{display:flex;align-items:center;gap:11px;font-family:Poppins,sans-serif;font-weight:800;font-size:18px;}'
+    +'.hd .logo{width:36px;height:36px;}'
+    +'.hd .tag{font-family:Poppins,sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;opacity:.8;}'
+    +'.hd .nr{font-family:Poppins,sans-serif;font-weight:800;font-size:14px;background:#D6F24E;color:#15183A;padding:7px 14px;border-radius:100px;}'
+    +'.bd{padding:30px 44px 6px;}.naam{font-family:Poppins,sans-serif;font-weight:800;font-size:2.1rem;letter-spacing:-.02em;line-height:1.1;}'
+    +'.functie{font-family:Poppins,sans-serif;font-weight:700;font-size:14px;color:#3551E6;margin-top:5px;}'
+    +'.metbadge{display:inline-block;background:#DCF5E3;color:#1f7a3d;font-family:Poppins,sans-serif;font-weight:700;font-size:11.5px;padding:6px 13px;border-radius:100px;margin-top:11px;}'
+    +'.facts{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 2px;}'
+    +'.fact{background:#F4F2EC;border:1px solid #ECE5D6;border-radius:9px;padding:8px 13px;font-size:13.5px;}'
+    +'.fact b{font-family:Poppins,sans-serif;display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#5C6178;font-weight:700;margin-bottom:1px;}'
+    +'.sec{padding:21px 44px;border-top:1px solid #F0ECE2;}'
+    +'.sec h2{font-family:Poppins,sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#3551E6;margin-bottom:11px;}'
+    +'.profielbox{background:#FBF6EC;border:1px solid #ECE5D6;border-radius:12px;padding:15px 18px;font-size:14.5px;color:#2c2f47;}'
+    +'.toelichtingbox{background:#EEF1FF;border:1px solid #D9DEFF;border-radius:12px;padding:15px 18px;font-size:14.5px;color:#2c3055;}'
+    +'.ft{background:#15183A;color:#aeb2c7;padding:18px 44px;font-size:11.5px;line-height:1.6;}.ft b{color:#fff;}'
+    +'@media print{.bar{display:none;}html,body,.wrap{background:#fff;padding:0;}.sheet{box-shadow:none;border-radius:0;max-width:100%;}}'
+    +'</style></head><body>'
+    +'<div class="bar"><button class="dl" onclick="dlPdf()">Download als PDF</button><button class="pr" onclick="window.print()">Printen</button></div>'
+    +'<div class="wrap"><div class="sheet" id="sheet">'
+    +'<div class="hd"><div class="brand">'
+    +'<svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="34" fill="#fff"/><rect x="34" y="31" width="17" height="58" rx="5.5" fill="#3551E6"/><rect x="69" y="31" width="17" height="58" rx="5.5" fill="#3551E6"/><rect x="45" y="51.5" width="30" height="17" rx="5.5" fill="#D6F24E"/></svg>'
+    +'<div>Holland<span style="color:#D6F24E;">.</span><div class="tag">Kandidaatprofiel</div></div></div>'
+    +'<div class="nr">'+nr+'</div></div>'
+    +'<div class="bd"><div class="naam">'+voornaam+'</div><div class="functie">Gewenste functie: '+functie+'</div>'
+    +(notitie?'<div class="metbadge">✓ Persoonlijk gesproken door Holland Recruitment</div>':'')
+    +'<div class="facts"><div class="fact"><b>Regio</b>'+regio+'</div><div class="fact"><b>Beschikbaarheid</b>'+besch+'</div></div></div>'
+    +(notitie?('<div class="sec"><h2>Toelichting van de recruiter</h2><div class="toelichtingbox">'+notitie+'</div></div>'):'')
+    +'<div class="sec"><h2>Profiel</h2><div class="profielbox">'+profiel+'</div></div>'
+    +'<div class="ft">Dit profiel is met zorg samengesteld door <b>Holland Recruitment</b>. Contact, kennismaking en planning verlopen altijd via Holland Recruitment · <b>info@holland-recruitment.nl</b></div>'
+    +'</div></div>'
+    +'<scr'+'ipt>function dlPdf(){var el=document.getElementById("sheet");if(!window.html2pdf){alert("Even geduld, de download is nog aan het laden.");return;}html2pdf().set({margin:0,filename:"Kandidaatprofiel '+nr+'.pdf",image:{type:"jpeg",quality:0.98},html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},jspdf:{unit:"mm",format:"a4",orientation:"portrait"}}).from(el).save();}</scr'+'ipt>'
+    +'</body></html>';
+  var w = window.open('', '_blank');
+  if(!w){ alert('Sta pop-ups toe om de presentatie-cv te openen.'); return; }
+  w.document.write(html); w.document.close();
+}
+</script>
 </body>
 </html>
