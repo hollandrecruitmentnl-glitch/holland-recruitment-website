@@ -186,6 +186,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="matches" onclick="switchTab('matches')">Matches <span class="count" id="c-mat">·</span></button>
       <button class="tab" data-tab="werkgevers" onclick="switchTab('werkgevers')">Werkgevers <span class="count" id="c-co">·</span></button>
       <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">Alerts <span class="count" id="c-alert">·</span></button>
+      <button class="tab" data-tab="emails" onclick="switchTab('emails')">Emails <span class="count" id="c-email">·</span></button>
     </div>
 
     <!-- View: Overzicht -->
@@ -273,6 +274,31 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-werkgevers" class="list"></div>
     </div>
 
+    <!-- View: Emails -->
+    <div id="view-emails" class="view">
+      <div class="stats" id="email-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <input type="search" id="f-email-search" placeholder="Zoek op ontvanger, onderwerp…" oninput="renderEmails()">
+        <select id="f-email-status" onchange="renderEmails()">
+          <option value="">Alle statussen</option>
+          <option value="sent">Verzonden</option>
+          <option value="delivered">Afgeleverd</option>
+          <option value="opened">Geopend</option>
+          <option value="clicked">Geklikt</option>
+          <option value="bounced">Gebounced</option>
+          <option value="complained">Spam</option>
+          <option value="failed">Mislukt</option>
+        </select>
+        <select id="f-email-since" onchange="loadEmails()">
+          <option value="24">Laatste 24 uur</option>
+          <option value="168" selected>Laatste 7 dagen</option>
+          <option value="720">Laatste 30 dagen</option>
+          <option value="8760">Alles (1 jaar)</option>
+        </select>
+      </div>
+      <div id="list-emails" class="list"></div>
+    </div>
+
     <!-- View: Alerts -->
     <div id="view-alerts" class="view">
       <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:4px 0 12px;color:var(--red);">🛑 Margin alerts</h2>
@@ -339,7 +365,9 @@ var state = {
   matches: [],
   werkgevers: [],
   alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false },
+  emails: [],
+  emailStats: null,
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -452,7 +480,26 @@ function loadTab(t){
       state.alerts = d || { margin_alerts:[],monitor_findings:[],avg_requests:[] };
       state.loaded.alerts=true; updateCounts(); renderAlerts();
     });
+  } else if(t==='emails'){
+    loadEmails();
   }
+}
+
+function loadEmails(){
+  document.getElementById('list-emails').innerHTML = '<div class="loader"></div>';
+  document.getElementById('email-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  var hours = parseInt(document.getElementById('f-email-since').value, 10) || 168;
+  Promise.all([
+    api('list-emails', { since_hours: hours, limit: 200 }),
+    api('email-stats', { since_hours: 24 })
+  ]).then(function(res){
+    state.emails = extractItems(res[0]);
+    state.emailStats = res[1] || null;
+    state.loaded.emails = true;
+    updateCounts();
+    renderEmailStats();
+    renderEmails();
+  });
 }
 
 // Helper: pak items uit response (RPCs returnen {items: [...]} sinds v3 om n8n array-split te omzeilen)
@@ -473,6 +520,7 @@ function updateCounts(){
   document.getElementById('c-co').textContent = state.werkgevers.length || '·';
   var aTotal = (state.alerts.margin_alerts||[]).length + (state.alerts.monitor_findings||[]).length + (state.alerts.avg_requests||[]).length;
   document.getElementById('c-alert').textContent = aTotal || '·';
+  document.getElementById('c-email').textContent = state.emails.length || '·';
 }
 
 /* ============ RENDER: Overzicht ============ */
@@ -700,6 +748,105 @@ function renderAlerts(){
           +'<div class="right"><span class="badge '+badgeClass(r.status)+'">'+badgeLabel(r.status)+'</span></div></div></div>';
       }).join('')
     : '<div class="empty">Geen open AVG verzoeken.</div>';
+}
+
+/* ============ RENDER: Email stats + Lijst ============ */
+function renderEmailStats(){
+  var s = state.emailStats;
+  if(!s){ document.getElementById('email-stats-cards').innerHTML = '<div class="empty" style="grid-column:1/-1;">Geen email-stats beschikbaar.</div>'; return; }
+  var cards = [
+    { label:'Verzonden (24u)', val:s.sent||0, sub:'totaal '+(s.total||0), cls:'' },
+    { label:'Afgeleverd', val:s.delivered||0, sub:(s.delivery_rate!=null?s.delivery_rate+'%':'—')+' delivery rate', cls:(s.delivered>0?'ok':'') },
+    { label:'Geopend', val:s.opened||0, sub:(s.open_rate!=null?s.open_rate+'%':'—')+' open rate', cls:'' },
+    { label:'Gebounced', val:s.bounced||0, sub:(s.bounce_rate!=null?s.bounce_rate+'%':'—')+' bounce rate', cls:(s.bounced>0?'alert':'') },
+    { label:'Spam klachten', val:s.complained||0, sub:'kritiek voor reputatie', cls:(s.complained>0?'alert':'') },
+    { label:'Mislukt / vertraagd', val:s.failed||0, sub:'check Resend log', cls:(s.failed>0?'warn':'') }
+  ];
+  document.getElementById('email-stats-cards').innerHTML = cards.map(function(c){
+    return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+  }).join('');
+}
+
+function renderEmails(){
+  var q = (document.getElementById('f-email-search').value||'').toLowerCase().trim();
+  var st = document.getElementById('f-email-status').value;
+  var lst = state.emails.slice();
+  if(st) lst = lst.filter(function(e){return e.status===st;});
+  if(q) lst = lst.filter(function(e){return ((e.to||'')+' '+(e.from||'')+' '+(e.subject||'')+' '+(e.template||'')).toLowerCase().indexOf(q)!==-1;});
+  if(!lst.length){
+    document.getElementById('list-emails').innerHTML = '<div class="empty">Nog geen emails geregistreerd. Configureer Resend webhook (zie setup-gids) zodat emails automatisch verschijnen.</div>';
+    return;
+  }
+  document.getElementById('list-emails').innerHTML = lst.map(function(e){
+    var statusLabel = {
+      'sent':'Verzonden', 'delivered':'Afgeleverd', 'opened':'Geopend', 'clicked':'Geklikt',
+      'bounced':'Gebounced', 'complained':'Spam', 'failed':'Mislukt', 'delayed':'Vertraagd'
+    }[e.status] || e.status;
+    var entityLink = '';
+    if(e.guessed_entity && e.guessed_entity.id){
+      entityLink = '<button class="btn" onclick="event.stopPropagation();openDetail(\''+esc(e.guessed_entity.type)+'\',\''+esc(e.guessed_entity.id)+'\')">👤 '+esc(e.guessed_entity.name||'Open')+'</button>';
+    }
+    return '<div class="card" onclick="openEmailDetail(\''+esc(e.id)+'\')">'
+      +'<div class="top"><div><div class="title">'+esc(e.subject||'(geen onderwerp)')+'</div>'
+      +'<div class="sub">Naar: <b>'+esc(e.to||'—')+'</b> · Van: '+esc(e.from||'—')+'</div></div>'
+      +'<div class="right"><span class="badge '+badgeClass(e.status)+'">'+statusLabel+'</span>'
+      +(e.open_count>0?'<span class="badge b-active">👁 '+e.open_count+'×</span>':'')
+      +(e.click_count>0?'<span class="badge b-active">🔗 '+e.click_count+'×</span>':'')
+      +'</div></div>'
+      +'<div class="meta">'
+      +'<span>📤 '+fmtDateTime(e.created_at)+'</span>'
+      +(e.delivered_at?'<span>✓ Afgeleverd: '+fmtDateTime(e.delivered_at)+'</span>':'')
+      +(e.opened_at?'<span>👁 Geopend: '+fmtDateTime(e.opened_at)+'</span>':'')
+      +(e.bounced_at?'<span style="color:var(--red);">⚠ Bounce: '+esc(e.bounce_reason||'—')+'</span>':'')
+      +(e.template?'<span><b>Template:</b> '+esc(e.template)+'</span>':'')
+      +'</div>'
+      +(entityLink?'<div class="actions-row">'+entityLink+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+function openEmailDetail(id){
+  var modal = document.getElementById('modal');
+  document.getElementById('modal-title').textContent = 'Laden…';
+  document.getElementById('modal-sub').textContent = '';
+  document.getElementById('modal-body').innerHTML = '<div class="loader"></div>';
+  document.getElementById('modal-foot').innerHTML = '';
+  modal.classList.add('show');
+  api('detail-email', { id: id }).then(function(d){
+    if(!d || d.error){ document.getElementById('modal-body').innerHTML = '<div class="err">Niet gevonden: '+(d && d.error || '')+'</div>'; document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>'; return; }
+    var e = d.email || {};
+    document.getElementById('modal-title').textContent = e.subject || '(geen onderwerp)';
+    document.getElementById('modal-sub').textContent = 'Resend ID: ' + (e.resend_id || '—');
+    var body = '<h4>Bericht</h4><dl>'
+      +'<dt>Naar</dt><dd>'+esc(e.to_addr||'—')+'</dd>'
+      +'<dt>Van</dt><dd>'+esc(e.from_addr||'—')+'</dd>'
+      +'<dt>Onderwerp</dt><dd>'+esc(e.subject||'—')+'</dd>'
+      +'<dt>Template</dt><dd>'+esc(e.template||'—')+'</dd>'
+      +'<dt>Status</dt><dd><span class="badge '+badgeClass(e.status)+'">'+esc(e.status||'—')+'</span></dd>'
+      +'<dt>Workflow</dt><dd>'+esc(e.workflow_id||'—')+'</dd>'
+      +'</dl>'
+      +'<h4>Lifecycle</h4><dl>'
+      +'<dt>Verzonden</dt><dd>'+fmtDateTime(e.created_at)+'</dd>'
+      +'<dt>Afgeleverd</dt><dd>'+(e.delivered_at?'✓ '+fmtDateTime(e.delivered_at):'—')+'</dd>'
+      +'<dt>Geopend</dt><dd>'+(e.opened_at?'✓ '+fmtDateTime(e.opened_at)+' ('+(e.open_count||0)+'×)':'—')+'</dd>'
+      +'<dt>Geklikt</dt><dd>'+((e.click_count||0)>0?'✓ '+e.click_count+'×':'—')+'</dd>'
+      +'<dt>Gebounced</dt><dd>'+(e.bounced_at?'⚠ '+fmtDateTime(e.bounced_at)+(e.bounce_reason?' — '+esc(e.bounce_reason):''):'—')+'</dd>'
+      +'<dt>Spam</dt><dd>'+(e.complained_at?'⚠ '+fmtDateTime(e.complained_at):'—')+'</dd>'
+      +'</dl>';
+    if(d.matched_candidate){
+      body += '<h4>Gekoppelde kandidaat</h4><div class="card" onclick="closeModal();openDetail(\'candidate\',\''+esc(d.matched_candidate.id)+'\')">'
+        +'<div class="title">'+esc(d.matched_candidate.name)+'</div></div>';
+    }
+    if(d.matched_company){
+      body += '<h4>Gekoppelde werkgever</h4><div class="card" onclick="closeModal();openDetail(\'company\',\''+esc(d.matched_company.id)+'\')">'
+        +'<div class="title">'+esc(d.matched_company.name)+'</div></div>';
+    }
+    if(e.meta && Object.keys(e.meta).length){
+      body += '<h4>Metadata</h4><div class="summary" style="font-family:monospace;font-size:12px;">'+esc(JSON.stringify(e.meta,null,2))+'</div>';
+    }
+    document.getElementById('modal-body').innerHTML = body;
+    document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
+  });
 }
 
 /* ============ DETAIL MODAL ============ */
