@@ -712,7 +712,11 @@ function openDetail(type,id){
   modal.classList.add('show');
   api('detail-'+type, { id: id }).then(function(d){
     if(!d || d.error){
-      document.getElementById('modal-body').innerHTML = '<div class="err">Niet gevonden: '+(d && d.error ? d.error : 'onbekend')+'</div>';
+      var errMsg = '<b>Fout:</b> ' + (d && d.error ? esc(d.error) : 'onbekend');
+      if(d && d.sqlerrm) errMsg += '<br><b>SQL:</b> '+esc(d.sqlerrm);
+      if(d && d.sqlstate) errMsg += '<br><b>State:</b> '+esc(d.sqlstate);
+      if(d && d.context) errMsg += '<br><b>Context:</b> '+esc(d.context);
+      document.getElementById('modal-body').innerHTML = '<div class="err">'+errMsg+'</div>';
       document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
       return;
     }
