@@ -588,7 +588,7 @@ function renderKandidaten(){
       +'<div class="actions-row">'
       +(c.email?'<a class="btn" href="mailto:'+esc(c.email)+'" onclick="event.stopPropagation()">📧 '+esc(c.email)+'</a>':'')
       +(c.phone?'<a class="btn" href="tel:'+esc(c.phone)+'" onclick="event.stopPropagation()">📞 '+esc(c.phone)+'</a>':'')
-      +(c.cv_url?'<button class="btn" onclick="event.stopPropagation();openBestand(\''+esc(c.cv_url)+'\')">📄 CV openen</button>':'')
+      +(c.has_cv && c.cv_url?'<button class="btn" onclick="event.stopPropagation();openBestand(\''+esc(c.cv_url)+'\')">📄 CV openen</button>':'')
       +'<button class="btn" onclick="event.stopPropagation();presentatieCv(\''+esc(c.id)+'\')">👁 Presentatie-CV</button>'
       +'<button class="btn" onclick="event.stopPropagation();openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Toelichting bewerken':'+ Toelichting toevoegen')+'</button>'
       +'</div></div>';
@@ -652,8 +652,9 @@ function renderWerkgevers(){
   if(q) lst = lst.filter(function(c){return ((c.name||'')+' '+(c.sector||'')+' '+(c.contact_name||'')+' '+(c.contact_email||'')).toLowerCase().indexOf(q)!==-1;});
   if(!lst.length){ document.getElementById('list-werkgevers').innerHTML='<div class="empty">Geen werkgevers.</div>'; return; }
   document.getElementById('list-werkgevers').innerHTML = lst.map(function(c){
+    var displayName = (c.name && c.name !== 'Onbekend') ? c.name : (c.kvk_number ? 'KvK '+c.kvk_number : (c.contact_email || 'Nieuwe werkgever — naam niet doorgegeven'));
     return '<div class="card" onclick="openDetail(\'company\',\''+esc(c.id)+'\')">'
-      +'<div class="top"><div><div class="title">'+esc(c.name||'Onbekend')+'</div>'
+      +'<div class="top"><div><div class="title">'+esc(displayName)+'</div>'
       +'<div class="sub">'+[c.sector,c.city,c.kvk_number?'KvK '+c.kvk_number:''].filter(Boolean).map(esc).join(' · ')+'</div></div>'
       +'<div class="right">'
       +(c.open_vacancy_count>0?'<span class="badge b-active">'+c.open_vacancy_count+' open</span>':'')
