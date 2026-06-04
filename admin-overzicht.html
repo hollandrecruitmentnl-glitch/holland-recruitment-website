@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin Overzicht — Holland Recruitment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#3551E6;--blue-deep:#2334AE;--lime:#D6F24E;--coral:#FF7A59;--ink:#15183A;--muted:#5C6178;--cream:#FBF6EC;--line:#ECE5D6;--green:#10B981;--amber:#F59E0B;--red:#DC2626;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);font-size:16px;line-height:1.5;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px;}
+a{color:inherit;text-decoration:none;}
+
+/* Login screen */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-card{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:36px;max-width:380px;width:100%;box-shadow:0 18px 48px rgba(21,24,58,.13);}
+.login-card h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:8px;}
+.login-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.login-card input{width:100%;padding:14px 18px;border:1.5px solid var(--line);border-radius:14px;font-family:'Inter',sans-serif;font-size:16px;margin-bottom:14px;}
+.login-card input:focus{outline:none;border-color:var(--blue);}
+.login-card button{width:100%;background:var(--blue);color:#fff;border:0;padding:14px;border-radius:14px;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;cursor:pointer;}
+.login-card button:hover{background:var(--blue-deep);}
+.login-card .err{color:var(--red);font-size:13px;margin-bottom:12px;display:none;}
+.login-card .err.show{display:block;}
+
+/* Dashboard */
+.dash{display:none;padding:24px 0 60px;}
+.dash.visible{display:block;}
+.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.dash-head h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.7rem;}
+.dash-head .actions{display:flex;gap:10px;align-items:center;}
+.dash-head .stamp{color:var(--muted);font-size:13px;}
+.btn-refresh{background:#fff;border:1.5px solid var(--line);padding:9px 16px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
+.btn-refresh:hover{background:var(--cream);}
+.btn-logout{color:var(--red);font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;background:none;border:0;cursor:pointer;}
+
+/* Stat cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:32px;}
+.stat{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:18px;}
+.stat .label{font-size:12px;color:var(--muted);font-family:'Poppins',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;}
+.stat .val{font-family:'Poppins',sans-serif;font-weight:800;font-size:2.1rem;line-height:1;color:var(--ink);}
+.stat .sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.stat.alert{border-color:var(--red);background:#FEF2F2;}
+.stat.alert .val{color:var(--red);}
+.stat.warn{border-color:var(--amber);background:#FFFBEB;}
+.stat.warn .val{color:var(--amber);}
+.stat.good{border-color:var(--green);background:#ECFDF5;}
+.stat.good .val{color:var(--green);}
+
+/* Section */
+.section{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;margin-bottom:24px;}
+.section h2{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.section h2 .count{font-size:13px;color:var(--muted);font-weight:500;}
+.list{display:flex;flex-direction:column;gap:10px;}
+.row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--cream);border-radius:12px;gap:10px;}
+.row .info{flex:1;min-width:0;}
+.row .info b{font-family:'Poppins',sans-serif;font-weight:700;font-size:14.5px;display:block;}
+.row .info span{font-size:13px;color:var(--muted);display:block;margin-top:2px;}
+.row .badge{background:#fff;border:1.5px solid var(--line);padding:5px 12px;border-radius:99px;font-family:'Poppins',sans-serif;font-weight:700;font-size:12px;color:var(--blue);white-space:nowrap;}
+.row .badge.high{background:#ECFDF5;border-color:var(--green);color:var(--green);}
+.row .badge.med{background:#FFFBEB;border-color:var(--amber);color:var(--amber);}
+.empty{padding:30px;text-align:center;color:var(--muted);font-size:14px;}
+
+@media(max-width:760px){.dash-head h1{font-size:1.4rem;}.stat .val{font-size:1.7rem;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginScreen">
+  <div class="login-card">
+    <h1>Admin Overzicht</h1>
+    <p>Holland Recruitment — interne snapshot van alle activiteit</p>
+    <div class="err" id="loginErr">Onjuiste PIN</div>
+    <input type="password" id="pinInput" placeholder="PIN" autocomplete="off">
+    <button id="loginBtn">Inloggen</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dashboard">
+  <div class="wrap">
+
+    <div class="dash-head">
+      <div>
+        <h1>Admin Overzicht</h1>
+        <div class="stamp" id="stamp"></div>
+      </div>
+      <div class="actions">
+        <button class="btn-refresh" id="refreshBtn">↻ Refresh</button>
+        <button class="btn-logout" id="logoutBtn">Uitloggen</button>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stats" id="statsGrid"></div>
+
+    <!-- Recent vacancies -->
+    <div class="section">
+      <h2>Recente vacatures <span class="count" id="vacCount"></span></h2>
+      <div class="list" id="vacList"></div>
+    </div>
+
+    <!-- Recent candidates -->
+    <div class="section">
+      <h2>Recente kandidaten (met AVG-consent) <span class="count" id="candCount"></span></h2>
+      <div class="list" id="candList"></div>
+    </div>
+
+    <!-- Pending matches -->
+    <div class="section">
+      <h2>Wachtende match-suggesties <span class="count" id="matchCount"></span></h2>
+      <div class="list" id="matchList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const WEBHOOK = 'https://hollandrecruitment.app.n8n.cloud/webhook/admin-data';
+
+const $login = document.getElementById('loginScreen');
+const $dash = document.getElementById('dashboard');
+const $pinInput = document.getElementById('pinInput');
+const $loginErr = document.getElementById('loginErr');
+const $stamp = document.getElementById('stamp');
+const $statsGrid = document.getElementById('statsGrid');
+const $vacList = document.getElementById('vacList');
+const $candList = document.getElementById('candList');
+const $matchList = document.getElementById('matchList');
+
+let currentPin = sessionStorage.getItem('hr_admin_pin');
+
+async function login(pin) {
+  const data = await fetchData(pin);
+  if (data) {
+    currentPin = pin;
+    sessionStorage.setItem('hr_admin_pin', pin);
+    $login.style.display = 'none';
+    $dash.classList.add('visible');
+    render(data);
+  } else {
+    $loginErr.classList.add('show');
+  }
+}
+
+async function fetchData(pin) {
+  try {
+    const res = await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Pin': pin },
+      body: JSON.stringify({})
+    });
+    if (res.status === 401) return null;
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' }) + ' ' + d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtEur(n) { return '€' + (parseFloat(n)||0).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+
+function render(data) {
+  const s = data.snapshot || {};
+  $stamp.textContent = 'Laatst bijgewerkt: ' + fmtDate(data.generated_at);
+
+  const stats = [
+    {label:'Open vacatures',val:s.open_vacancies||0,sub:'+' + (s.new_vacancies_7d||0) + ' afgelopen 7d'},
+    {label:'Actieve klanten',val:s.active_companies||0,sub:'+' + (s.new_companies_7d||0) + ' afgelopen 7d'},
+    {label:'Kandidaten',val:s.candidates_with_consent||0,sub:'+' + (s.new_candidates_7d||0) + ' afgelopen 7d'},
+    {label:'B2B chats',val:s.chats_completed||0,sub:s.chats_in_progress + ' lopend · +' + (s.new_chats_7d||0) + ' nieuw 7d'},
+    {label:'Wachtende matches',val:s.pending_matches||0,cls:(s.pending_matches>0?'warn':null),sub:'AI voorstellen om te reviewen'},
+    {label:'Actieve plaatsingen',val:s.active_placements||0,cls:(s.active_placements>0?'good':null),sub:'Marge: ' + fmtEur(s.total_margin_eur)},
+    {label:'Margin alerts',val:(s.open_critical_alerts||0)+(s.open_warning_alerts||0),cls:(s.open_critical_alerts>0?'alert':(s.open_warning_alerts>0?'warn':null)),sub:s.open_critical_alerts + ' kritiek · ' + s.open_warning_alerts + ' warning'},
+    {label:'AVG verzoeken',val:s.open_avg_requests||0,cls:(s.avg_due_soon>0?'warn':null),sub:s.avg_due_soon + ' verlopen binnen 7d'},
+    {label:'Monitor findings',val:(s.monitor_critical||0)+(s.monitor_warning||0),cls:(s.monitor_critical>0?'alert':(s.monitor_warning>0?'warn':null)),sub:s.monitor_critical + ' kritiek · ' + s.monitor_warning + ' warning'}
+  ];
+  $statsGrid.innerHTML = stats.map(st => '<div class="stat ' + (st.cls||'') + '"><div class="label">' + st.label + '</div><div class="val">' + st.val + '</div><div class="sub">' + st.sub + '</div></div>').join('');
+
+  // Recent vacancies
+  const vacs = data.recent_vacancies || [];
+  document.getElementById('vacCount').textContent = vacs.length + ' getoond';
+  $vacList.innerHTML = vacs.length === 0 ? '<div class="empty">Geen recente vacatures.</div>' :
+    vacs.map(v => '<div class="row"><div class="info"><b>' + (v.headcount_needed||1) + '× ' + (v.title||'?') + '</b><span>' + (v.company_name||'?') + ' · ' + (v.city||'?') + ' · ' + (v.sector||'?') + ' · ' + fmtDate(v.created_at) + '</span></div><span class="badge">' + (v.source||'?') + '</span></div>').join('');
+
+  // Recent candidates
+  const cands = data.recent_candidates || [];
+  document.getElementById('candCount').textContent = cands.length + ' getoond';
+  $candList.innerHTML = cands.length === 0 ? '<div class="empty">Geen kandidaten met AVG-consent.</div>' :
+    cands.map(c => {
+      const tags = [];
+      if (c.has_cv) tags.push('CV');
+      if (c.has_screening) tags.push('Gescreend');
+      return '<div class="row"><div class="info"><b>' + (c.first_name||'') + ' ' + (c.last_name||'') + '</b><span>' + (c.city||'?') + ' · ' + (c.status||'?') + ' · ' + fmtDate(c.created_at) + '</span></div>' + (tags.length ? '<span class="badge high">' + tags.join(' · ') + '</span>' : '') + '</div>';
+    }).join('');
+
+  // Pending matches
+  const matches = data.pending_matches || [];
+  document.getElementById('matchCount').textContent = matches.length + ' getoond';
+  $matchList.innerHTML = matches.length === 0 ? '<div class="empty">Geen wachtende match-suggesties.</div>' :
+    matches.map(m => {
+      const cls = m.fit_score>=80 ? 'high' : m.fit_score>=60 ? 'med' : '';
+      return '<div class="row"><div class="info"><b>' + (m.candidate_name||'?') + ' → ' + (m.vacancy_title||'?') + '</b><span>' + (m.company_name||'?') + ' · ' + (m.vacancy_city||'?') + ' · ' + fmtDate(m.created_at) + '</span></div><span class="badge ' + cls + '">' + (m.fit_score||0) + '/100</span></div>';
+    }).join('');
+}
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const pin = $pinInput.value.trim();
+  if (!pin) return;
+  login(pin);
+});
+$pinInput.addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  if(!currentPin) return;
+  const data = await fetchData(currentPin);
+  if (data) render(data);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  currentPin = null;
+  sessionStorage.removeItem('hr_admin_pin');
+  $dash.classList.remove('visible');
+  $login.style.display = 'flex';
+  $pinInput.value = '';
+});
+
+// Auto-login if PIN cached
+if (currentPin) {
+  fetchData(currentPin).then(data => {
+    if (data) {
+      $login.style.display = 'none';
+      $dash.classList.add('visible');
+      render(data);
+    } else {
+      sessionStorage.removeItem('hr_admin_pin');
+      currentPin = null;
+    }
+  });
+}
+</script>
+
+</body>
+</html>
