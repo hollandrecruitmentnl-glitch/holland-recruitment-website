@@ -664,18 +664,21 @@ function renderAlerts(){
   var a = state.alerts;
   document.getElementById('list-margin').innerHTML = (a.margin_alerts||[]).length
     ? a.margin_alerts.map(function(m){
-        return '<div class="card"><div class="top"><div><div class="title">Marge-afwijking — '+esc(m.reason||'—')+'</div>'
-          +'<div class="sub">Huidig: '+fmtEur(m.current_margin)+' · Verwacht: '+fmtEur(m.expected_margin)+'</div></div>'
+        return '<div class="card"><div class="top"><div><div class="title">'+esc(m.title||'Marge-alert')+'</div>'
+          +'<div class="sub">'+esc(m.alert_type||'')+' · Huidig: '+fmtEur(m.current_margin)+' · Target: '+fmtEur(m.target_margin)+(m.potential_savings?' · Potentieel: '+fmtEur(m.potential_savings):'')+'</div></div>'
           +'<div class="right"><span class="badge '+badgeClass(m.severity)+'">'+badgeLabel(m.severity)+'</span></div></div>'
-          +'<div class="meta"><span><b>Plaatsing:</b> '+esc(m.placement_id||'—')+'</span><span>'+fmtDateTime(m.created_at)+'</span></div></div>';
+          +(m.description?'<div class="summary">'+esc(m.description)+'</div>':'')
+          +(m.recommendation?'<div class="notitie"><b>Aanbeveling:</b> '+esc(m.recommendation)+'</div>':'')
+          +'<div class="meta"><span>'+fmtDateTime(m.created_at)+'</span></div></div>';
       }).join('')
     : '<div class="empty">Geen open margin alerts.</div>';
   document.getElementById('list-monitor').innerHTML = (a.monitor_findings||[]).length
     ? a.monitor_findings.map(function(f){
-        return '<div class="card"><div class="top"><div><div class="title">'+esc(f.summary||f.finding_type||'—')+'</div>'
-          +'<div class="sub">'+esc(f.agent_name||'')+' · '+esc(f.finding_type||'')+'</div></div>'
+        return '<div class="card"><div class="top"><div><div class="title">'+esc(f.title||f.finding_type||'—')+'</div>'
+          +'<div class="sub">'+esc(f.affected_agent||'')+' · '+esc(f.finding_type||'')+'</div></div>'
           +'<div class="right"><span class="badge '+badgeClass(f.severity)+'">'+badgeLabel(f.severity)+'</span></div></div>'
-          +(f.details?'<div class="summary">'+esc(typeof f.details==='string'?f.details:JSON.stringify(f.details))+'</div>':'')
+          +(f.description?'<div class="summary">'+esc(f.description)+'</div>':'')
+          +(f.recommendation?'<div class="notitie"><b>Aanbeveling:</b> '+esc(f.recommendation)+'</div>':'')
           +'<div class="meta"><span>'+fmtDateTime(f.created_at)+'</span></div></div>';
       }).join('')
     : '<div class="empty">Geen open monitor findings.</div>';
