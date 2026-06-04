@@ -580,7 +580,7 @@ function renderKandidaten(){
       +'<div class="sub">'+[c.city,c.preferred_roles,c.availability].filter(Boolean).map(esc).join(' · ')+'</div></div>'
       +'<div class="right">'
       +'<span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span>'
-      +(c.has_cv?'<span class="badge b-active">CV ✓</span>':'<span class="badge b-pending">Geen CV</span>')
+      +(c.has_cv?'<span class="badge b-active" title="CV is door kandidaat geüpload">CV ontvangen ✓</span>':'<span class="badge b-pending" title="Geen CV — verzoekmail wordt automatisch verstuurd">CV nog ontvangen</span>')
       +(c.match_count>0?'<span class="badge b-new">'+c.match_count+' matches</span>':'')
       +'</div></div>'
       +(c.screening_summary?'<div class="summary">'+esc(c.screening_summary)+'</div>':'')
@@ -652,7 +652,7 @@ function renderWerkgevers(){
   if(q) lst = lst.filter(function(c){return ((c.name||'')+' '+(c.sector||'')+' '+(c.contact_name||'')+' '+(c.contact_email||'')).toLowerCase().indexOf(q)!==-1;});
   if(!lst.length){ document.getElementById('list-werkgevers').innerHTML='<div class="empty">Geen werkgevers.</div>'; return; }
   document.getElementById('list-werkgevers').innerHTML = lst.map(function(c){
-    return '<div class="card">'
+    return '<div class="card" onclick="openDetail(\'company\',\''+esc(c.id)+'\')">'
       +'<div class="top"><div><div class="title">'+esc(c.name||'Onbekend')+'</div>'
       +'<div class="sub">'+[c.sector,c.city,c.kvk_number?'KvK '+c.kvk_number:''].filter(Boolean).map(esc).join(' · ')+'</div></div>'
       +'<div class="right">'
@@ -718,6 +718,7 @@ function openDetail(type,id){
     if(type==='vacancy') renderVacancyDetail(d);
     else if(type==='candidate') renderCandidateDetail(d);
     else if(type==='chat') renderChatDetail(d);
+    else if(type==='company') renderCompanyDetail(d);
     else if(type==='match'){
       var match = state.matches.find(function(m){return m.id===id;});
       if(match && match.vacancy_id){
@@ -832,6 +833,55 @@ function renderCandidateDetail(d){
     + '<button class="btn btn-primary" onclick="openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Notitie bewerken':'+ Notitie toevoegen')+'</button>'
     + '<button class="btn" onclick="closeModal()">Sluiten</button>';
   loadEmailLog('candidate', c.id);
+}
+
+function renderCompanyDetail(d){
+  var c = d.company || {};
+  document.getElementById('modal-title').textContent = c.name || 'Werkgever';
+  document.getElementById('modal-sub').textContent = [c.sector, c.city, c.kvk_number ? 'KvK '+c.kvk_number : ''].filter(Boolean).join(' · ');
+  var body = '<h4>Bedrijf</h4><dl>'
+    +'<dt>Naam</dt><dd>'+esc(c.name||'—')+'</dd>'
+    +'<dt>KvK</dt><dd>'+esc(c.kvk_number||'—')+'</dd>'
+    +'<dt>Sector</dt><dd>'+esc(c.sector||'—')+'</dd>'
+    +'<dt>Stad</dt><dd>'+esc(c.city||'—')+'</dd>'
+    +'<dt>Contact</dt><dd>'+esc((c.contact_first_name||'')+' '+(c.contact_last_name||''))+'</dd>'
+    +'<dt>E-mail</dt><dd>'+(c.contact_email?'<a href="mailto:'+esc(c.contact_email)+'">'+esc(c.contact_email)+'</a>':'—')+'</dd>'
+    +'<dt>Telefoon</dt><dd>'+(c.contact_phone?'<a href="tel:'+esc(c.contact_phone)+'">'+esc(c.contact_phone)+'</a>':'—')+'</dd>'
+    +'<dt>Website</dt><dd>'+(c.website?'<a href="'+esc(c.website)+'" target="_blank">'+esc(c.website)+'</a>':'—')+'</dd>'
+    +'<dt>Aangemaakt</dt><dd>'+fmtDateTime(c.created_at)+'</dd>'
+    +'</dl>';
+  if(d.vacancies && d.vacancies.length){
+    body += '<h4>Vacatures ('+d.vacancies.length+')</h4><div class="list">';
+    d.vacancies.forEach(function(v){
+      body += '<div class="card" onclick="closeModal();openDetail(\'vacancy\',\''+esc(v.id)+'\')">'
+        +'<div class="top"><div><div class="title">'+(v.headcount_needed?v.headcount_needed+'× ':'')+esc(v.title||'—')+'</div>'
+        +'<div class="sub">'+esc(v.city||'')+' · '+fmtDateTime(v.created_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(v.status)+'">'+badgeLabel(v.status)+'</span></div></div></div>';
+    });
+    body += '</div>';
+  }
+  if(d.chats && d.chats.length){
+    body += '<h4>B2B chats ('+d.chats.length+')</h4><div class="list">';
+    d.chats.forEach(function(ch){
+      body += '<div class="card" onclick="closeModal();openDetail(\'chat\',\''+esc(ch.id)+'\')">'
+        +'<div class="top"><div><div class="title">Chat — '+(ch.message_count||0)+' berichten</div>'
+        +'<div class="sub">'+fmtDateTime(ch.started_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(ch.status)+'">'+badgeLabel(ch.status)+'</span></div></div></div>';
+    });
+    body += '</div>';
+  }
+  if(d.placements && d.placements.length){
+    body += '<h4>Plaatsingen ('+d.placements.length+')</h4><div class="list">';
+    d.placements.forEach(function(p){
+      body += '<div class="card" style="cursor:default;"><div class="top"><div><div class="title">Plaatsing</div>'
+        +'<div class="sub">'+fmtDateTime(p.created_at)+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(p.status)+'">'+badgeLabel(p.status)+'</span></div></div></div>';
+    });
+    body += '</div>';
+  }
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
+  if(c.id) loadEmailLog('company', c.id);
 }
 
 function renderChatDetail(d){
