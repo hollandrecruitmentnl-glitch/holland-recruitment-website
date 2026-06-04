@@ -580,7 +580,7 @@ function renderKandidaten(){
       +'<div class="sub">'+[c.city,c.preferred_roles,c.availability].filter(Boolean).map(esc).join(' · ')+'</div></div>'
       +'<div class="right">'
       +'<span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span>'
-      +(c.has_cv?'<span class="badge b-active" title="CV is door kandidaat geüpload">CV ontvangen ✓</span>':'<span class="badge b-pending" title="Geen CV — verzoekmail wordt automatisch verstuurd">CV nog ontvangen</span>')
+      +(c.has_cv?'<span class="badge b-active" title="CV is door kandidaat geüpload">CV ontvangen ✓</span>':'<span class="badge b-pending" title="Geen CV — verzoekmail wordt automatisch verstuurd">Wacht op CV</span>')
       +(c.match_count>0?'<span class="badge b-new">'+c.match_count+' matches</span>':'')
       +'</div></div>'
       +(c.screening_summary?'<div class="summary">'+esc(c.screening_summary)+'</div>':'')
