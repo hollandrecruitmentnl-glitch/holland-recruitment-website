@@ -433,19 +433,19 @@ function loadTab(t){
     api('snapshot').then(function(d){ state.snapshot=d; state.loaded.overzicht=true; renderSnapshot(); });
   } else if(t==='vacatures'){
     document.getElementById('list-vacatures').innerHTML = '<div class="loader"></div>';
-    api('list-vacancies').then(function(d){ state.vacatures=Array.isArray(d)?d:[]; state.loaded.vacatures=true; updateCounts(); renderVacatures(); });
+    api('list-vacancies').then(function(d){ state.vacatures=extractItems(d); state.loaded.vacatures=true; updateCounts(); renderVacatures(); });
   } else if(t==='kandidaten'){
     document.getElementById('list-kandidaten').innerHTML = '<div class="loader"></div>';
-    api('list-candidates').then(function(d){ state.kandidaten=Array.isArray(d)?d:[]; state.loaded.kandidaten=true; updateCounts(); renderKandidaten(); });
+    api('list-candidates').then(function(d){ state.kandidaten=extractItems(d); state.loaded.kandidaten=true; updateCounts(); renderKandidaten(); });
   } else if(t==='chats'){
     document.getElementById('list-chats').innerHTML = '<div class="loader"></div>';
-    api('list-chats').then(function(d){ state.chats=Array.isArray(d)?d:[]; state.loaded.chats=true; updateCounts(); renderChats(); });
+    api('list-chats').then(function(d){ state.chats=extractItems(d); state.loaded.chats=true; updateCounts(); renderChats(); });
   } else if(t==='matches'){
     document.getElementById('list-matches').innerHTML = '<div class="loader"></div>';
-    api('list-matches').then(function(d){ state.matches=Array.isArray(d)?d:[]; state.loaded.matches=true; updateCounts(); renderMatches(); });
+    api('list-matches').then(function(d){ state.matches=extractItems(d); state.loaded.matches=true; updateCounts(); renderMatches(); });
   } else if(t==='werkgevers'){
     document.getElementById('list-werkgevers').innerHTML = '<div class="loader"></div>';
-    api('list-companies').then(function(d){ state.werkgevers=Array.isArray(d)?d:[]; state.loaded.werkgevers=true; updateCounts(); renderWerkgevers(); });
+    api('list-companies').then(function(d){ state.werkgevers=extractItems(d); state.loaded.werkgevers=true; updateCounts(); renderWerkgevers(); });
   } else if(t==='alerts'){
     document.getElementById('list-margin').innerHTML = '<div class="loader"></div>';
     api('list-alerts').then(function(d){
@@ -453,6 +453,16 @@ function loadTab(t){
       state.loaded.alerts=true; updateCounts(); renderAlerts();
     });
   }
+}
+
+// Helper: pak items uit response (RPCs returnen {items: [...]} sinds v3 om n8n array-split te omzeilen)
+function extractItems(d){
+  if(!d) return [];
+  if(Array.isArray(d)) return d;
+  if(d.items && Array.isArray(d.items)) return d.items;
+  // Fallback: single object (n8n splitste array) — wrap in 1-element array
+  if(d.id) return [d];
+  return [];
 }
 
 function updateCounts(){
@@ -700,16 +710,28 @@ function openDetail(type,id){
   document.getElementById('modal-foot').innerHTML = '';
   modal.classList.add('show');
   api('detail-'+type, { id: id }).then(function(d){
-    if(!d || d.error){ document.getElementById('modal-body').innerHTML = '<div class="err">Niet gevonden.</div>'; return; }
+    if(!d || d.error){
+      document.getElementById('modal-body').innerHTML = '<div class="err">Niet gevonden: '+(d && d.error ? d.error : 'onbekend')+'</div>';
+      document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
+      return;
+    }
     if(type==='vacancy') renderVacancyDetail(d);
     else if(type==='candidate') renderCandidateDetail(d);
     else if(type==='chat') renderChatDetail(d);
     else if(type==='match'){
-      // Match: open vacancy detail (matches are inline)
-      api('detail-vacancy', { id: state.matches.find(function(m){return m.id===id;})?.vacancy_id }).then(function(vd){
-        if(vd && !vd.error) renderVacancyDetail(vd);
-      });
+      var match = state.matches.find(function(m){return m.id===id;});
+      if(match && match.vacancy_id){
+        api('detail-vacancy', { id: match.vacancy_id }).then(function(vd){
+          if(vd && !vd.error) renderVacancyDetail(vd);
+          else document.getElementById('modal-body').innerHTML = '<div class="err">Vacature niet gevonden.</div>';
+        });
+      } else {
+        document.getElementById('modal-body').innerHTML = '<div class="err">Match niet gevonden.</div>';
+      }
     }
+  }).catch(function(err){
+    document.getElementById('modal-body').innerHTML = '<div class="err">Netwerk fout: '+esc(err && err.message || '')+'</div>';
+    document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
   });
 }
 function closeModal(){ document.getElementById('modal').classList.remove('show'); }
