@@ -1065,7 +1065,11 @@ function loadEmailLog(type, id){ /* deprecated, vervangen door loadEmailsForAddr
 function loadEmailsForAddress(email){
   if(!email) return;
   api('emails-for-address', { email: email }).then(function(d){
-    var arr = Array.isArray(d) ? d : (d && d.items ? d.items : []);
+    // d kan zijn: array, {items: [...]}, of single object (n8n array-split fallback)
+    var arr = [];
+    if(Array.isArray(d)) arr = d;
+    else if(d && Array.isArray(d.items)) arr = d.items;
+    else if(d && d.resend_id) arr = [d];  // fallback single object
     var html;
     if(!arr.length){
       html = '<h4>Verstuurde e-mails (0)</h4><div class="empty" style="padding:20px;">Geen emails verstuurd naar <b>'+esc(email)+'</b>. Mogelijk verstuurt de intake-workflow nog geen welcome-mail — zie gap-analyse in dashboard.</div>';
