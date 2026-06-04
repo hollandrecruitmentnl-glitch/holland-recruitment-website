@@ -349,15 +349,21 @@ document.getElementById('login-form').addEventListener('submit', function(e){
   e.preventDefault();
   var p = document.getElementById('login-pin').value.trim();
   if(!p){ showLoginErr(); return; }
+  // CRITICAL: zet pin VOOR de api call (race condition fix)
+  pin = p;
+  document.getElementById('login-err').classList.remove('show');
   api('snapshot').then(function(d){
     if(d && !d.error && (d.snapshot || d.generated_at)){
-      pin = p;
       sessionStorage.setItem(PIN_KEY, pin);
       showDash(); loadTab('overzicht');
-    } else showLoginErr();
-  }).catch(function(){ showLoginErr(); });
-  // Test PIN by trying a snapshot — override fetch with the entered pin
-  pin = p;
+    } else {
+      pin = '';
+      showLoginErr();
+    }
+  }).catch(function(){
+    pin = '';
+    showLoginErr();
+  });
 });
 
 function showLoginErr(){ document.getElementById('login-err').classList.add('show'); pin=''; sessionStorage.removeItem(PIN_KEY); }
