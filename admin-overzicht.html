@@ -938,8 +938,8 @@ function renderVacancyDetail(d){
   }
   document.getElementById('modal-body').innerHTML = body;
   document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
-  // Email log async
-  loadEmailLog('vacancy', v.id);
+  // Toon emails verstuurd naar bedrijfs-contact
+  if(co.contact_email) loadEmailsForAddress(co.contact_email);
 }
 
 function renderCandidateDetail(d){
@@ -984,7 +984,7 @@ function renderCandidateDetail(d){
     + '<button class="btn" onclick="presentatieCv(\''+esc(c.id)+'\')">👁 Presentatie-CV</button>'
     + '<button class="btn btn-primary" onclick="openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Notitie bewerken':'+ Notitie toevoegen')+'</button>'
     + '<button class="btn" onclick="closeModal()">Sluiten</button>';
-  loadEmailLog('candidate', c.id);
+  if(c.email) loadEmailsForAddress(c.email);
 }
 
 function renderCompanyDetail(d){
@@ -1057,21 +1057,36 @@ function renderChatDetail(d){
   }
   document.getElementById('modal-body').innerHTML = body;
   document.getElementById('modal-foot').innerHTML = '<button class="btn" onclick="closeModal()">Sluiten</button>';
-  loadEmailLog('chat', c.id);
+  if(c.contact_email) loadEmailsForAddress(c.contact_email);
 }
 
-function loadEmailLog(type, id){
-  if(!id) return;
-  api('email-log', { entity_type: type, entity_id: id }).then(function(d){
-    if(!Array.isArray(d) || !d.length) return;
-    var html = '<h4>Verstuurde e-mails ('+d.length+')</h4><div class="list">';
-    d.forEach(function(e){
-      html += '<div class="card" style="cursor:default;"><div class="top"><div><div class="title">'+esc(e.subject||'—')+'</div>'
-        +'<div class="sub">Naar: '+esc(e.to||'—')+' · Template: '+esc(e.template||'—')+'</div></div>'
-        +'<div class="right"><span class="badge '+badgeClass(e.status)+'">'+badgeLabel(e.status)+'</span></div></div>'
-        +'<div class="meta"><span>'+fmtDateTime(e.created_at)+'</span></div></div>';
-    });
-    html += '</div>';
+function loadEmailLog(type, id){ /* deprecated, vervangen door loadEmailsForAddress */ }
+
+function loadEmailsForAddress(email){
+  if(!email) return;
+  api('emails-for-address', { email: email }).then(function(d){
+    var arr = Array.isArray(d) ? d : (d && d.items ? d.items : []);
+    var html;
+    if(!arr.length){
+      html = '<h4>Verstuurde e-mails (0)</h4><div class="empty" style="padding:20px;">Geen emails verstuurd naar <b>'+esc(email)+'</b>. Mogelijk verstuurt de intake-workflow nog geen welcome-mail — zie gap-analyse in dashboard.</div>';
+    } else {
+      html = '<h4>Verstuurde e-mails ('+arr.length+')</h4><div class="list">';
+      arr.forEach(function(e){
+        var statusLabel = {'sent':'Verzonden','delivered':'Afgeleverd','opened':'Geopend','bounced':'Gebounced','complained':'Spam','clicked':'Geklikt'}[e.status] || e.status;
+        html += '<div class="card" style="cursor:default;"><div class="top"><div><div class="title">'+esc(e.subject||'(geen onderwerp)')+'</div>'
+          +'<div class="sub">Van: '+esc(e.from||'—')+'</div></div>'
+          +'<div class="right"><span class="badge '+badgeClass(e.status)+'">'+statusLabel+'</span>'
+          +(e.open_count>0?'<span class="badge b-active">👁 '+e.open_count+'×</span>':'')
+          +'</div></div>'
+          +'<div class="meta">'
+          +'<span>📤 '+fmtDateTime(e.sent_at)+'</span>'
+          +(e.delivered_at?'<span>✓ '+fmtDateTime(e.delivered_at)+'</span>':'')
+          +(e.opened_at?'<span>👁 '+fmtDateTime(e.opened_at)+'</span>':'')
+          +(e.bounced_at?'<span style="color:var(--red);">⚠ '+esc(e.bounce_reason||'bounce')+'</span>':'')
+          +'</div></div>';
+      });
+      html += '</div>';
+    }
     document.getElementById('modal-body').insertAdjacentHTML('beforeend', html);
   });
 }
