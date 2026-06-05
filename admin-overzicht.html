@@ -187,6 +187,9 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="werkgevers" onclick="switchTab('werkgevers')">Werkgevers <span class="count" id="c-co">·</span></button>
       <button class="tab" data-tab="alerts" onclick="switchTab('alerts')">Alerts <span class="count" id="c-alert">·</span></button>
       <button class="tab" data-tab="emails" onclick="switchTab('emails')">Emails <span class="count" id="c-email">·</span></button>
+      <button class="tab" data-tab="social" onclick="switchTab('social')">📱 Social <span class="count" id="c-social">·</span></button>
+      <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendar <span class="count" id="c-cal">·</span></button>
+      <button class="tab" data-tab="trends" onclick="switchTab('trends')">🔍 Trends <span class="count" id="c-trends">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -301,6 +304,23 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-emails" class="list"></div>
     </div>
 
+    <!-- View: Social -->
+    <div id="view-social" class="view">
+      <div class="stats" id="social-stats-cards" style="margin-bottom:18px;"></div>
+      <div id="list-social-posts" class="list"></div>
+    </div>
+
+    <!-- View: Content Calendar -->
+    <div id="view-calendar" class="view">
+      <div class="stats" id="calendar-stats-cards" style="margin-bottom:18px;"></div>
+      <div id="list-calendar" class="list"></div>
+    </div>
+
+    <!-- View: Trends -->
+    <div id="view-trends" class="view">
+      <div id="list-trends" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -389,7 +409,7 @@ var state = {
   alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
   emails: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -508,7 +528,120 @@ function loadTab(t){
     loadBrain();
   } else if(t==='health'){
     loadSystemHealth();
+  } else if(t==='social'){
+    loadSocial();
+  } else if(t==='calendar'){
+    loadCalendar();
+  } else if(t==='trends'){
+    loadTrends();
   }
+}
+
+function loadSocial(){
+  document.getElementById('social-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-social-posts').innerHTML = '<div class="loader"></div>';
+  api('list-social-posts', { limit: 30 }).then(function(d){
+    state.loaded.social = true;
+    var stats = (d && d.stats) || {};
+    var posts = extractItems(d);
+    document.getElementById('c-social').textContent = stats.posted_7d || posts.length || '·';
+    var cards = [
+      { label:'Posts vandaag', val: stats.posted_24h || 0, sub: 'live op FB + IG', cls: (stats.posted_24h>0?'ok':'') },
+      { label:'Posts deze week', val: stats.posted_7d || 0, sub: 'totaal '+(stats.total_posted||0)+' all-time', cls: '' },
+      { label:'In wachtrij', val: stats.queued || 0, sub: 'wacht op publicatie', cls: '' },
+      { label:'Drafts (approval)', val: stats.drafts || 0, sub: 'wacht op jouw approval', cls: (stats.drafts>0?'warn':'') }
+    ];
+    document.getElementById('social-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    if(!posts.length){
+      document.getElementById('list-social-posts').innerHTML = '<div class="empty">Nog geen posts. Agent 1 Generator draait dagelijks 08:00.</div>';
+      return;
+    }
+    var platMap = {'instagram':'🟣 Instagram','facebook_page':'🔵 Facebook','linkedin':'💼 LinkedIn'};
+    document.getElementById('list-social-posts').innerHTML = posts.map(function(p){
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top"><div><div class="title">'+esc(platMap[p.platform]||p.platform||'?')+' · '+esc(p.topic||'(geen topic)')+'</div>'
+        +'<div class="sub">'+(p.posted_at?'📤 '+fmtDateTime(p.posted_at):'⏳ '+(p.status||'?'))+(p.ai_model_used?' · '+esc(p.ai_model_used):'')+'</div></div>'
+        +'<div class="right"><span class="badge '+badgeClass(p.status)+'">'+esc(p.status||'?')+'</span></div></div>'
+        +(p.content?'<div class="summary">'+esc(p.content)+'</div>':'')
+        +'<div class="meta">'
+        +(p.reach?'<span><b>Reach:</b> '+p.reach+'</span>':'')
+        +(p.likes!=null?'<span>❤ '+p.likes+'</span>':'')
+        +(p.comments!=null?'<span>💬 '+p.comments+'</span>':'')
+        +(p.shares!=null?'<span>🔁 '+p.shares+'</span>':'')
+        +(p.engagement_rate!=null?'<span><b>Engagement:</b> '+p.engagement_rate+'%</span>':'')
+        +(p.post_url?'<span><a href="'+esc(p.post_url)+'" target="_blank" style="color:var(--blue);">→ Open post</a></span>':'')
+        +'</div></div>';
+    }).join('');
+  });
+}
+
+function loadCalendar(){
+  document.getElementById('calendar-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-calendar').innerHTML = '<div class="loader"></div>';
+  api('content-calendar', { days: 14 }).then(function(d){
+    state.loaded.calendar = true;
+    var stats = (d && d.stats) || {};
+    var slots = extractItems(d);
+    document.getElementById('c-cal').textContent = stats.planned_7d || '·';
+    var cards = [
+      { label:'Komende 7 dagen', val: stats.planned_7d || 0, sub: 'geplande slots', cls: '' },
+      { label:'Totaal gepland', val: stats.total_planned || 0, sub: 'in toekomst', cls: '' },
+      { label:'Gegenereerd', val: stats.generated || 0, sub: 'klaar voor publiceren', cls: (stats.generated>0?'ok':'') },
+      { label:'Gepubliceerd', val: stats.published || 0, sub: 'door Generator afgehandeld', cls: '' }
+    ];
+    document.getElementById('calendar-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    if(!slots.length){
+      document.getElementById('list-calendar').innerHTML = '<div class="empty">Geen geplande slots. Content Strategy Agent draait wekelijks.</div>';
+      return;
+    }
+    // Group by date
+    var byDate = {};
+    slots.forEach(function(s){ (byDate[s.scheduled_for] = byDate[s.scheduled_for] || []).push(s); });
+    var html = '';
+    Object.keys(byDate).sort().forEach(function(date){
+      var d = new Date(date);
+      html += '<h4 style="font-family:Poppins,sans-serif;font-weight:700;font-size:14px;margin:18px 0 10px;color:var(--blue);">📅 '+d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+'</h4>';
+      byDate[date].forEach(function(s){
+        var statColor = {'planned':'b-pending','in_progress':'b-pending','generated':'b-active','published':'b-done','skipped':'b-neutral','failed':'b-rejected'}[s.status] || 'b-neutral';
+        html += '<div class="card" style="cursor:default;margin-bottom:8px;">'
+          +'<div class="top"><div><div class="title">'+esc(s.scheduled_time||'')+' · '+esc(s.platform||'')+' · '+esc(s.pillar||'')+'</div>'
+          +'<div class="sub"><b>'+esc(s.topic||'')+'</b>'+(s.angle?' — '+esc(s.angle):'')+'</div></div>'
+          +'<div class="right"><span class="badge '+statColor+'">'+esc(s.status||'?')+'</span><span class="badge b-neutral">P'+(s.priority||5)+'</span></div></div>'
+          +(s.hook_suggestion?'<div class="summary"><b>Hook:</b> '+esc(s.hook_suggestion)+'</div>':'')
+          +(s.rationale?'<div class="meta"><span style="color:var(--muted);"><b>Reden:</b> '+esc(s.rationale)+'</span></div>':'')
+          +'</div>';
+      });
+    });
+    document.getElementById('list-calendar').innerHTML = html;
+  });
+}
+
+function loadTrends(){
+  document.getElementById('list-trends').innerHTML = '<div class="loader"></div>';
+  api('strategy-insights', { limit: 30 }).then(function(d){
+    state.loaded.trends = true;
+    var insights = extractItems(d);
+    document.getElementById('c-trends').textContent = insights.length || '·';
+    if(!insights.length){
+      document.getElementById('list-trends').innerHTML = '<div class="empty">Geen active insights. Trend Scanner + Analytics Brain draaien wekelijks.</div>';
+      return;
+    }
+    document.getElementById('list-trends').innerHTML = insights.map(function(i){
+      var conf = i.confidence ? Math.round(i.confidence*100)+'%' : '?';
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top"><div><div class="title">'+esc(i.insight_type||'insight')+'</div>'
+        +'<div class="sub">Confidence: '+conf+(i.sample_size?' · sample n='+i.sample_size:'')+'</div></div>'
+        +'<div class="right"><span class="badge '+(i.confidence>=0.7?'b-active':i.confidence>=0.4?'b-pending':'b-neutral')+'">'+conf+'</span></div></div>'
+        +(i.insight?'<div class="summary">'+esc(i.insight)+'</div>':'')
+        +(i.recommendation?'<div class="notitie"><b>Aanbeveling:</b> '+esc(i.recommendation)+'</div>':'')
+        +'<div class="meta"><span>'+fmtDateTime(i.created_at)+'</span></div>'
+        +'</div>';
+    }).join('');
+  });
 }
 
 function loadBrain(){
