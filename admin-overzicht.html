@@ -190,6 +190,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="social" onclick="switchTab('social')">📱 Social <span class="count" id="c-social">·</span></button>
       <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendar <span class="count" id="c-cal">·</span></button>
       <button class="tab" data-tab="trends" onclick="switchTab('trends')">🔍 Trends <span class="count" id="c-trends">·</span></button>
+      <button class="tab" data-tab="blogs" onclick="switchTab('blogs')">📝 Blogs <span class="count" id="c-blog">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -307,6 +308,7 @@ button{font-family:inherit;cursor:pointer;}
     <!-- View: Social -->
     <div id="view-social" class="view">
       <div class="stats" id="social-stats-cards" style="margin-bottom:18px;"></div>
+      <div id="social-platform-bar"></div>
       <div id="list-social-posts" class="list"></div>
     </div>
 
@@ -319,6 +321,28 @@ button{font-family:inherit;cursor:pointer;}
     <!-- View: Trends -->
     <div id="view-trends" class="view">
       <div id="list-trends" class="list"></div>
+    </div>
+
+    <!-- View: Blogs (kenniscentrum-artikelen) -->
+    <div id="view-blogs" class="view">
+      <div class="stats" id="blog-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <input type="search" id="f-blog-search" placeholder="Zoek op titel, keyword…" oninput="renderBlogs()">
+        <select id="f-blog-status" onchange="renderBlogs()">
+          <option value="">Alle statussen</option>
+          <option value="published">Gepubliceerd</option>
+          <option value="approved">Goedgekeurd (klaar)</option>
+          <option value="draft">Concept</option>
+          <option value="idea">Idee (nog niet geschreven)</option>
+        </select>
+        <select id="f-blog-aud" onchange="renderBlogs()">
+          <option value="">Alle doelgroepen</option>
+          <option value="werkgever">Werkgever</option>
+          <option value="werknemer">Werknemer</option>
+          <option value="algemeen">Algemeen</option>
+        </select>
+      </div>
+      <div id="list-blogs" class="list"></div>
     </div>
 
     <!-- View: Brain -->
@@ -408,8 +432,9 @@ var state = {
   werkgevers: [],
   alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
   emails: [],
+  blogs: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -534,6 +559,8 @@ function loadTab(t){
     loadCalendar();
   } else if(t==='trends'){
     loadTrends();
+  } else if(t==='blogs'){
+    loadBlogs();
   }
 }
 
@@ -544,18 +571,32 @@ function loadSocial(){
     state.loaded.social = true;
     var stats = (d && d.stats) || {};
     var posts = extractItems(d);
-    document.getElementById('c-social').textContent = stats.posted_7d || posts.length || '·';
+    document.getElementById('c-social').textContent = stats.total_all || posts.length || '·';
     var cards = [
       { label:'Posts vandaag', val: stats.posted_24h || 0, sub: 'live op FB + IG', cls: (stats.posted_24h>0?'ok':'') },
-      { label:'Posts deze week', val: stats.posted_7d || 0, sub: 'totaal '+(stats.total_posted||0)+' all-time', cls: '' },
+      { label:'Posts deze week', val: stats.posted_7d || 0, sub: 'totaal '+(stats.posted||0)+' gepubliceerd', cls: '' },
       { label:'In wachtrij', val: stats.queued || 0, sub: 'wacht op publicatie', cls: '' },
       { label:'Drafts (approval)', val: stats.drafts || 0, sub: 'wacht op jouw approval', cls: (stats.drafts>0?'warn':'') }
     ];
     document.getElementById('social-stats-cards').innerHTML = cards.map(function(c){
       return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
     }).join('');
+    // Platform breakdown rij
+    var totalAll = stats.total_all || 0;
+    var platBar = '<div class="card" style="cursor:default;margin:6px 0 14px;padding:14px;background:#f7f9fc;">'
+      + '<div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px;align-items:center;">'
+      + '<span style="font-weight:600;color:var(--blue);">Per platform:</span>'
+      + '<span>🔵 Facebook · <b>'+(stats.by_facebook||0)+'</b></span>'
+      + '<span>🟣 Instagram · <b>'+(stats.by_instagram||0)+'</b></span>'
+      + '<span>💼 LinkedIn · <b>'+(stats.by_linkedin||0)+'</b> <span style="color:var(--muted);font-size:11px;">(api approval pending)</span></span>'
+      + '<span style="margin-left:auto;color:var(--muted);">Totaal in DB: <b>'+totalAll+'</b> · failed: '+(stats.failed||0)+'</span>'
+      + '</div></div>';
+    document.getElementById('social-platform-bar').innerHTML = platBar;
     if(!posts.length){
-      document.getElementById('list-social-posts').innerHTML = '<div class="empty">Nog geen posts. Agent 1 Generator draait dagelijks 08:00.</div>';
+      var msg = totalAll === 0
+        ? '<div class="empty"><b>Geen posts in social_posts tabel.</b><br><span style="color:var(--muted);font-size:13px;">Mogelijk: (1) Generator heeft nog niet gedraaid · (2) Handmatige IG-launch-posts zijn niet door Metrics Collector ingelezen. Trigger n8n workflow <b>Metrics Collector</b> handmatig om bestaande IG-posts te importeren.</span></div>'
+        : '<div class="empty">Tabel heeft '+totalAll+' posts maar geen match op huidige weergave.</div>';
+      document.getElementById('list-social-posts').innerHTML = msg;
       return;
     }
     var platMap = {'instagram':'🟣 Instagram','facebook_page':'🔵 Facebook','linkedin':'💼 LinkedIn'};
@@ -575,6 +616,74 @@ function loadSocial(){
         +'</div></div>';
     }).join('');
   });
+}
+
+function loadBlogs(){
+  document.getElementById('blog-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-blogs').innerHTML = '<div class="loader"></div>';
+  api('list-blog-posts', { limit: 100 }).then(function(d){
+    state.loaded.blogs = true;
+    state.blogs = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-blog').textContent = stats.published || state.blogs.length || '·';
+    var cards = [
+      { label:'Live op kenniscentrum', val: stats.published || 0, sub: '+'+(stats.published_7d||0)+' afgelopen 7d', cls: (stats.published>0?'ok':'') },
+      { label:'Goedgekeurd, wacht op publish', val: stats.approved || 0, sub: 'klaar voor live', cls: (stats.approved>0?'warn':'') },
+      { label:'Concepten in review', val: stats.drafts || 0, sub: 'jouw approval nodig', cls: '' },
+      { label:'Ideeën in pipeline', val: stats.ideas || 0, sub: 'wacht op Schrijver-agent', cls: '' }
+    ];
+    document.getElementById('blog-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    renderBlogs();
+  });
+}
+
+function renderBlogs(){
+  var list = state.blogs || [];
+  var qEl = document.getElementById('f-blog-search'); var q = (qEl && qEl.value || '').toLowerCase().trim();
+  var sEl = document.getElementById('f-blog-status'); var s = (sEl && sEl.value || '');
+  var aEl = document.getElementById('f-blog-aud'); var a = (aEl && aEl.value || '');
+  var filtered = list.filter(function(b){
+    if(s && b.status !== s) return false;
+    if(a && b.audience !== a) return false;
+    if(q){
+      var hay = ((b.title||'')+' '+(b.target_keyword||'')+' '+(b.slug||'')).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  if(!filtered.length){
+    document.getElementById('list-blogs').innerHTML = '<div class="empty">Geen blogs gevonden met dit filter.</div>';
+    return;
+  }
+  var statusBadge = {
+    'published': {cls:'b-done', label:'Live'},
+    'approved':  {cls:'b-active', label:'Klaar voor publish'},
+    'draft':     {cls:'b-pending', label:'Concept'},
+    'idea':      {cls:'b-neutral', label:'Idee'}
+  };
+  var audIcon = {'werkgever':'🏢','werknemer':'👷','algemeen':'🌐'};
+  document.getElementById('list-blogs').innerHTML = filtered.map(function(b){
+    var sb = statusBadge[b.status] || {cls:'b-neutral', label:b.status||'?'};
+    var ai = audIcon[b.audience] || '·';
+    var dateText = '';
+    if(b.status === 'published' && b.published_at) dateText = '📤 Gepubliceerd ' + fmtDateTime(b.published_at);
+    else if(b.updated_at) dateText = '✏️ Laatst bijgewerkt ' + fmtDateTime(b.updated_at);
+    else if(b.created_at) dateText = '🕐 Aangemaakt ' + fmtDateTime(b.created_at);
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top">'
+        +'<div><div class="title">'+ai+' '+esc(b.title||'(geen titel)')+'</div>'
+        +'<div class="sub">'+dateText+(b.target_keyword?' · 🎯 <b>'+esc(b.target_keyword)+'</b>':'')+(b.body_length?' · '+b.body_length+' tekens':'')+'</div></div>'
+        +'<div class="right"><span class="badge '+sb.cls+'">'+esc(sb.label)+'</span>'+(b.audience?'<span class="badge b-neutral">'+esc(b.audience)+'</span>':'')+'</div>'
+      +'</div>'
+      +(b.meta_description?'<div class="summary">'+esc(b.meta_description)+'</div>':'')
+      +'<div class="meta">'
+        +(b.slug?'<span><b>Slug:</b> /'+esc(b.slug)+'</span>':'')
+        +(b.live_url?'<span><a href="'+esc(b.live_url)+'" target="_blank" style="color:var(--blue);">→ Open op kenniscentrum</a></span>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
 }
 
 function loadCalendar(){
