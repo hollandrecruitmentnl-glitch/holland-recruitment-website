@@ -744,7 +744,11 @@ function renderKandidaten(){
       +'<div class="sub">'+[c.city,c.preferred_roles,c.availability].filter(Boolean).map(esc).join(' · ')+'</div></div>'
       +'<div class="right">'
       +'<span class="badge '+badgeClass(c.status)+'">'+badgeLabel(c.status)+'</span>'
-      +(c.has_cv?'<span class="badge b-active" title="CV is door kandidaat geüpload">CV ontvangen ✓</span>':'<span class="badge b-pending" title="Geen CV — verzoekmail wordt automatisch verstuurd">Wacht op CV</span>')
+      +(c.has_cv
+        ? (c.cv_parsed
+            ? '<span class="badge b-active" title="CV is geüpload én AI heeft de inhoud gestructureerd uitgelezen">CV uitgelezen ✓</span>'
+            : '<span class="badge b-pending" title="CV is geüpload maar AI heeft het nog niet uitgelezen — gebeurt elke 4u automatisch">CV ontvangen</span>')
+        : '<span class="badge b-pending" title="Geen CV — verzoekmail wordt automatisch verstuurd">Wacht op CV</span>')
       +(c.match_count>0?'<span class="badge b-new">'+c.match_count+' matches</span>':'')
       +'</div></div>'
       +(c.screening_summary?'<div class="summary">'+esc(c.screening_summary)+'</div>':'')
@@ -753,6 +757,7 @@ function renderKandidaten(){
       +(c.email?'<a class="btn" href="mailto:'+esc(c.email)+'" onclick="event.stopPropagation()">📧 '+esc(c.email)+'</a>':'')
       +(c.phone?'<a class="btn" href="tel:'+esc(c.phone)+'" onclick="event.stopPropagation()">📞 '+esc(c.phone)+'</a>':'')
       +(c.has_cv && c.cv_url?'<button class="btn" onclick="event.stopPropagation();openBestand(\''+esc(c.cv_url)+'\')">📄 CV openen</button>':'')
+      +(c.has_cv && !c.cv_parsed?'<button class="btn" onclick="event.stopPropagation();parseCv(\''+esc(c.id)+'\',\''+esc(c.cv_url||'')+'\',this)">🧠 CV uitlezen</button>':'')
       +'<button class="btn" onclick="event.stopPropagation();presentatieCv(\''+esc(c.id)+'\')">👁 Presentatie-CV</button>'
       +'<button class="btn" onclick="event.stopPropagation();openNotitie(\''+esc(c.id)+'\')">'+(c.recruiter_notitie?'✎ Toelichting bewerken':'+ Toelichting toevoegen')+'</button>'
       +'</div></div>';
@@ -1074,6 +1079,72 @@ function renderCandidateDetail(d){
     +'</dl>';
   if(c.screening_summary){ body += '<h4>AI Screening</h4><div class="summary">'+esc(c.screening_summary)+'</div>'; }
   if(c.recruiter_notitie){ body += '<h4>Recruiter notitie</h4><div class="notitie">'+esc(c.recruiter_notitie)+'</div>'; }
+
+  // Try fetch parsed CV data
+  if(c.id){
+    body += '<div id="cv-parsed-section"></div>';
+    api('cv-parsed-data', { id: c.id }).then(function(pd){
+      var sec = document.getElementById('cv-parsed-section');
+      if(!sec) return;
+      if(!pd || pd.error){
+        sec.innerHTML = '<h4>🧠 Uitgelezen CV-data</h4><div class="empty" style="padding:16px;">CV is nog niet uitgelezen. AI parser draait elke 4 uur automatisch, of klik "🧠 CV uitlezen" in de actie-balk.</div>';
+        return;
+      }
+      var html = '<h4>🧠 Uitgelezen CV-data <span style="font-weight:400;font-size:11px;color:var(--muted);">· '+esc(pd.parser_model||'')+' v'+esc(pd.parser_version||'')+' · '+fmtDateTime(pd.parsed_at)+'</span></h4>';
+      if(pd.parse_confidence!=null){
+        var confColor = pd.parse_confidence>=70?'var(--green)':(pd.parse_confidence>=40?'var(--amber)':'var(--red)');
+        html += '<div style="background:'+confColor+'15;border-left:3px solid '+confColor+';padding:10px 14px;border-radius:8px;font-size:13.5px;margin-bottom:14px;"><b>Parse confidence:</b> '+pd.parse_confidence+'% — '+(pd.parse_confidence>=70?'CV was compleet en duidelijk':pd.parse_confidence>=40?'CV had wat onduidelijkheden':'CV onvolledig, review aanbevolen')+'</div>';
+      }
+      if(pd.profile_summary){
+        html += '<div class="summary">'+esc(pd.profile_summary)+'</div>';
+      }
+      var facts = [];
+      if(pd.years_experience!=null) facts.push('<dt>Ervaring</dt><dd>'+pd.years_experience+' jaar</dd>');
+      if(pd.current_position) facts.push('<dt>Huidige rol</dt><dd>'+esc(pd.current_position)+'</dd>');
+      if(pd.availability) facts.push('<dt>Beschikbaarheid</dt><dd>'+esc(pd.availability)+'</dd>');
+      if(pd.remote_preference) facts.push('<dt>Locatie</dt><dd>'+esc(pd.remote_preference)+'</dd>');
+      if(facts.length) html += '<dl>'+facts.join('')+'</dl>';
+
+      function pills(arr, cls){
+        if(!arr || !arr.length) return '';
+        return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">'+arr.map(function(s){return '<span class="badge '+(cls||'b-new')+'" style="font-size:11.5px;">'+esc(s)+'</span>';}).join('')+'</div>';
+      }
+
+      if(pd.hard_skills && pd.hard_skills.length){
+        html += '<h4 style="margin-top:18px;font-size:12px;">Vakkennis</h4>'+pills(pd.hard_skills, 'b-active');
+      }
+      if(pd.tools_software && pd.tools_software.length){
+        html += '<h4 style="margin-top:14px;font-size:12px;">Tools / software</h4>'+pills(pd.tools_software, 'b-new');
+      }
+      if(pd.certificates && pd.certificates.length){
+        html += '<h4 style="margin-top:14px;font-size:12px;">Certificaten</h4>'+pills(pd.certificates, 'b-pending');
+      }
+      if(pd.drivers_licenses && pd.drivers_licenses.length){
+        html += '<h4 style="margin-top:14px;font-size:12px;">Rijbewijzen</h4>'+pills(pd.drivers_licenses, 'b-active');
+      }
+      if(pd.languages && pd.languages.length){
+        html += '<h4 style="margin-top:14px;font-size:12px;">Talen</h4><dl>'+pd.languages.map(function(l){
+          return '<dt>'+esc(l.language||'')+'</dt><dd>'+esc(l.level||'')+'</dd>';
+        }).join('')+'</dl>';
+      }
+      if(pd.experience && pd.experience.length){
+        html += '<h4 style="margin-top:18px;font-size:12px;">Werkervaring</h4>';
+        pd.experience.forEach(function(j){
+          html += '<div class="card" style="cursor:default;margin-bottom:8px;"><div class="title" style="font-size:14px;">'+esc(j.title||'')+' · '+esc(j.company||'')+'</div><div class="sub">'+esc(j.period||'')+(j.location?' · '+esc(j.location):'')+'</div>'+(j.description?'<div class="meta" style="margin-top:6px;font-size:13px;">'+esc(j.description)+'</div>':'')+'</div>';
+        });
+      }
+      if(pd.education && pd.education.length){
+        html += '<h4 style="margin-top:14px;font-size:12px;">Opleiding</h4>';
+        pd.education.forEach(function(e){
+          html += '<div class="card" style="cursor:default;margin-bottom:6px;"><div class="title" style="font-size:13.5px;">'+esc(e.degree||'')+'</div><div class="sub">'+esc(e.institution||'')+(e.period?' · '+esc(e.period):'')+'</div></div>';
+        });
+      }
+      if(pd.parse_warnings && pd.parse_warnings.length){
+        html += '<div style="background:#FFF1D6;border-left:3px solid var(--amber);padding:10px 14px;border-radius:8px;font-size:13px;margin-top:14px;"><b>⚠ Review nodig:</b> '+pd.parse_warnings.map(esc).join(', ')+'</div>';
+      }
+      sec.innerHTML = html;
+    });
+  }
   if(d.matches && d.matches.length){
     body += '<h4>Matches ('+d.matches.length+')</h4><div class="list">';
     d.matches.forEach(function(m){
@@ -1224,6 +1295,25 @@ function matchAction(matchId, act, btn){
       if(btn){ btn.disabled=false; btn.textContent=act==='approve'?'✓ Goedkeuren':'✗ Afwijzen'; }
       alert('Actie mislukt: ' + (d && d.error || 'onbekende fout'));
     }
+  });
+}
+
+function parseCv(candidateId, cvUrl, btn){
+  if(!candidateId){ alert('Geen kandidaat-ID'); return; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Wordt uitgelezen…'; }
+  fetch('https://hollandrecruitment.app.n8n.cloud/webhook/parse-cv', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ candidate_id: candidateId, cv_url: cvUrl })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if(btn){ btn.textContent = '✓ Uitlezen gestart'; }
+    setTimeout(function(){
+      state.loaded.kandidaten = false;
+      if(state.activeTab === 'kandidaten') loadTab('kandidaten');
+    }, 60000);
+    alert('CV wordt uitgelezen door AI. Refresh over 1 minuut om resultaat te zien.');
+  }).catch(function(err){
+    if(btn){ btn.disabled = false; btn.textContent = '🧠 CV uitlezen'; }
+    alert('Kon CV niet uitlezen. Workflow "HR — CV Parser Agent" actief?');
   });
 }
 
