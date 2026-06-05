@@ -309,6 +309,29 @@ button{font-family:inherit;cursor:pointer;}
     <div id="view-social" class="view">
       <div class="stats" id="social-stats-cards" style="margin-bottom:18px;"></div>
       <div id="social-platform-bar"></div>
+      <div class="toolbar">
+        <input type="search" id="f-soc-search" placeholder="Zoek op topic, content…" oninput="renderSocial()">
+        <select id="f-soc-platform" onchange="renderSocial()">
+          <option value="">Alle platforms</option>
+          <option value="instagram">🟣 Instagram</option>
+          <option value="facebook_page">🔵 Facebook</option>
+          <option value="linkedin">💼 LinkedIn</option>
+        </select>
+        <select id="f-soc-status" onchange="renderSocial()">
+          <option value="">Alle statussen</option>
+          <option value="posted">Live (posted)</option>
+          <option value="queued">In wachtrij</option>
+          <option value="approved">Goedgekeurd</option>
+          <option value="draft">Concept</option>
+          <option value="failed">Mislukt</option>
+        </select>
+        <select id="f-soc-side" onchange="renderSocial()">
+          <option value="">Alle doelgroepen</option>
+          <option value="algemeen">Algemeen</option>
+          <option value="kandidaat">Kandidaat</option>
+          <option value="werkgever">Werkgever</option>
+        </select>
+      </div>
       <div id="list-social-posts" class="list"></div>
     </div>
 
@@ -433,6 +456,7 @@ var state = {
   alerts: { margin_alerts: [], monitor_findings: [], avg_requests: [] },
   emails: [],
   blogs: [],
+  social: [],
   emailStats: null,
   loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false },
   activeTab: 'overzicht',
@@ -567,10 +591,11 @@ function loadTab(t){
 function loadSocial(){
   document.getElementById('social-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
   document.getElementById('list-social-posts').innerHTML = '<div class="loader"></div>';
-  api('list-social-posts', { limit: 30 }).then(function(d){
+  api('list-social-posts', { limit: 100 }).then(function(d){
     state.loaded.social = true;
+    state.social = extractItems(d);
     var stats = (d && d.stats) || {};
-    var posts = extractItems(d);
+    var posts = state.social;
     document.getElementById('c-social').textContent = stats.total_all || posts.length || '·';
     var cards = [
       { label:'Posts vandaag', val: stats.posted_24h || 0, sub: 'live op FB + IG', cls: (stats.posted_24h>0?'ok':'') },
@@ -592,30 +617,49 @@ function loadSocial(){
       + '<span style="margin-left:auto;color:var(--muted);">Totaal in DB: <b>'+totalAll+'</b> · failed: '+(stats.failed||0)+'</span>'
       + '</div></div>';
     document.getElementById('social-platform-bar').innerHTML = platBar;
-    if(!posts.length){
-      var msg = totalAll === 0
-        ? '<div class="empty"><b>Geen posts in social_posts tabel.</b><br><span style="color:var(--muted);font-size:13px;">Mogelijk: (1) Generator heeft nog niet gedraaid · (2) Handmatige IG-launch-posts zijn niet door Metrics Collector ingelezen. Trigger n8n workflow <b>Metrics Collector</b> handmatig om bestaande IG-posts te importeren.</span></div>'
-        : '<div class="empty">Tabel heeft '+totalAll+' posts maar geen match op huidige weergave.</div>';
-      document.getElementById('list-social-posts').innerHTML = msg;
-      return;
-    }
-    var platMap = {'instagram':'🟣 Instagram','facebook_page':'🔵 Facebook','linkedin':'💼 LinkedIn'};
-    document.getElementById('list-social-posts').innerHTML = posts.map(function(p){
-      return '<div class="card" style="cursor:default;">'
-        +'<div class="top"><div><div class="title">'+esc(platMap[p.platform]||p.platform||'?')+' · '+esc(p.topic||'(geen topic)')+'</div>'
-        +'<div class="sub">'+(p.posted_at?'📤 '+fmtDateTime(p.posted_at):'⏳ '+(p.status||'?'))+(p.ai_model_used?' · '+esc(p.ai_model_used):'')+'</div></div>'
-        +'<div class="right"><span class="badge '+badgeClass(p.status)+'">'+esc(p.status||'?')+'</span></div></div>'
-        +(p.content?'<div class="summary">'+esc(p.content)+'</div>':'')
-        +'<div class="meta">'
-        +(p.reach?'<span><b>Reach:</b> '+p.reach+'</span>':'')
-        +(p.likes!=null?'<span>❤ '+p.likes+'</span>':'')
-        +(p.comments!=null?'<span>💬 '+p.comments+'</span>':'')
-        +(p.shares!=null?'<span>🔁 '+p.shares+'</span>':'')
-        +(p.engagement_rate!=null?'<span><b>Engagement:</b> '+p.engagement_rate+'%</span>':'')
-        +(p.post_url?'<span><a href="'+esc(p.post_url)+'" target="_blank" style="color:var(--blue);">→ Open post</a></span>':'')
-        +'</div></div>';
-    }).join('');
+    renderSocial();
   });
+}
+
+function renderSocial(){
+  var posts = state.social || [];
+  var qEl = document.getElementById('f-soc-search'); var q = (qEl && qEl.value || '').toLowerCase().trim();
+  var pEl = document.getElementById('f-soc-platform'); var pf = (pEl && pEl.value || '');
+  var sEl = document.getElementById('f-soc-status'); var st = (sEl && sEl.value || '');
+  var sdEl = document.getElementById('f-soc-side'); var sd = (sdEl && sdEl.value || '');
+  var filtered = posts.filter(function(p){
+    if(pf && p.platform !== pf) return false;
+    if(st && p.status !== st) return false;
+    if(sd && p.side !== sd) return false;
+    if(q){
+      var hay = ((p.topic||'')+' '+(p.content||'')).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  if(!filtered.length){
+    var msg = posts.length === 0
+      ? '<div class="empty"><b>Geen posts in social_posts tabel.</b><br><span style="color:var(--muted);font-size:13px;">Mogelijk: (1) Generator heeft nog niet gedraaid · (2) Handmatige IG-launch-posts zijn niet door Metrics Collector ingelezen.</span></div>'
+      : '<div class="empty">'+posts.length+' posts in DB, maar geen match op huidige filter.</div>';
+    document.getElementById('list-social-posts').innerHTML = msg;
+    return;
+  }
+  var platMap = {'instagram':'🟣 Instagram','facebook_page':'🔵 Facebook','linkedin':'💼 LinkedIn'};
+  document.getElementById('list-social-posts').innerHTML = filtered.map(function(p){
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top"><div><div class="title">'+esc(platMap[p.platform]||p.platform||'?')+' · '+esc(p.topic||'(geen topic)')+'</div>'
+      +'<div class="sub">'+(p.posted_at?'📤 '+fmtDateTime(p.posted_at):'⏳ '+(p.status||'?'))+(p.ai_model_used?' · '+esc(p.ai_model_used):'')+(p.side?' · 🎯 '+esc(p.side):'')+'</div></div>'
+      +'<div class="right"><span class="badge '+badgeClass(p.status)+'">'+esc(p.status||'?')+'</span></div></div>'
+      +(p.content?'<div class="summary">'+esc(p.content)+'</div>':'')
+      +'<div class="meta">'
+      +(p.reach?'<span><b>Reach:</b> '+p.reach+'</span>':'')
+      +(p.likes!=null?'<span>❤ '+p.likes+'</span>':'')
+      +(p.comments!=null?'<span>💬 '+p.comments+'</span>':'')
+      +(p.shares!=null?'<span>🔁 '+p.shares+'</span>':'')
+      +(p.engagement_rate!=null?'<span><b>Engagement:</b> '+p.engagement_rate+'%</span>':'')
+      +(p.post_url?'<span><a href="'+esc(p.post_url)+'" target="_blank" style="color:var(--blue);">→ Open post</a></span>':'')
+      +'</div></div>';
+  }).join('');
 }
 
 function loadBlogs(){
@@ -740,11 +784,12 @@ function loadTrends(){
       return;
     }
     document.getElementById('list-trends').innerHTML = insights.map(function(i){
-      var conf = i.confidence ? Math.round(i.confidence*100)+'%' : '?';
+      var conf = i.confidence != null ? Math.round(i.confidence)+'%' : '?';
+      var confNum = i.confidence != null ? i.confidence : 0;
       return '<div class="card" style="cursor:default;">'
         +'<div class="top"><div><div class="title">'+esc(i.insight_type||'insight')+'</div>'
         +'<div class="sub">Confidence: '+conf+(i.sample_size?' · sample n='+i.sample_size:'')+'</div></div>'
-        +'<div class="right"><span class="badge '+(i.confidence>=0.7?'b-active':i.confidence>=0.4?'b-pending':'b-neutral')+'">'+conf+'</span></div></div>'
+        +'<div class="right"><span class="badge '+(confNum>=70?'b-active':confNum>=40?'b-pending':'b-neutral')+'">'+conf+'</span></div></div>'
         +(i.insight?'<div class="summary">'+esc(i.insight)+'</div>':'')
         +(i.recommendation?'<div class="notitie"><b>Aanbeveling:</b> '+esc(i.recommendation)+'</div>':'')
         +'<div class="meta"><span>'+fmtDateTime(i.created_at)+'</span></div>'
