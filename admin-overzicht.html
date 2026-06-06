@@ -192,6 +192,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="trends" onclick="switchTab('trends')">🔍 Trends <span class="count" id="c-trends">·</span></button>
       <button class="tab" data-tab="blogs" onclick="switchTab('blogs')">📝 Blogs <span class="count" id="c-blog">·</span></button>
       <button class="tab" data-tab="engagement" onclick="switchTab('engagement')">💬 Engagement <span class="count" id="c-eng">·</span></button>
+      <button class="tab" data-tab="hashtags" onclick="switchTab('hashtags')">#️⃣ Hashtags <span class="count" id="c-htag">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -396,6 +397,27 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-engagement" class="list"></div>
     </div>
 
+    <!-- View: Hashtag Strategy (Agent #287w) -->
+    <div id="view-hashtags" class="view">
+      <div class="stats" id="htag-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <select id="f-htag-platform" onchange="renderHashtags()">
+          <option value="">Alle platforms</option>
+          <option value="instagram">🟣 Instagram</option>
+          <option value="facebook_page">🔵 Facebook</option>
+        </select>
+        <select id="f-htag-strategy" onchange="renderHashtags()">
+          <option value="">Alle strategieën</option>
+          <option value="volume">Volume</option>
+          <option value="niche">Niche</option>
+          <option value="location">Locatie</option>
+          <option value="brand">Brand</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+      <div id="list-hashtags" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -486,8 +508,9 @@ var state = {
   blogs: [],
   social: [],
   engagement: [],
+  hashtags: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -616,7 +639,67 @@ function loadTab(t){
     loadBlogs();
   } else if(t==='engagement'){
     loadEngagement();
+  } else if(t==='hashtags'){
+    loadHashtags();
   }
+}
+
+function loadHashtags(){
+  document.getElementById('htag-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-hashtags').innerHTML = '<div class="loader"></div>';
+  api('hashtag-overview', { limit: 100 }).then(function(d){
+    state.loaded.hashtags = true;
+    state.hashtags = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-htag').textContent = stats.total_bundles || state.hashtags.length || '·';
+    var topRate = stats.top_bundle_engagement_rate ? stats.top_bundle_engagement_rate.toFixed(2)+'%' : '—';
+    var cards = [
+      { label:'Bundles totaal', val: stats.total_bundles || 0, sub: stats.active+' actief', cls: '' },
+      { label:'Getest in posts', val: stats.tested || 0, sub: 'min. 1× gebruikt', cls: (stats.tested>0?'ok':'') },
+      { label:'High performers', val: stats.high_performer || 0, sub: '> 2% engagement', cls: (stats.high_performer>0?'ok':'') },
+      { label:'Top bundle rate', val: topRate, sub: 'beste engagement', cls: '' }
+    ];
+    document.getElementById('htag-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    renderHashtags();
+  });
+}
+
+function renderHashtags(){
+  var list = state.hashtags || [];
+  var pEl = document.getElementById('f-htag-platform'); var pf = (pEl && pEl.value || '');
+  var sEl = document.getElementById('f-htag-strategy'); var st = (sEl && sEl.value || '');
+  var filtered = list.filter(function(b){
+    if(pf && b.platform !== pf && b.platform !== 'all') return false;
+    if(st && b.strategy_type !== st) return false;
+    return true;
+  });
+  if(!filtered.length){
+    document.getElementById('list-hashtags').innerHTML = '<div class="empty">Geen bundles met dit filter.</div>';
+    return;
+  }
+  var platMap = {'instagram':'🟣 IG','facebook_page':'🔵 FB','linkedin':'💼 LI','all':'🌐 ALL'};
+  var stratColors = {'volume':'#3b82f6','niche':'#10b981','location':'#f59e0b','brand':'#8b5cf6','mixed':'#6b7280','trending':'#ef4444'};
+  document.getElementById('list-hashtags').innerHTML = filtered.map(function(b){
+    var sc = stratColors[b.strategy_type] || '#6b7280';
+    var rateNum = b.avg_engagement_rate || 0;
+    var rateCls = rateNum >= 2 ? 'b-done' : rateNum >= 1 ? 'b-pending' : 'b-neutral';
+    var rateLabel = rateNum > 0 ? rateNum.toFixed(2)+'% engagement' : 'nog niet gemeten';
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top">'
+        +'<div><div class="title">'+esc(b.name)+' · '+(platMap[b.platform]||b.platform)+'</div>'
+        +'<div class="sub">'+esc(b.description||'')+(b.sector?' · sector: '+esc(b.sector):'')+(b.side?' · '+esc(b.side):'')+'</div></div>'
+        +'<div class="right">'
+          +'<span class="badge" style="background:'+sc+'20;color:'+sc+';">'+esc(b.strategy_type||'?')+'</span>'
+          +'<span class="badge '+rateCls+'">'+rateLabel+'</span>'
+          +'<span class="badge b-neutral">'+(b.use_count||0)+'× gebruikt</span>'
+        +'</div>'
+      +'</div>'
+      +'<div class="summary" style="font-family:monospace;font-size:12px;background:#f4f6fb;border-radius:6px;padding:8px;">'+(b.hashtags||[]).map(function(h){return '<span style="display:inline-block;background:#fff;border:1px solid #e4e7ec;padding:2px 6px;border-radius:4px;margin:2px;">'+esc(h)+'</span>';}).join('')+'</div>'
+      +(b.total_reach || b.total_engagement ? '<div class="meta"><span><b>Totale reach:</b> '+(b.total_reach||0)+'</span><span><b>Totale engagement:</b> '+(b.total_engagement||0)+'</span></div>' : '')
+      +'</div>';
+  }).join('');
 }
 
 function loadEngagement(){
