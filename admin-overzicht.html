@@ -191,6 +191,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendar <span class="count" id="c-cal">·</span></button>
       <button class="tab" data-tab="trends" onclick="switchTab('trends')">🔍 Trends <span class="count" id="c-trends">·</span></button>
       <button class="tab" data-tab="blogs" onclick="switchTab('blogs')">📝 Blogs <span class="count" id="c-blog">·</span></button>
+      <button class="tab" data-tab="engagement" onclick="switchTab('engagement')">💬 Engagement <span class="count" id="c-eng">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -368,6 +369,33 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-blogs" class="list"></div>
     </div>
 
+    <!-- View: Engagement (Agent 2 comments + DMs) -->
+    <div id="view-engagement" class="view">
+      <div class="stats" id="eng-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <input type="search" id="f-eng-search" placeholder="Zoek op tekst, gebruiker…" oninput="renderEngagement()">
+        <select id="f-eng-platform" onchange="renderEngagement()">
+          <option value="">Alle platforms</option>
+          <option value="instagram">🟣 Instagram</option>
+          <option value="facebook_page">🔵 Facebook</option>
+        </select>
+        <select id="f-eng-type" onchange="renderEngagement()">
+          <option value="">Alle types</option>
+          <option value="comment">Comments</option>
+          <option value="dm">DMs</option>
+          <option value="mention">Mentions</option>
+        </select>
+        <select id="f-eng-action" onchange="renderEngagement()">
+          <option value="">Alle acties</option>
+          <option value="replied">Auto-reply</option>
+          <option value="escalated">Geëscaleerd</option>
+          <option value="ignored">Genegeerd</option>
+          <option value="duplicate">Duplicaat</option>
+        </select>
+      </div>
+      <div id="list-engagement" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -457,8 +485,9 @@ var state = {
   emails: [],
   blogs: [],
   social: [],
+  engagement: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -585,7 +614,85 @@ function loadTab(t){
     loadTrends();
   } else if(t==='blogs'){
     loadBlogs();
+  } else if(t==='engagement'){
+    loadEngagement();
   }
+}
+
+function loadEngagement(){
+  document.getElementById('eng-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-engagement').innerHTML = '<div class="loader"></div>';
+  api('engagement-overview', { limit: 100 }).then(function(d){
+    state.loaded.engagement = true;
+    state.engagement = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-eng').textContent = stats.total_24h || state.engagement.length || '·';
+    var avgSec = stats.avg_response_seconds || 0;
+    var avgDisplay = avgSec > 60 ? Math.round(avgSec/60)+' min' : avgSec+' sec';
+    var cards = [
+      { label:'Events 24u', val: stats.total_24h || 0, sub: 'totaal '+(stats.total_all||0)+' all-time', cls: (stats.total_24h>0?'ok':'') },
+      { label:'Auto-reply 24u', val: stats.replied_24h || 0, sub: 'AI antwoordde direct', cls: (stats.replied_24h>0?'ok':'') },
+      { label:'Geëscaleerd 24u', val: stats.escalated_24h || 0, sub: 'wacht op jouw input', cls: (stats.escalated_24h>0?'warn':'') },
+      { label:'Gem. responstijd', val: avgDisplay, sub: stats.comments_all+' comments · '+stats.dms_all+' DMs', cls: '' }
+    ];
+    document.getElementById('eng-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    renderEngagement();
+  });
+}
+
+function renderEngagement(){
+  var list = state.engagement || [];
+  var qEl = document.getElementById('f-eng-search'); var q = (qEl && qEl.value || '').toLowerCase().trim();
+  var pEl = document.getElementById('f-eng-platform'); var pf = (pEl && pEl.value || '');
+  var tEl = document.getElementById('f-eng-type'); var typ = (tEl && tEl.value || '');
+  var aEl = document.getElementById('f-eng-action'); var act = (aEl && aEl.value || '');
+  var filtered = list.filter(function(e){
+    if(pf && e.platform !== pf) return false;
+    if(typ && e.event_type !== typ) return false;
+    if(act && e.agent_action !== act) return false;
+    if(q){
+      var hay = ((e.incoming_text||'')+' '+(e.reply_text||'')+' '+(e.external_user_name||'')).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  if(!filtered.length){
+    var msg = list.length === 0
+      ? '<div class="empty"><b>Geen engagement events nog.</b><br><span style="color:var(--muted);font-size:13px;">Agent 2 wacht op Meta webhook events. Productie data komt pas na Meta App Live mode (#180) + Page Subscription activatie (#312).</span></div>'
+      : '<div class="empty">'+list.length+' events totaal, geen match op filter.</div>';
+    document.getElementById('list-engagement').innerHTML = msg;
+    return;
+  }
+  var platMap = {'instagram':'🟣 IG','facebook_page':'🔵 FB'};
+  var typeMap = {'comment':'💬 Comment','dm':'📨 DM','mention':'@ Mention','story_reply':'📸 Story reply'};
+  var actionBadge = {
+    'replied':   {cls:'b-done', label:'AI antwoordde'},
+    'escalated': {cls:'b-rejected', label:'Geëscaleerd'},
+    'ignored':   {cls:'b-neutral', label:'Genegeerd'},
+    'duplicate': {cls:'b-neutral', label:'Duplicaat'},
+    'blocked':   {cls:'b-rejected', label:'Geblokkeerd'}
+  };
+  document.getElementById('list-engagement').innerHTML = filtered.map(function(e){
+    var ab = actionBadge[e.agent_action] || {cls:'b-neutral', label:e.agent_action||'?'};
+    var cl = e.classification || {};
+    var sentEmoji = cl.sentiment === 'positive' ? '😊' : cl.sentiment === 'negative' ? '😟' : '😐';
+    var riskColor = cl.brand_risk === 'high' ? 'var(--red)' : cl.brand_risk === 'medium' ? 'var(--amber)' : 'var(--green)';
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top">'
+        +'<div><div class="title">'+(platMap[e.platform]||e.platform)+' · '+(typeMap[e.event_type]||e.event_type)+(e.external_user_name?' · van <b>'+esc(e.external_user_name)+'</b>':'')+'</div>'
+        +'<div class="sub">'+fmtDateTime(e.processed_at)+(e.ai_model_used?' · '+esc(e.ai_model_used):'')+'</div></div>'
+        +'<div class="right"><span class="badge '+ab.cls+'">'+ab.label+'</span>'
+        +(cl.sentiment?'<span class="badge b-neutral">'+sentEmoji+' '+esc(cl.sentiment)+'</span>':'')
+        +(cl.brand_risk?'<span class="badge" style="background:'+riskColor+'20;color:'+riskColor+';">risk: '+esc(cl.brand_risk)+'</span>':'')
+        +'</div>'
+      +'</div>'
+      +'<div class="summary"><b>Inkomend:</b> '+esc(e.incoming_text || '(leeg)')+'</div>'
+      +(e.reply_text?'<div class="summary" style="background:var(--blue)10;border-left:3px solid var(--blue);"><b>Sanne antwoordde:</b> '+esc(e.reply_text)+'</div>':'')
+      +(e.escalation_reason?'<div class="meta"><span style="color:var(--amber);"><b>Reden escalatie:</b> '+esc(e.escalation_reason)+'</span></div>':'')
+      +'</div>';
+  }).join('');
 }
 
 function loadSocial(){
