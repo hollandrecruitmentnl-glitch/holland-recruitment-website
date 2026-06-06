@@ -193,6 +193,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="blogs" onclick="switchTab('blogs')">📝 Blogs <span class="count" id="c-blog">·</span></button>
       <button class="tab" data-tab="engagement" onclick="switchTab('engagement')">💬 Engagement <span class="count" id="c-eng">·</span></button>
       <button class="tab" data-tab="hashtags" onclick="switchTab('hashtags')">#️⃣ Hashtags <span class="count" id="c-htag">·</span></button>
+      <button class="tab" data-tab="carousels" onclick="switchTab('carousels')">🎠 Carousels <span class="count" id="c-car">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -418,6 +419,12 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-hashtags" class="list"></div>
     </div>
 
+    <!-- View: Carousels (Agent #287y) -->
+    <div id="view-carousels" class="view">
+      <div class="stats" id="car-stats-cards" style="margin-bottom:18px;"></div>
+      <div id="list-carousels" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -509,8 +516,9 @@ var state = {
   social: [],
   engagement: [],
   hashtags: [],
+  carousels: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -641,7 +649,53 @@ function loadTab(t){
     loadEngagement();
   } else if(t==='hashtags'){
     loadHashtags();
+  } else if(t==='carousels'){
+    loadCarousels();
   }
+}
+
+function loadCarousels(){
+  document.getElementById('car-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-carousels').innerHTML = '<div class="loader"></div>';
+  api('carousel-overview', { limit: 30 }).then(function(d){
+    state.loaded.carousels = true;
+    var items = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-car').textContent = stats.total_templates || items.length || '·';
+    var cards = [
+      { label:'Templates totaal', val: stats.total_templates || 0, sub: stats.external_seeds + ' externe seeds', cls: '' },
+      { label:'Hybrid (extern+intern)', val: stats.hybrid || 0, sub: '70/30 blended', cls: (stats.hybrid>0?'ok':'') },
+      { label:'Getest in productie', val: stats.tested_in_production || 0, sub: 'min. 1× gebruikt', cls: '' },
+      { label:'Top template', val: stats.best_score || '—', sub: stats.top_template || '—', cls: 'ok' }
+    ];
+    document.getElementById('car-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    var structColors = {'tips_list':'#3b82f6','mythbusting':'#ef4444','before_after':'#8b5cf6','comparison':'#f59e0b','how_to':'#10b981','data_story':'#06b6d4','checklist':'#84cc16','story_arc':'#ec4899','top_n':'#f97316','mistake_lesson':'#6366f1'};
+    var platMap = {'instagram':'🟣 IG','facebook_page':'🔵 FB','linkedin':'💼 LinkedIn','all':'🌐 ALL'};
+    if(!items.length){
+      document.getElementById('list-carousels').innerHTML = '<div class="empty">Geen templates — run SQL.</div>';
+      return;
+    }
+    document.getElementById('list-carousels').innerHTML = items.map(function(t){
+      var sc = structColors[t.structure_type] || '#6b7280';
+      var ds = t.data_source === 'external_research' ? '🌍 extern' : t.data_source === 'hybrid' ? '🔀 hybrid' : '📈 intern';
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top">'
+          +'<div><div class="title">'+esc(t.name)+' · '+(platMap[t.platform]||t.platform)+' · '+t.slide_count+' slides</div>'
+          +'<div class="sub">'+esc(t.description||'')+'</div></div>'
+          +'<div class="right">'
+            +'<span class="badge" style="background:'+sc+'20;color:'+sc+';">'+esc(t.structure_type)+'</span>'
+            +'<span class="badge b-active">score '+(t.performance_score||0)+'</span>'
+            +'<span class="badge b-neutral">'+ds+'</span>'
+            +'<span class="badge b-neutral">'+(t.use_count||0)+'× gebruikt</span>'
+          +'</div>'
+        +'</div>'
+        +(t.example_topic?'<div class="summary"><b>Voorbeeld topic:</b> '+esc(t.example_topic)+'</div>':'')
+        +(t.source_note?'<div class="meta"><span style="color:var(--muted);font-size:11px;">📚 '+esc(t.source_note)+'</span></div>':'')
+        +'</div>';
+    }).join('');
+  });
 }
 
 function loadHashtags(){
