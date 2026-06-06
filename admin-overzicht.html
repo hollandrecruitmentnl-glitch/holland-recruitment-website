@@ -390,8 +390,9 @@ button{font-family:inherit;cursor:pointer;}
         </select>
         <select id="f-eng-action" onchange="renderEngagement()">
           <option value="">Alle acties</option>
-          <option value="replied">Auto-reply</option>
-          <option value="escalated">Geëscaleerd</option>
+          <option value="replied">AI antwoordde</option>
+          <option value="escalated">Te risicovol — jij</option>
+          <option value="post_failed">POST faal</option>
           <option value="ignored">Genegeerd</option>
           <option value="duplicate">Duplicaat</option>
         </select>
@@ -909,11 +910,12 @@ function renderEngagement(){
   var platMap = {'instagram':'🟣 IG','facebook_page':'🔵 FB'};
   var typeMap = {'comment':'💬 Comment','dm':'📨 DM','mention':'@ Mention','story_reply':'📸 Story reply'};
   var actionBadge = {
-    'replied':   {cls:'b-done', label:'AI antwoordde'},
-    'escalated': {cls:'b-rejected', label:'Geëscaleerd'},
-    'ignored':   {cls:'b-neutral', label:'Genegeerd'},
-    'duplicate': {cls:'b-neutral', label:'Duplicaat'},
-    'blocked':   {cls:'b-rejected', label:'Geblokkeerd'}
+    'replied':     {cls:'b-done', label:'AI antwoordde'},
+    'escalated':   {cls:'b-rejected', label:'Te risicovol — jij ✏️'},
+    'post_failed': {cls:'b-pending', label:'POST faal (technisch)'},
+    'ignored':     {cls:'b-neutral', label:'Genegeerd'},
+    'duplicate':   {cls:'b-neutral', label:'Duplicaat'},
+    'blocked':     {cls:'b-rejected', label:'Geblokkeerd'}
   };
   document.getElementById('list-engagement').innerHTML = filtered.map(function(e){
     var ab = actionBadge[e.agent_action] || {cls:'b-neutral', label:e.agent_action||'?'};
