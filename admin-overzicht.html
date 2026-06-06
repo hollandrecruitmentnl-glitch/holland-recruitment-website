@@ -195,6 +195,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="hashtags" onclick="switchTab('hashtags')">#️⃣ Hashtags <span class="count" id="c-htag">·</span></button>
       <button class="tab" data-tab="carousels" onclick="switchTab('carousels')">🎠 Carousels <span class="count" id="c-car">·</span></button>
       <button class="tab" data-tab="prospects" onclick="switchTab('prospects')">🎯 Prospects <span class="count" id="c-pros">·</span></button>
+      <button class="tab" data-tab="trending" onclick="switchTab('trending')">🔥 Trending <span class="count" id="c-trend">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -453,6 +454,37 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-prospects" class="list"></div>
     </div>
 
+    <!-- View: Trending (Agent #287x Trending Topic Hijacker) -->
+    <div id="view-trending" class="view">
+      <div class="stats" id="trend-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <select id="f-trend-category" onchange="renderTrending()">
+          <option value="">Alle categorieën</option>
+          <option value="wetgeving">Wetgeving</option>
+          <option value="staking">Staking</option>
+          <option value="tarieven">Tarieven</option>
+          <option value="sector_news">Sector nieuws</option>
+          <option value="technology">Technology</option>
+          <option value="arbeidsmarkt">Arbeidsmarkt</option>
+          <option value="viral_story">Viral story</option>
+        </select>
+        <select id="f-trend-status" onchange="renderTrending()">
+          <option value="">Alle statussen</option>
+          <option value="classified">Geclassificeerd</option>
+          <option value="approved">Goedgekeurd</option>
+          <option value="reacted">Gereageerd</option>
+          <option value="rejected">Afgewezen</option>
+        </select>
+        <select id="f-trend-risk" onchange="renderTrending()">
+          <option value="">Alle brand risks</option>
+          <option value="low">Low risk</option>
+          <option value="medium">Medium risk</option>
+          <option value="high">High risk</option>
+        </select>
+      </div>
+      <div id="list-trending" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -546,8 +578,9 @@ var state = {
   hashtags: [],
   carousels: [],
   prospects: [],
+  trending: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -682,7 +715,83 @@ function loadTab(t){
     loadCarousels();
   } else if(t==='prospects'){
     loadProspects();
+  } else if(t==='trending'){
+    loadTrending();
   }
+}
+
+function loadTrending(){
+  document.getElementById('trend-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-trending').innerHTML = '<div class="loader"></div>';
+  api('trending-overview', { limit: 50 }).then(function(d){
+    state.loaded.trending = true;
+    state.trending = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-trend').textContent = stats.pending_hot || stats.total_24h || state.trending.length || '·';
+    var cards = [
+      { label:'Detected 24u', val: stats.total_24h || 0, sub: 'totaal pickups', cls: '' },
+      { label:'Hot pending', val: stats.pending_hot || 0, sub: '≥70 relevance, niet gereageerd', cls: (stats.pending_hot>0?'warn':'') },
+      { label:'Reacted ever', val: stats.reacted_total || 0, sub: 'gepubliceerd als react-post', cls: '' },
+      { label:'Last scan', val: stats.last_scan ? new Date(stats.last_scan).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}) : '—', sub: 'volgende: elke 4u', cls: '' }
+    ];
+    document.getElementById('trend-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    renderTrending();
+  });
+}
+
+function renderTrending(){
+  var list = state.trending || [];
+  var cEl = document.getElementById('f-trend-category'); var cat = (cEl && cEl.value || '');
+  var sEl = document.getElementById('f-trend-status'); var st = (sEl && sEl.value || '');
+  var rEl = document.getElementById('f-trend-risk'); var risk = (rEl && rEl.value || '');
+  var filtered = list.filter(function(t){
+    if(cat && t.topic_category !== cat) return false;
+    if(st && t.status !== st) return false;
+    if(risk && t.brand_risk !== risk) return false;
+    return true;
+  });
+  if(!filtered.length){
+    var msg = list.length === 0
+      ? '<div class="empty"><b>Nog geen trending topics.</b><br><span style="color:var(--muted);font-size:13px;">Workflow #287x scant 6 NL recruitment-bronnen elke 4u. Activeer workflow voor 1e scan.</span></div>'
+      : '<div class="empty">'+list.length+' totaal, geen match op filter.</div>';
+    document.getElementById('list-trending').innerHTML = msg;
+    return;
+  }
+  var catColors = {'wetgeving':'#8b5cf6','staking':'#ef4444','tarieven':'#f59e0b','sector_news':'#3b82f6','technology':'#06b6d4','arbeidsmarkt':'#10b981','viral_story':'#ec4899','other':'#6b7280'};
+  var riskColors = {'low':'#10b981','medium':'#f59e0b','high':'#ef4444'};
+  var urgIcon = {'now':'🔥','today':'⚡','this_week':'📅','low':'·'};
+  var statusBadge = {
+    'detected':   {cls:'b-pending', label:'Gedetecteerd'},
+    'classified': {cls:'b-active', label:'Geclassificeerd'},
+    'approved':   {cls:'b-active', label:'Goedgekeurd'},
+    'reacted':    {cls:'b-done', label:'Gereageerd ✓'},
+    'rejected':   {cls:'b-rejected', label:'Afgewezen'}
+  };
+  document.getElementById('list-trending').innerHTML = filtered.map(function(t){
+    var cc = catColors[t.topic_category] || '#6b7280';
+    var rc = riskColors[t.brand_risk] || '#6b7280';
+    var sb = statusBadge[t.status] || {cls:'b-neutral', label:t.status};
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top">'
+        +'<div><div class="title">'+(urgIcon[t.urgency]||'·')+' '+esc(t.title)+'</div>'
+        +'<div class="sub">📰 '+esc(t.source_name||'?')+' · '+fmtDateTime(t.detected_at)+(t.published_at?' · gepubliceerd '+fmtDateTime(t.published_at):'')+'</div></div>'
+        +'<div class="right">'
+          +'<span class="badge" style="background:'+cc+'20;color:'+cc+';">'+esc(t.topic_category)+'</span>'
+          +'<span class="badge b-active">score '+(t.relevance_score||0)+'</span>'
+          +'<span class="badge" style="background:'+rc+'20;color:'+rc+';">risk: '+t.brand_risk+'</span>'
+          +'<span class="badge '+sb.cls+'">'+sb.label+'</span>'
+        +'</div>'
+      +'</div>'
+      +(t.summary?'<div class="summary">'+esc(t.summary)+'</div>':'')
+      +(t.hijack_angle?'<div class="summary" style="background:#fff7ed;border-left:3px solid #f59e0b;"><b>💡 Hijack-angle:</b> '+esc(t.hijack_angle)+'</div>':'')
+      +'<div class="meta">'
+        +(t.topic_keywords && t.topic_keywords.length?'<span><b>Keywords:</b> '+t.topic_keywords.map(function(k){return '#'+esc(k);}).join(' ')+'</span>':'')
+        +(t.url?'<span><a href="'+esc(t.url)+'" target="_blank" style="color:var(--blue);">→ Bron</a></span>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
 }
 
 function loadProspects(){
