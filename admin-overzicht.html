@@ -194,6 +194,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="engagement" onclick="switchTab('engagement')">💬 Engagement <span class="count" id="c-eng">·</span></button>
       <button class="tab" data-tab="hashtags" onclick="switchTab('hashtags')">#️⃣ Hashtags <span class="count" id="c-htag">·</span></button>
       <button class="tab" data-tab="carousels" onclick="switchTab('carousels')">🎠 Carousels <span class="count" id="c-car">·</span></button>
+      <button class="tab" data-tab="prospects" onclick="switchTab('prospects')">🎯 Prospects <span class="count" id="c-pros">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -425,6 +426,32 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-carousels" class="list"></div>
     </div>
 
+    <!-- View: Prospects (Agent #287p Decision Maker Mapper) -->
+    <div id="view-prospects" class="view">
+      <div class="stats" id="pros-stats-cards" style="margin-bottom:18px;"></div>
+      <div class="toolbar">
+        <input type="search" id="f-pros-search" placeholder="Zoek op naam, KvK, stad…" oninput="renderProspects()">
+        <select id="f-pros-sector" onchange="renderProspects()">
+          <option value="">Alle sectoren</option>
+          <option value="logistiek">Logistiek</option>
+          <option value="horeca">Horeca</option>
+          <option value="zorg">Zorg</option>
+          <option value="schoonmaak">Schoonmaak</option>
+          <option value="productie">Productie</option>
+        </select>
+        <select id="f-pros-status" onchange="renderProspects()">
+          <option value="">Alle statussen</option>
+          <option value="discovered">Ontdekt</option>
+          <option value="enriching">Verrijken</option>
+          <option value="enriched">Verrijkt</option>
+          <option value="contacted">Gecontacteerd</option>
+          <option value="responded">Reageerde</option>
+          <option value="won">Gewonnen</option>
+        </select>
+      </div>
+      <div id="list-prospects" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -517,8 +544,9 @@ var state = {
   engagement: [],
   hashtags: [],
   carousels: [],
+  prospects: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -651,7 +679,83 @@ function loadTab(t){
     loadHashtags();
   } else if(t==='carousels'){
     loadCarousels();
+  } else if(t==='prospects'){
+    loadProspects();
   }
+}
+
+function loadProspects(){
+  document.getElementById('pros-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-prospects').innerHTML = '<div class="loader"></div>';
+  api('prospects-overview', { limit: 200 }).then(function(d){
+    state.loaded.prospects = true;
+    state.prospects = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-pros').textContent = stats.total || state.prospects.length || '·';
+    var topSectors = stats.by_sector_top || {};
+    var topSecLabel = Object.keys(topSectors).slice(0,2).map(function(k){return k+' ('+topSectors[k]+')';}).join(', ') || '—';
+    var cards = [
+      { label:'Prospects totaal', val: stats.total || 0, sub: 'in pipeline', cls: '' },
+      { label:'High priority', val: stats.high_priority || 0, sub: '≥70 score', cls: (stats.high_priority>0?'ok':'') },
+      { label:'Met contact-email', val: stats.with_email_contact || 0, sub: 'klaar voor outreach', cls: '' },
+      { label:'Top sectoren', val: stats.discovered || 0, sub: topSecLabel, cls: '' }
+    ];
+    document.getElementById('pros-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    renderProspects();
+  });
+}
+
+function renderProspects(){
+  var list = state.prospects || [];
+  var qEl = document.getElementById('f-pros-search'); var q = (qEl && qEl.value || '').toLowerCase().trim();
+  var sEl = document.getElementById('f-pros-sector'); var sec = (sEl && sEl.value || '');
+  var stEl = document.getElementById('f-pros-status'); var st = (stEl && stEl.value || '');
+  var filtered = list.filter(function(p){
+    if(sec && p.sector !== sec) return false;
+    if(st && p.status !== st) return false;
+    if(q){
+      var hay = ((p.name||'')+' '+(p.kvk_number||'')+' '+(p.city||'')).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  if(!filtered.length){
+    var msg = list.length === 0
+      ? '<div class="empty"><b>Nog geen prospects in DB.</b><br><span style="color:var(--muted);font-size:13px;">Workflow #287p staat in safe-mode. Activeer KvK API + manueel via n8n om eerste prospects te discoveren.</span></div>'
+      : '<div class="empty">'+list.length+' totaal, geen match op filter.</div>';
+    document.getElementById('list-prospects').innerHTML = msg;
+    return;
+  }
+  var statusBadge = {
+    'discovered': {cls:'b-neutral', label:'Ontdekt'},
+    'enriching':  {cls:'b-pending', label:'Verrijken…'},
+    'enriched':   {cls:'b-active', label:'Verrijkt'},
+    'contacted':  {cls:'b-active', label:'Gecontacteerd'},
+    'responded':  {cls:'b-active', label:'Reageerde'},
+    'meeting':    {cls:'b-done', label:'Meeting'},
+    'won':        {cls:'b-done', label:'GEWONNEN'},
+    'lost':       {cls:'b-rejected', label:'Verloren'}
+  };
+  document.getElementById('list-prospects').innerHTML = filtered.map(function(p){
+    var sb = statusBadge[p.status] || {cls:'b-neutral', label:p.status};
+    var scoreColor = p.priority_score >= 70 ? 'var(--green)' : p.priority_score >= 40 ? 'var(--amber)' : 'var(--muted)';
+    return '<div class="card" style="cursor:default;">'
+      +'<div class="top">'
+        +'<div><div class="title">'+esc(p.name)+(p.kvk_number?' · KvK '+esc(p.kvk_number):'')+'</div>'
+        +'<div class="sub">'+(p.city?'📍 '+esc(p.city):'')+(p.sector?' · '+esc(p.sector):'')+(p.size_class?' · '+esc(p.size_class)+(p.estimated_employees?' ('+p.estimated_employees+' medewerkers)':''):'')+'</div></div>'
+        +'<div class="right">'
+          +'<span class="badge" style="background:'+scoreColor+'20;color:'+scoreColor+';">score '+(p.priority_score||0)+'</span>'
+          +'<span class="badge '+sb.cls+'">'+sb.label+'</span>'
+          +(p.has_email_contact?'<span class="badge b-done">✉️ email</span>':'<span class="badge b-neutral">geen contact</span>')
+          +(p.decision_makers_count?'<span class="badge b-neutral">'+p.decision_makers_count+' DM</span>':'')
+        +'</div>'
+      +'</div>'
+      +(p.fit_reasons && p.fit_reasons.length?'<div class="meta"><span style="color:var(--muted);"><b>Match-redenen:</b> '+p.fit_reasons.join(', ')+'</span></div>':'')
+      +(p.website?'<div class="meta"><span><a href="'+esc(p.website)+'" target="_blank" style="color:var(--blue);">→ '+esc(p.website)+'</a></span></div>':'')
+      +'</div>';
+  }).join('');
 }
 
 function loadCarousels(){
