@@ -196,6 +196,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="carousels" onclick="switchTab('carousels')">🎠 Carousels <span class="count" id="c-car">·</span></button>
       <button class="tab" data-tab="prospects" onclick="switchTab('prospects')">🎯 Prospects <span class="count" id="c-pros">·</span></button>
       <button class="tab" data-tab="trending" onclick="switchTab('trending')">🔥 Trending <span class="count" id="c-trend">·</span></button>
+      <button class="tab" data-tab="triggers" onclick="switchTab('triggers')">💾 Triggers <span class="count" id="c-trig">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -485,6 +486,12 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-trending" class="list"></div>
     </div>
 
+    <!-- View: Save/Share Triggers (Agent #287ab) -->
+    <div id="view-triggers" class="view">
+      <div class="stats" id="trig-stats-cards" style="margin-bottom:18px;"></div>
+      <div id="list-triggers" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -579,8 +586,9 @@ var state = {
   carousels: [],
   prospects: [],
   trending: [],
+  triggers: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -717,7 +725,50 @@ function loadTab(t){
     loadProspects();
   } else if(t==='trending'){
     loadTrending();
+  } else if(t==='triggers'){
+    loadTriggers();
   }
+}
+
+function loadTriggers(){
+  document.getElementById('trig-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-triggers').innerHTML = '<div class="loader"></div>';
+  api('triggers-overview', { limit: 30 }).then(function(d){
+    state.loaded.triggers = true;
+    state.triggers = extractItems(d);
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-trig').textContent = stats.total_triggers || state.triggers.length || '·';
+    var cards = [
+      { label:'Triggers totaal', val: stats.total_triggers || 0, sub: stats.external_seeds + ' research seeds', cls: '' },
+      { label:'Best save rate', val: (stats.best_save_rate||0)+'%', sub: 'algoritme-killer-metric', cls: (stats.best_save_rate>0?'ok':'') },
+      { label:'Best share rate', val: (stats.best_share_rate||0)+'%', sub: 'shares wegen 5×', cls: (stats.best_share_rate>0?'ok':'') },
+      { label:'Top trigger', val: stats.best_score || '—', sub: stats.top_trigger || '—', cls: 'ok' }
+    ];
+    document.getElementById('trig-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+    if(!state.triggers.length){ document.getElementById('list-triggers').innerHTML='<div class="empty">Geen triggers. Run SQL.</div>'; return; }
+    var typeColors = {'save_bait':'#10b981','share_bait':'#3b82f6','utility_save':'#84cc16','utility_share':'#06b6d4','emotional_share':'#ec4899','controversial':'#ef4444','data_visual':'#8b5cf6','list_format':'#f59e0b','quote_card':'#6366f1','mistake_warning':'#dc2626'};
+    document.getElementById('list-triggers').innerHTML = state.triggers.map(function(t){
+      var tc = typeColors[t.trigger_type] || '#6b7280';
+      var ds = t.data_source === 'external_research' ? '🌍 extern' : t.data_source === 'hybrid' ? '🔀 hybrid' : '📈 intern';
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top">'
+          +'<div><div class="title">'+esc(t.name)+'</div>'
+          +'<div class="sub">'+esc(t.description||'')+'</div></div>'
+          +'<div class="right">'
+            +'<span class="badge" style="background:'+tc+'20;color:'+tc+';">'+esc(t.trigger_type)+'</span>'
+            +'<span class="badge b-active">score '+(t.performance_score||0)+'</span>'
+            +'<span class="badge b-neutral">'+ds+'</span>'
+            +'<span class="badge b-neutral">'+(t.use_count||0)+'× gebruikt</span>'
+          +'</div>'
+        +'</div>'
+        +(t.example_hook?'<div class="summary"><b>💡 Hook:</b> '+esc(t.example_hook)+'</div>':'')
+        +(t.cta_template?'<div class="meta"><span style="color:var(--blue);"><b>CTA:</b> "'+esc(t.cta_template)+'"</span></div>':'')
+        +(t.source_note?'<div class="meta"><span style="color:var(--muted);font-size:11px;">📚 '+esc(t.source_note)+'</span></div>':'')
+        +'</div>';
+    }).join('');
+  });
 }
 
 function loadTrending(){
