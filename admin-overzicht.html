@@ -199,6 +199,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="triggers" onclick="switchTab('triggers')">💾 Triggers <span class="count" id="c-trig">·</span></button>
       <button class="tab" data-tab="conversion" onclick="switchTab('conversion')">🎯 Conversie <span class="count" id="c-conv">·</span></button>
       <button class="tab" data-tab="guardian" onclick="switchTab('guardian')">🛡️ Guardian <span class="count" id="c-guard">·</span></button>
+      <button class="tab" data-tab="quality" onclick="switchTab('quality')">✨ Quality <span class="count" id="c-qual">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -514,6 +515,15 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-guardian-patterns" class="list"></div>
     </div>
 
+    <!-- View: Quality Monitor (#206) -->
+    <div id="view-quality" class="view">
+      <div class="stats" id="qual-stats-cards" style="margin-bottom:18px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">🛡️ Recente audits (laatste 30 dagen)</h2>
+      <div id="list-quality-audits" class="list"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--blue);">📚 Quality patterns (19 research-grounded)</h2>
+      <div id="list-quality-patterns" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -611,8 +621,9 @@ var state = {
   triggers: [],
   conversion: [],
   guardian: { events: [], patterns: [] },
+  quality: { audits: [], patterns: [] },
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false, conversion:false, guardian:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false, conversion:false, guardian:false, quality:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -755,6 +766,8 @@ function loadTab(t){
     loadConversion();
   } else if(t==='guardian'){
     loadGuardian();
+  } else if(t==='quality'){
+    loadQuality();
   }
 }
 
@@ -876,6 +889,75 @@ function loadConversion(){
         +'<div class="meta"><span style="color:var(--blue);font-size:12px;"><b>CTA:</b> "'+esc(p.primary_cta_text||'')+'"</span></div>'
       +'</div>';
     }).join('');
+  });
+}
+
+function loadQuality(){
+  document.getElementById('qual-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-quality-audits').innerHTML = '<div class="loader"></div>';
+  document.getElementById('list-quality-patterns').innerHTML = '<div class="loader"></div>';
+  api('quality-overview', { days: 30 }).then(function(d){
+    state.loaded.quality = true;
+    state.quality.audits = (d && d.recent_audits) || [];
+    state.quality.patterns = (d && d.patterns) || [];
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-qual').textContent = stats.blocked || stats.needs_review || '·';
+
+    var cards = [
+      { label:'Audits 30d', val: stats.total_audits || 0, sub: 'totaal gecontroleerd', cls: '' },
+      { label:'Blocked', val: stats.blocked || 0, sub: 'auto-stopped vóór publish', cls: stats.blocked > 0 ? 'crit' : 'ok' },
+      { label:'Avg score', val: (stats.avg_score || 0)+'/100', sub: 'gemiddelde quality score', cls: stats.avg_score >= 80 ? 'ok' : (stats.avg_score >= 60 ? 'warn' : 'crit') },
+      { label:'Block-rate %', val: (stats.block_rate_pct || 0)+'%', sub: stats.human_overrides+' founder overrides', cls: '' }
+    ];
+    document.getElementById('qual-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+
+    if(!state.quality.audits.length){
+      document.getElementById('list-quality-audits').innerHTML = '<div class="empty"><b>Geen audits yet.</b><br><span style="color:var(--muted);font-size:13px;">Quality Monitor scant elke 2 uur nieuwe social_posts. Zodra Generator/Trend/Strategy een post produceert wordt deze auto-geaudit.</span></div>';
+    } else {
+      var decisionColors = {'allow':'#10b981','allow_with_notes':'#84cc16','needs_review':'#f59e0b','block':'#dc2626'};
+      document.getElementById('list-quality-audits').innerHTML = state.quality.audits.map(function(a){
+        var dc = decisionColors[a.decision] || '#6b7280';
+        var blockers = (a.blockers && Array.isArray(a.blockers) && a.blockers.length) ? '<div class="meta" style="color:#dc2626;font-size:11px;"><b>Blockers:</b> ' + a.blockers.slice(0,3).map(esc).join(' · ') + '</div>' : '';
+        var warnings = (a.warnings && Array.isArray(a.warnings) && a.warnings.length) ? '<div class="meta" style="color:#f59e0b;font-size:11px;"><b>Warnings:</b> ' + a.warnings.slice(0,3).map(esc).join(' · ') + '</div>' : '';
+        var preview = a.post_content ? '<div class="summary">"'+esc(a.post_content.substring(0,180))+(a.post_content.length>180?'…':'')+'"</div>' : '';
+        return '<div class="card" style="cursor:default;">'
+          +'<div class="top">'
+            +'<div><div class="title">Score '+a.total_score+'/100 · '+esc(a.platform)+'</div>'
+            +'<div class="sub" style="font-size:11px;color:#6b7280;">brand '+a.brand_score+' · content '+a.content_score+' · design '+a.design_score+' · compliance '+a.compliance_score+' · '+new Date(a.created_at).toLocaleString('nl-NL')+'</div></div>'
+            +'<div class="right">'
+              +'<span class="badge" style="background:'+dc+'20;color:'+dc+';font-weight:700;">'+esc(a.decision.toUpperCase().replace(/_/g,' '))+'</span>'
+              +(a.human_overridden ? '<span class="badge b-active">👤 overridden</span>' : '')
+            +'</div>'
+          +'</div>'
+          +preview+blockers+warnings
+        +'</div>';
+      }).join('');
+    }
+
+    if(!state.quality.patterns.length){
+      document.getElementById('list-quality-patterns').innerHTML = '<div class="empty">Geen patterns geseed.</div>';
+    } else {
+      var typeColors = {'brand':'#003366','content':'#3b82f6','design':'#8b5cf6','compliance':'#dc2626'};
+      var sevColors = {'block':'#dc2626','warn':'#f59e0b','note':'#6b7280'};
+      document.getElementById('list-quality-patterns').innerHTML = state.quality.patterns.map(function(p){
+        var tc = typeColors[p.pattern_type] || '#6b7280';
+        var sc = sevColors[p.severity] || '#6b7280';
+        return '<div class="card" style="cursor:default;">'
+          +'<div class="top">'
+            +'<div><div class="title">'+esc(p.rule_name)+'</div>'
+            +'<div class="sub">'+esc(p.source_note || '')+'</div></div>'
+            +'<div class="right">'
+              +'<span class="badge" style="background:'+tc+'20;color:'+tc+';">'+esc(p.pattern_type)+'</span>'
+              +'<span class="badge" style="background:'+sc+'20;color:'+sc+';">'+esc(p.severity)+'</span>'
+              +'<span class="badge b-neutral">'+(p.triggered_count || 0)+'× triggered</span>'
+              +(p.fp_rate_pct > 0 ? '<span class="badge b-neutral">FP '+p.fp_rate_pct+'%</span>' : '')
+            +'</div>'
+          +'</div>'
+        +'</div>';
+      }).join('');
+    }
   });
 }
 
