@@ -356,6 +356,30 @@ section{position:relative;}
 
 
 <style>
+/* MISSING classes from live voor-werkgevers — defensive defaults */
+.two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:start;}
+@media (max-width:880px){.two-col{grid-template-columns:1fr;gap:28px;}}
+
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+.card-stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;transition:transform .3s ease, box-shadow .3s ease;}
+.card-stat:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(53,81,230,.08);}
+.card-stat .num{font-family:Poppins,sans-serif;font-size:1.7rem;font-weight:700;color:var(--blue);line-height:1.1;}
+.card-stat .lbl{color:var(--muted);font-size:.88rem;margin-top:6px;line-height:1.4;}
+
+.wijk-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;}
+.wijk-card .bic{width:48px;height:48px;border-radius:14px;margin-bottom:14px;}
+.wijk-card .bic svg{width:22px;height:22px;color:#fff;stroke:#fff;}
+.wijk-card h4{font-family:Poppins,sans-serif;font-size:1.1rem;margin:0 0 8px;color:var(--ink);}
+.wijk-card p{color:var(--muted);font-size:.96rem;line-height:1.6;margin:0;}
+
+.quote-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:36px 40px;max-width:820px;margin:0 auto;position:relative;}
+.quote-card .quote-mark{width:34px;height:34px;display:block;margin-bottom:10px;}
+.quote-card blockquote{font-family:Poppins,sans-serif;font-size:1.35rem;line-height:1.5;color:var(--ink);margin:0 0 18px;font-weight:600;}
+.quote-card cite{color:var(--muted);font-style:normal;font-size:.95rem;display:block;}
+@media (max-width:680px){.quote-card{padding:28px 24px;}.quote-card blockquote{font-size:1.1rem;}}
+
+/* .cta-band, .cta-card, .cdec, .faq, .qa, .qi, .ans live in head — no override here */
+
 .sector-list{display:flex;flex-direction:column;gap:14px;}
 .sector-row{display:flex;gap:18px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 22px;transition:transform .3s ease, box-shadow .3s ease;}
 .sector-row:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(53,81,230,.07);}
@@ -382,14 +406,7 @@ section{position:relative;}
 .gva-table .top-col{color:var(--blue);font-weight:600;}
 .gva-table tr:last-child td{border-bottom:none;}
 
-.faq{background:#fff;border:1px solid var(--line);border-radius:24px;padding:8px 0;}
-.faq-item{border-bottom:1px solid var(--line);}
-.faq-item:last-child{border-bottom:none;}
-.faq-item summary{padding:18px 24px;cursor:pointer;font-family:Poppins,sans-serif;font-weight:600;color:var(--ink);font-size:1.02rem;list-style:none;display:flex;justify-content:space-between;align-items:center;}
-.faq-item summary::-webkit-details-marker{display:none;}
-.faq-item summary::after{content:"+";font-size:1.4rem;color:var(--blue);transition:transform .25s ease;}
-.faq-item[open] summary::after{content:"−";}
-.faq-body{padding:0 24px 20px;color:var(--muted);font-size:.97rem;line-height:1.65;}
+/* .faq + .qa + button + .qi + .ans CSS lives in live head — no override */
 
 .link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
 .card-link{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;text-decoration:none;color:var(--ink);font-family:Poppins,sans-serif;font-weight:600;transition:transform .25s ease, border-color .25s ease;}
@@ -730,70 +747,69 @@ section{position:relative;}
 <section class="sec">
   <div class="wrap">
     <div class="quote-card reveal">
-      <svg class="quote-mark" viewBox="0 0 32 32" fill="none"><path d="M10 8H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2c0 2-1 4-2 4v3c4 0 8-4 8-9V10a2 2 0 0 0-2-2zM26 8h-4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2c0 2-1 4-2 4v3c4 0 8-4 8-9V10a2 2 0 0 0-2-2z" fill="var(--lime)"/></svg>
+      <svg class="quote-mark" width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M10 8H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2c0 2-1 4-2 4v3c4 0 8-4 8-9V10a2 2 0 0 0-2-2zM26 8h-4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2c0 2-1 4-2 4v3c4 0 8-4 8-9V10a2 2 0 0 0-2-2z" fill="var(--lime)"/></svg>
       <blockquote>Een teamleider die mee draait én stuurt, dat is goud waard. Holland Recruitment matched ons aan iemand die in 2 weken het team weer op rapport-tempo had.</blockquote>
       <cite>Operations manager · Mid-size DC</cite>
     </div>
   </div>
 </section>
 
-<!-- CTA BANNER -->
-<section class="sec">
-  <div class="wrap">
-    <div class="cta-banner-blue reveal">
-      <h2>Klaar voor teamleiders logistiek?</h2>
-      <p>Shortlist binnen 24 uur, factor 1,40-1,55, geen verborgen kosten. Vandaag aanvragen, morgen kandidaten — of bel direct via WhatsApp.</p>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;">
-        <a href="/personeel-aanvragen.html?functie=teamleider-logistiek" class="btn btn-lime">
-          Teamleider logistiek aanvragen
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-        </a>
-        <a href="https://wa.me/31851249654" class="btn btn-white">WhatsApp</a>
-      </div>
+<!-- CTA BAND — EXACT homepage pattern -->
+<section class="cta-band">
+  <div class="cta-card reveal">
+    <div class="cdec cd1"></div><div class="cdec cd2"></div><div class="cdec cd3"></div>
+    <h2>Klaar voor teamleiders logistiek?</h2>
+    <p>Shortlist binnen 24 uur, factor 1,40-1,55, geen verborgen kosten. Vandaag aanvragen, morgen kandidaten.</p>
+    <div class="hero-cta">
+      <a href="/personeel-aanvragen.html?functie=teamleider-logistiek" class="btn btn-lime">
+        Teamleider logistiek aanvragen
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://wa.me/31851249654" class="btn btn-white">WhatsApp</a>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="sec" style="background:var(--cream);">
+<!-- FAQ — EXACT homepage pattern: .sec-head mid + .faq + .qa -->
+<section class="sec" id="faq" style="padding-top:20px;background:var(--cream);">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="tag" style="margin-bottom:14px;"><span class="dot"></span> Veelgestelde vragen</div>
-      <h2 style="font-size:clamp(2rem,3.6vw,2.6rem);">Veelgestelde vragen over teamleiders logistiek.</h2>
+    <div class="sec-head mid reveal">
+      <div class="tag" style="margin:0 auto;"><span class="dot"></span> Veelgestelde vragen</div>
+      <h2>Veelgestelde vragen over teamleiders logistiek.</h2>
     </div>
-    <div class="faq reveal d1">
-      <details class="faq-item">
-          <summary>Wat kost een teamleider logistiek?</summary>
-          <div class="faq-body">Bij €19 p/u en factor 1,45 betaalt u €27,55 p/u all-in. Voor senior teamleiders kan dit oplopen.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hoe snel beschikbaar?</summary>
-          <div class="faq-body">48-72 uur door schaarste. Voor interim-vervanging soms sneller.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hebben jullie teamleiders met VCA-VOL?</summary>
-          <div class="faq-body">Ja, standaard voor leidinggevende rollen.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Wat is het verschil met shift supervisor?</summary>
-          <div class="faq-body">Teamleider stuurt 10-30 krachten in één ploeg; shift supervisor stuurt meerdere teamleiders + verantwoordelijk voor hele shift-resultaat.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Werken jullie met interim-teamleiders?</summary>
-          <div class="faq-body">Ja, voor 3-12 maanden trajecten bij verlof, ziekte of vacaturetijd.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Doen jullie ook werving voor vaste plaatsing?</summary>
-          <div class="faq-body">Ja, na succesvol interim-traject kan een vast contract worden afgesproken. Wij vragen daarvoor een redelijke conversion fee.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hebben jullie teamleiders met SAP / Manhattan ervaring?</summary>
-          <div class="faq-body">Ja, wij matchen op WMS-systeem-ervaring.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Doen jullie 5-ploegen en weekend?</summary>
-          <div class="faq-body">Ja, met CAO-toeslagen in factor.</div>
-        </details>
+    <div class="faq">
+      <div class="qa reveal">
+          <button>Wat kost een teamleider logistiek?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Bij €19 p/u en factor 1,45 betaalt u €27,55 p/u all-in. Voor senior teamleiders kan dit oplopen.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hoe snel beschikbaar?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>48-72 uur door schaarste. Voor interim-vervanging soms sneller.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hebben jullie teamleiders met VCA-VOL?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, standaard voor leidinggevende rollen.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Wat is het verschil met shift supervisor?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Teamleider stuurt 10-30 krachten in één ploeg; shift supervisor stuurt meerdere teamleiders + verantwoordelijk voor hele shift-resultaat.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Werken jullie met interim-teamleiders?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, voor 3-12 maanden trajecten bij verlof, ziekte of vacaturetijd.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Doen jullie ook werving voor vaste plaatsing?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, na succesvol interim-traject kan een vast contract worden afgesproken. Wij vragen daarvoor een redelijke conversion fee.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hebben jullie teamleiders met SAP / Manhattan ervaring?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, wij matchen op WMS-systeem-ervaring.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Doen jullie 5-ploegen en weekend?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, met CAO-toeslagen in factor.</p></div>
+        </div>
     </div>
   </div>
 </section>
