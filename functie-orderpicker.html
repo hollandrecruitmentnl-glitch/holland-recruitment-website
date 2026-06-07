@@ -378,12 +378,7 @@ section{position:relative;}
 .quote-card cite{color:var(--muted);font-style:normal;font-size:.95rem;display:block;}
 @media (max-width:680px){.quote-card{padding:28px 24px;}.quote-card blockquote{font-size:1.1rem;}}
 
-.cta-banner-blue{background:var(--blue);color:#fff;border-radius:24px;padding:44px 40px;text-align:center;}
-.cta-banner-blue h2{color:#fff;font-family:Poppins,sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 12px;}
-.cta-banner-blue p{color:rgba(255,255,255,.88);font-size:1.05rem;max-width:680px;margin:0 auto;line-height:1.6;}
-.cta-banner-blue .btn-lime{background:var(--lime);color:var(--ink);}
-.cta-banner-blue .btn-white{background:#fff;color:var(--ink);}
-@media (max-width:680px){.cta-banner-blue{padding:32px 24px;}}
+/* .cta-band, .cta-card, .cdec, .faq, .qa, .qi, .ans live in head — no override here */
 
 .sector-list{display:flex;flex-direction:column;gap:14px;}
 .sector-row{display:flex;gap:18px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 22px;transition:transform .3s ease, box-shadow .3s ease;}
@@ -411,14 +406,7 @@ section{position:relative;}
 .gva-table .top-col{color:var(--blue);font-weight:600;}
 .gva-table tr:last-child td{border-bottom:none;}
 
-.faq{background:#fff;border:1px solid var(--line);border-radius:24px;padding:8px 0;}
-.faq-item{border-bottom:1px solid var(--line);}
-.faq-item:last-child{border-bottom:none;}
-.faq-item summary{padding:18px 24px;cursor:pointer;font-family:Poppins,sans-serif;font-weight:600;color:var(--ink);font-size:1.02rem;list-style:none;display:flex;justify-content:space-between;align-items:center;}
-.faq-item summary::-webkit-details-marker{display:none;}
-.faq-item summary::after{content:"+";font-size:1.4rem;color:var(--blue);transition:transform .25s ease;}
-.faq-item[open] summary::after{content:"−";}
-.faq-body{padding:0 24px 20px;color:var(--muted);font-size:.97rem;line-height:1.65;}
+/* .faq + .qa + button + .qi + .ans CSS lives in live head — no override */
 
 .link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
 .card-link{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;text-decoration:none;color:var(--ink);font-family:Poppins,sans-serif;font-weight:600;transition:transform .25s ease, border-color .25s ease;}
@@ -766,63 +754,62 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- CTA BANNER -->
-<section class="sec">
-  <div class="wrap">
-    <div class="cta-banner-blue reveal">
-      <h2>Klaar voor orderpickers?</h2>
-      <p>Shortlist binnen 24 uur, factor 1,40-1,55, geen verborgen kosten. Vandaag aanvragen, morgen kandidaten — of bel direct via WhatsApp.</p>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;">
-        <a href="/personeel-aanvragen.html?functie=orderpicker" class="btn btn-lime">
-          Orderpicker aanvragen
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-        </a>
-        <a href="https://wa.me/31851249654" class="btn btn-white">WhatsApp</a>
-      </div>
+<!-- CTA BAND — EXACT homepage pattern -->
+<section class="cta-band">
+  <div class="cta-card reveal">
+    <div class="cdec cd1"></div><div class="cdec cd2"></div><div class="cdec cd3"></div>
+    <h2>Klaar voor orderpickers?</h2>
+    <p>Shortlist binnen 24 uur, factor 1,40-1,55, geen verborgen kosten. Vandaag aanvragen, morgen kandidaten.</p>
+    <div class="hero-cta">
+      <a href="/personeel-aanvragen.html?functie=orderpicker" class="btn btn-lime">
+        Orderpicker aanvragen
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://wa.me/31851249654" class="btn btn-white">WhatsApp</a>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="sec" style="background:var(--cream);">
+<!-- FAQ — EXACT homepage pattern: .sec-head mid + .faq + .qa -->
+<section class="sec" id="faq" style="padding-top:20px;background:var(--cream);">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="tag" style="margin-bottom:14px;"><span class="dot"></span> Veelgestelde vragen</div>
-      <h2 style="font-size:clamp(2rem,3.6vw,2.6rem);">Veelgestelde vragen over orderpickers.</h2>
+    <div class="sec-head mid reveal">
+      <div class="tag" style="margin:0 auto;"><span class="dot"></span> Veelgestelde vragen</div>
+      <h2>Veelgestelde vragen over orderpickers.</h2>
     </div>
-    <div class="faq reveal d1">
-      <details class="faq-item">
-          <summary>Wat kost een orderpicker via Holland Recruitment?</summary>
-          <div class="faq-body">Bij een werknemers-loon van €13,50 p/u en factor 1,45 betaalt u €19,58 p/u inclusief alle CAO-toeslagen, vakantiegeld, pensioen, ET-uitkering en onze marge. Geen extra kosten achteraf.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hoe snel kunnen jullie een orderpicker leveren?</summary>
-          <div class="faq-body">Voor reguliere shifts: 24-48 uur. Voor acute piek of ziekte-vervanging: meestal binnen dezelfde dag mogelijk in regio Rotterdam, Tilburg, Eindhoven, Amsterdam. Bel of WhatsApp voor spoed.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hebben jullie orderpickers met VCA en RF-ervaring?</summary>
-          <div class="faq-body">Ja, dat is onze standaard. Iedere kandidaat in onze pool heeft minimaal VCA Basis en aantoonbare RF-scanner of voice-picking ervaring. Specifieke wensen (vries, hoog-pick, GDP) selecteren we expliciet.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Wat als de orderpicker niet bevalt?</summary>
-          <div class="faq-body">Bij niet-bevalling tijdens de eerste 8 uur kost het u niets. Wij komen direct met een vervanger en de niet-bevallen kracht haalt zijn loon bij ons. U betaalt alleen voor wat werkt.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Kunnen jullie ook voor weekend, nacht en piek leveren?</summary>
-          <div class="faq-body">Ja. Onze pool werkt in 5-ploegen-roosters en kent toeslagen voor avond (+10%), nacht (+30%) en weekend (+50% za / +100% zo) conform CAO. Deze zijn al in de factor 1,40-1,55 ingerekend.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Hoe gaan jullie om met no-shows?</summary>
-          <div class="faq-body">Onze no-show-ratio is <2% omdat we werken met een vaste kern. Bij no-show vervangen we kosteloos binnen 90 minuten in de stadsregio's. U betaalt nooit voor een niet-verschenen kracht.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Werken jullie ook met internationale orderpickers?</summary>
-          <div class="faq-body">Ja, ~30% van onze pool is Poolse, Roemeense of Bulgaarse kracht met huisvesting, transport en goed Engels of Nederlands. Voor internationale DC's vaak juist gewenst.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Wat is het verschil tussen orderpicker en reachtruckchauffeur?</summary>
-          <div class="faq-body">Orderpicker verzamelt orders op order-niveau, vaak op begane grond of via order-picker truck. Reachtruckchauffeur verplaatst pallets in/uit stellingen tot 11 meter hoog. Reachtruck verdient ~€2 p/u meer maar vereist extra certificaat.</div>
-        </details>
+    <div class="faq">
+      <div class="qa reveal">
+          <button>Wat kost een orderpicker via Holland Recruitment?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Bij een werknemers-loon van €13,50 p/u en factor 1,45 betaalt u €19,58 p/u inclusief alle CAO-toeslagen, vakantiegeld, pensioen, ET-uitkering en onze marge. Geen extra kosten achteraf.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hoe snel kunnen jullie een orderpicker leveren?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Voor reguliere shifts: 24-48 uur. Voor acute piek of ziekte-vervanging: meestal binnen dezelfde dag mogelijk in regio Rotterdam, Tilburg, Eindhoven, Amsterdam. Bel of WhatsApp voor spoed.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hebben jullie orderpickers met VCA en RF-ervaring?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, dat is onze standaard. Iedere kandidaat in onze pool heeft minimaal VCA Basis en aantoonbare RF-scanner of voice-picking ervaring. Specifieke wensen (vries, hoog-pick, GDP) selecteren we expliciet.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Wat als de orderpicker niet bevalt?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Bij niet-bevalling tijdens de eerste 8 uur kost het u niets. Wij komen direct met een vervanger en de niet-bevallen kracht haalt zijn loon bij ons. U betaalt alleen voor wat werkt.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Kunnen jullie ook voor weekend, nacht en piek leveren?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja. Onze pool werkt in 5-ploegen-roosters en kent toeslagen voor avond (+10%), nacht (+30%) en weekend (+50% za / +100% zo) conform CAO. Deze zijn al in de factor 1,40-1,55 ingerekend.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Hoe gaan jullie om met no-shows?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Onze no-show-ratio is <2% omdat we werken met een vaste kern. Bij no-show vervangen we kosteloos binnen 90 minuten in de stadsregio's. U betaalt nooit voor een niet-verschenen kracht.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Werken jullie ook met internationale orderpickers?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Ja, ~30% van onze pool is Poolse, Roemeense of Bulgaarse kracht met huisvesting, transport en goed Engels of Nederlands. Voor internationale DC's vaak juist gewenst.</p></div>
+        </div>
+        <div class="qa reveal">
+          <button>Wat is het verschil tussen orderpicker en reachtruckchauffeur?<span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button>
+          <div class="ans"><p>Orderpicker verzamelt orders op order-niveau, vaak op begane grond of via order-picker truck. Reachtruckchauffeur verplaatst pallets in/uit stellingen tot 11 meter hoog. Reachtruck verdient ~€2 p/u meer maar vereist extra certificaat.</p></div>
+        </div>
     </div>
   </div>
 </section>
