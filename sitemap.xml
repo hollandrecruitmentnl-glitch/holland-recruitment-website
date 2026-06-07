@@ -43,4 +43,16 @@
   <url><loc>https://www.holland-recruitment.nl/uitzendbureau-logistiek-zaandam.html</loc><lastmod>2026-05-28</lastmod></url>
   <url><loc>https://www.holland-recruitment.nl/privacyverklaring.html</loc><lastmod>2026-05-28</lastmod></url>
   <url><loc>https://www.holland-recruitment.nl/voorwaarden.html</loc><lastmod>2026-05-28</lastmod></url>
+  <url>
+    <loc>https://www.holland-recruitment.nl/functies.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.holland-recruitment.nl/regios.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>
