@@ -198,6 +198,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="trending" onclick="switchTab('trending')">🔥 Trending <span class="count" id="c-trend">·</span></button>
       <button class="tab" data-tab="triggers" onclick="switchTab('triggers')">💾 Triggers <span class="count" id="c-trig">·</span></button>
       <button class="tab" data-tab="conversion" onclick="switchTab('conversion')">🎯 Conversie <span class="count" id="c-conv">·</span></button>
+      <button class="tab" data-tab="guardian" onclick="switchTab('guardian')">🛡️ Guardian <span class="count" id="c-guard">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -504,6 +505,15 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-conversion" class="list"></div>
     </div>
 
+    <!-- View: Guardian AI (#335) -->
+    <div id="view-guardian" class="view">
+      <div class="stats" id="guard-stats-cards" style="margin-bottom:18px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">🚨 Recente events (laatste 7 dagen)</h2>
+      <div id="list-guardian-events" class="list"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:24px 0 12px;color:var(--blue);">🧬 Bekende patterns (Hybrid Learning)</h2>
+      <div id="list-guardian-patterns" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -600,8 +610,9 @@ var state = {
   trending: [],
   triggers: [],
   conversion: [],
+  guardian: { events: [], patterns: [] },
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false, conversion:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false, conversion:false, guardian:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -742,6 +753,8 @@ function loadTab(t){
     loadTriggers();
   } else if(t==='conversion'){
     loadConversion();
+  } else if(t==='guardian'){
+    loadGuardian();
   }
 }
 
@@ -861,6 +874,76 @@ function loadConversion(){
           +'<span style="color:#ef4444;"><b>'+(p.dismissals||0)+'</b> dismiss</span>'
         +'</div>'
         +'<div class="meta"><span style="color:var(--blue);font-size:12px;"><b>CTA:</b> "'+esc(p.primary_cta_text||'')+'"</span></div>'
+      +'</div>';
+    }).join('');
+  });
+}
+
+function loadGuardian(){
+  document.getElementById('guard-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-guardian-events').innerHTML = '<div class="loader"></div>';
+  document.getElementById('list-guardian-patterns').innerHTML = '<div class="loader"></div>';
+  api('guardian-overview', { days: 7 }).then(function(d){
+    state.loaded.guardian = true;
+    state.guardian.events = (d && d.recent_events) || [];
+    state.guardian.patterns = (d && d.patterns) || [];
+    var stats = (d && d.stats) || {};
+    document.getElementById('c-guard').textContent = stats.unresolved || stats.critical || '·';
+
+    // Stats cards
+    var critCls = stats.critical > 0 ? 'crit' : '';
+    var cards = [
+      { label:'Events 7d', val: stats.total_events || 0, sub: 'totaal geregistreerd', cls: '' },
+      { label:'Critical', val: stats.critical || 0, sub: 'directe actie nodig', cls: stats.critical > 0 ? 'crit' : 'ok' },
+      { label:'Auto-fixed', val: stats.auto_fixed || 0, sub: 'Guardian heeft zelf opgelost', cls: 'ok' },
+      { label:'Wacht op approval', val: stats.awaiting_approval || 0, sub: 'jouw goedkeuring nodig', cls: stats.awaiting_approval > 0 ? 'warn' : '' }
+    ];
+    document.getElementById('guard-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+
+    // Recent events
+    if(!state.guardian.events.length){
+      document.getElementById('list-guardian-events').innerHTML = '<div class="empty"><b>Geen events.</b><br><span style="color:var(--muted);font-size:13px;">Guardian draait elke 60 min. Eerstvolgende scan binnen 1 uur. Status: actief.</span></div>';
+    } else {
+      var sevColors = {'critical':'#dc2626','error':'#ef4444','warn':'#f59e0b','info':'#3b82f6'};
+      document.getElementById('list-guardian-events').innerHTML = state.guardian.events.map(function(e){
+        var sc = sevColors[e.severity] || '#6b7280';
+        var resolved = e.resolved_at ? '<span class="badge b-active">✓ opgelost</span>' : '';
+        var action = e.auto_fix_applied ? '<span class="badge b-active">⚙️ auto-fixed</span>' : (e.action_taken === 'awaiting_approval' ? '<span class="badge" style="background:#fef3c7;color:#92400e;">⏳ approve mij</span>' : '');
+        return '<div class="card" style="cursor:default;">'
+          +'<div class="top">'
+            +'<div><div class="title">'+esc(e.pattern_name || 'Onbekend pattern')+'</div>'
+            +'<div class="sub" style="color:#6b7280;font-size:11px;">'+esc(e.source || '')+' · '+new Date(e.detected_at).toLocaleString('nl-NL')+'</div></div>'
+            +'<div class="right">'
+              +'<span class="badge" style="background:'+sc+'20;color:'+sc+';">'+esc(e.severity)+'</span>'
+              +'<span class="badge b-neutral">'+esc(e.scan_type || '')+'</span>'
+              +action+resolved
+            +'</div>'
+          +'</div>'
+          +(e.error_message ? '<div class="meta" style="color:#dc2626;font-family:monospace;font-size:11px;background:#fef2f2;padding:8px 10px;border-radius:6px;margin-top:8px;">'+esc(e.error_message)+'</div>' : '')
+          +(e.diagnosis ? '<div class="summary"><b>🔍 Diagnose:</b> '+esc(e.diagnosis)+'</div>' : '')
+          +(e.suggested_fix ? '<div class="meta"><span style="color:var(--blue);"><b>💡 Suggested fix:</b> '+esc(e.suggested_fix)+'</span></div>' : '')
+        +'</div>';
+      }).join('');
+    }
+
+    // Patterns
+    var catColors = {'n8n_workflow':'#3b82f6','sql_schema':'#8b5cf6','api_auth':'#ef4444','data_quality':'#10b981','schedule':'#f59e0b','compliance':'#dc2626','deliverability':'#ec4899'};
+    document.getElementById('list-guardian-patterns').innerHTML = state.guardian.patterns.map(function(p){
+      var cc = catColors[p.category] || '#6b7280';
+      var fpRate = p.triggered_count > 0 ? Math.round((p.false_positive_count / p.triggered_count) * 100) : 0;
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top">'
+          +'<div><div class="title">'+esc(p.pattern_name)+'</div>'
+          +'<div class="sub">'+esc(p.source_note || '')+'</div></div>'
+          +'<div class="right">'
+            +'<span class="badge" style="background:'+cc+'20;color:'+cc+';">'+esc(p.category)+'</span>'
+            +'<span class="badge b-neutral">'+esc(p.severity)+'</span>'
+            +(p.auto_fixable ? '<span class="badge b-active">🛠 auto</span>' : '<span class="badge b-neutral">handmatig</span>')
+            +'<span class="badge b-neutral">'+(p.triggered_count || 0)+'× triggered</span>'
+          +'</div>'
+        +'</div>'
       +'</div>';
     }).join('');
   });
