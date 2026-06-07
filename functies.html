@@ -340,6 +340,9 @@ section{position:relative;}
 .hub-card .meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);}
 .hub-card .meta span{background:var(--cream);padding:3px 10px;border-radius:99px;}
 .hub-card .arrow{align-self:flex-start;color:var(--blue);font-weight:700;font-family:Poppins,sans-serif;}
+.sector-group{margin-bottom:36px;}
+.sector-group h3{font-family:Poppins,sans-serif;font-size:1.3rem;color:var(--ink);margin:24px 0 14px;display:flex;align-items:center;gap:10px;}
+.sector-group h3::before{content:"";display:inline-block;width:8px;height:8px;background:var(--blue);border-radius:50%;}
 </style>
 
 </head>
@@ -498,53 +501,100 @@ section{position:relative;}
   <div class="wrap">
     
     <div class="sec-head reveal">
-      <div class="tag" style="margin-bottom:14px;"><span class="dot"></span> Per stad</div>
+      <div class="tag" style="margin-bottom:14px;"><span class="dot"></span> Per sector × stad</div>
       <h2 style="font-size:clamp(2rem,3.6vw,2.6rem);">Op zoek naar krachten in een specifieke regio?</h2>
     </div>
-    <div class="hub-grid">
-      <a href="/uitzendbureau-logistiek-rotterdam.html" class="hub-card reveal d1">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        <h3>Logistiek Rotterdam</h3>
-        <p>Onze hoofdvestiging. Containerstroom, e-commerce DC's en koel-DC's met diepe pool.</p>
-        <div class="meta"><span>Pool 1200+</span><span>24-48u</span></div>
-        <div class="arrow">Bekijk stad →</div>
-      </a>
-      <a href="/uitzendbureau-horeca-amsterdam.html" class="hub-card reveal d2">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-        <h3>Horeca Amsterdam</h3>
-        <p>Hotelkamers, restaurant + housekeeping. Multitaal pool met dichte stadsdekking.</p>
-        <div class="meta"><span>Pool 800+</span><span>24-48u</span></div>
-        <div class="arrow">Bekijk stad →</div>
-      </a>
-      <a href="/uitzendbureau-zorg-den-haag.html" class="hub-card reveal d3">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF7A59" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3>Zorg Den Haag</h3>
-        <p>VIG, VVT, ouderenzorg + ondersteuning. BIG-verificatie standaard.</p>
-        <div class="meta"><span>Pool 450+</span><span>BIG-geverifieerd</span></div>
-        <div class="arrow">Bekijk stad →</div>
-      </a>
-      <a href="/uitzendbureau-techniek-eindhoven.html" class="hub-card reveal d4">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <h3>Techniek Eindhoven</h3>
-        <p>Brainport-DC's, installatietechniek + cleanroom. VCA-VOL en internationale ervaring.</p>
-        <div class="meta"><span>Pool 600+</span><span>VCA-VOL</span></div>
-        <div class="arrow">Bekijk stad →</div>
-      </a>
-      <a href="/uitzendbureau-logistiek-tilburg.html" class="hub-card reveal d1">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7 12h7M9 8c0-2 2-3 4-3M9 16c0 2 2 3 4 3"/></svg></div>
-        <h3>Logistiek Tilburg</h3>
-        <p>Tilburg DC-corridor — Bol.com, Coolblue, Zalando. Bulk-pool voor piek-momenten.</p>
-        <div class="meta"><span>Pool 950+</span><span>24-48u</span></div>
-        <div class="arrow">Bekijk stad →</div>
-      </a>
-      <a href="/personeel-aanvragen.html" class="hub-card reveal d2">
-        <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <h3>Andere regio of sector?</h3>
-        <p>Wij plaatsen in heel Nederland. Vraag direct via formulier of WhatsApp — binnen 24 uur reactie.</p>
-        <div class="meta"><span>Heel NL</span><span>Spoed mogelijk</span></div>
-        <div class="arrow">Aanvragen →</div>
-      </a>
-    </div>
+    <div class="sector-group"><h3>Logistiek (6 regios)</h3><div class="hub-grid"><a href="/uitzendbureau-logistiek-rotterdam.html" class="hub-card reveal d1">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Rotterdam</h3>
+            <p>Pool 340+ · Indeed 100+</p>
+            <div class="meta"><span>factor 1.45-1.55×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-logistiek-tilburg.html" class="hub-card reveal d2">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Tilburg</h3>
+            <p>Pool 210+ · Indeed 80+</p>
+            <div class="meta"><span>factor 1.45-1.52×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-logistiek-utrecht.html" class="hub-card reveal d3">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Utrecht</h3>
+            <p>Pool 280+ · Indeed 80+</p>
+            <div class="meta"><span>factor 1.42-1.52×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-logistiek-groningen.html" class="hub-card reveal d4">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Groningen</h3>
+            <p>Pool 165+ · Indeed 35+</p>
+            <div class="meta"><span>factor 1.42-1.52×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-logistiek-breda.html" class="hub-card reveal d1">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Breda</h3>
+            <p>Pool 195+ · Indeed 50+</p>
+            <div class="meta"><span>factor 1.42-1.52×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-logistiek-arnhem.html" class="hub-card reveal d2">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>Logistiek Arnhem</h3>
+            <p>Pool 155+ · Indeed 40+</p>
+            <div class="meta"><span>factor 1.42-1.52×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a></div></div><div class="sector-group"><h3>Horeca (3 regios)</h3><div class="hub-grid"><a href="/uitzendbureau-horeca-amsterdam.html" class="hub-card reveal d1">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <h3>Horeca Amsterdam</h3>
+            <p>Pool 180+ · Indeed 150+</p>
+            <div class="meta"><span>factor 1.45-1.50×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-horeca-utrecht.html" class="hub-card reveal d2">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <h3>Horeca Utrecht</h3>
+            <p>Pool 220+ · Indeed 55+</p>
+            <div class="meta"><span>factor 1.40-1.50×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-horeca-rotterdam.html" class="hub-card reveal d3">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <h3>Horeca Rotterdam</h3>
+            <p>Pool 240+ · Indeed 65+</p>
+            <div class="meta"><span>factor 1.40-1.50×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a></div></div><div class="sector-group"><h3>Zorg (3 regios)</h3><div class="hub-grid"><a href="/uitzendbureau-zorg-den-haag.html" class="hub-card reveal d1">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF7A59" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Zorg Den Haag</h3>
+            <p>Pool 95+ · Indeed 80+</p>
+            <div class="meta"><span>factor 1.50-1.55×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-zorg-eindhoven.html" class="hub-card reveal d2">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF7A59" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Zorg Eindhoven</h3>
+            <p>Pool 120+ · Indeed 60+</p>
+            <div class="meta"><span>factor 1.50-1.65×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-zorg-amsterdam.html" class="hub-card reveal d3">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF7A59" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Zorg Amsterdam</h3>
+            <p>Pool 180+ · Indeed 95+</p>
+            <div class="meta"><span>factor 1.50-1.65×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a></div></div><div class="sector-group"><h3>Techniek (3 regios)</h3><div class="hub-grid"><a href="/uitzendbureau-techniek-eindhoven.html" class="hub-card reveal d1">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <h3>Techniek Eindhoven</h3>
+            <p>Pool 145+ · Indeed 120+</p>
+            <div class="meta"><span>factor 1.48-1.55×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-techniek-tilburg.html" class="hub-card reveal d2">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <h3>Techniek Tilburg</h3>
+            <p>Pool 145+ · Indeed 45+</p>
+            <div class="meta"><span>factor 1.45-1.58×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a><a href="/uitzendbureau-techniek-rotterdam.html" class="hub-card reveal d3">
+            <div class="bic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3551E6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <h3>Techniek Rotterdam</h3>
+            <p>Pool 175+ · Indeed 70+</p>
+            <div class="meta"><span>factor 1.45-1.58×</span></div>
+            <div class="arrow">Bekijk regio →</div>
+          </a></div></div>
   </div>
 </section>
 
@@ -570,8 +620,8 @@ section{position:relative;}
     <div class="faq">
       <div class="qa reveal"><button>Plaatsen jullie alleen logistiek?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Nee. Logistiek is onze grootste pool, maar we plaatsen ook in horeca, zorg, techniek en administratie. Vraag naar specifieke functies via WhatsApp.</p></div></div>
       <div class="qa reveal"><button>Wat is jullie levertijd?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>24-48 uur voor reguliere shifts in heel Nederland. Voor spoed in de Randstad of Brabant vaak dezelfde dag.</p></div></div>
-      <div class="qa reveal"><button>Werken jullie met internationale krachten?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Ja, ~25% van onze pool is internationaal — voornamelijk Pools, Roemeens en Bulgaars met huisvesting en transport door ons geregeld.</p></div></div>
-      <div class="qa reveal"><button>Wat zijn jullie tarieven?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Factor 1,40-1,55 all-in inclusief CAO-toeslagen, vakantiegeld, pensioen en onze marge. Concreet bedrag per functie zie je op de specifieke pagina.</p></div></div>
+      <div class="qa reveal"><button>Werken jullie met internationale krachten?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Ja, ~25% van onze pool is internationaal — voornamelijk Pools, Roemeens en Bulgaars met huisvesting en transport door ons geregeld conform ET-convenant.</p></div></div>
+      <div class="qa reveal"><button>Wat zijn jullie tarieven?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Factor 1,40-1,65× all-in inclusief CAO-toeslagen, vakantiegeld, pensioen en onze marge. Concreet bedrag per functie zie je op de specifieke pagina.</p></div></div>
       <div class="qa reveal"><button>Hoe screen je kandidaten?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Drie lagen: AI-matching op skills en certificaten, persoonlijk telefoongesprek door recruiter, certificaten-check (VCA, heftruck, BIG, ADR waar relevant).</p></div></div>
       <div class="qa reveal"><button>Wat als de kracht niet bevalt?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Eerste 8 uur kosteloos vervanging — u betaalt alleen voor wat werkt. Onze backoffice neemt loondoorbetaling volledig over.</p></div></div>
       <div class="qa reveal"><button>Kunnen jullie ook groepen leveren?<span class="qi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="ans"><p>Ja, voor packline-pieken of bulk-shifts kunnen we 5-20 krachten tegelijk leveren in Randstad en Brabant binnen 48 uur.</p></div></div>
@@ -598,27 +648,25 @@ section{position:relative;}
       </div>
       <div class="footer-col">
         <h4>Functies</h4>
-        <a href="/functies.html"><strong>Alle functies →</strong></a>
         <a href="/functie-orderpicker.html">Orderpicker</a>
         <a href="/functie-magazijnmedewerker.html">Magazijnmedewerker</a>
         <a href="/functie-heftruckchauffeur.html">Heftruckchauffeur</a>
         <a href="/functie-reachtruckchauffeur.html">Reachtruckchauffeur</a>
-        <a href="/functie-expeditiemedewerker.html">Expeditiemedewerker</a>
         <a href="/functie-inpakker.html">Inpakker</a>
-        <a href="/functie-logistiek-medewerker.html">Logistiek medewerker</a>
         <a href="/functie-productiemedewerker.html">Productiemedewerker</a>
-        <a href="/functie-chauffeur.html">Chauffeur</a>
-        <a href="/functie-teamleider-logistiek.html">Teamleider logistiek</a>
+        <a href="/functie-expeditiemedewerker.html">Expeditiemedewerker</a>
+        <a href="/functie-logistiek-medewerker.html">Logistiek medewerker</a>
       </div>
       <div class="footer-col">
         <h4>Regio's</h4>
-        <a href="/regios.html"><strong>Alle regio's →</strong></a>
-        <a href="/uitzendbureau-logistiek-rotterdam.html">Logistiek Rotterdam</a>
-        <a href="/uitzendbureau-horeca-amsterdam.html">Horeca Amsterdam</a>
-        <a href="/uitzendbureau-zorg-den-haag.html">Zorg Den Haag</a>
-        <a href="/uitzendbureau-techniek-eindhoven.html">Techniek Eindhoven</a>
-        <a href="/uitzendbureau-logistiek-tilburg.html">Logistiek Tilburg</a>
-        <a href="/personeel-aanvragen.html">Andere regio? →</a>
+        <a href="/uitzendbureau-logistiek-rotterdam.html">Rotterdam</a>
+        <a href="/uitzendbureau-logistiek-amsterdam.html">Amsterdam</a>
+        <a href="/uitzendbureau-logistiek-utrecht.html">Utrecht</a>
+        <a href="/uitzendbureau-logistiek-den-haag.html">Den Haag</a>
+        <a href="/uitzendbureau-logistiek-leiden.html">Leiden</a>
+        <a href="/uitzendbureau-logistiek-hoofddorp.html">Hoofddorp</a>
+        <a href="/uitzendbureau-logistiek-almere.html">Almere</a>
+        <a href="/uitzendbureau-logistiek-dordrecht.html">Dordrecht</a>
       </div>
       <div class="footer-col">
         <h4>Pagina's</h4>
