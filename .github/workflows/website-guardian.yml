@@ -1,0 +1,181 @@
+# Place at: .github/workflows/website-guardian.yml in hollandrecruitmentnl-glitch/holland-recruitment-website repo
+# Runs Website Guardian weekly: snippet drift detection + revalidate all SEO pages
+
+name: Website Guardian — Weekly Drift Check
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'  # Elke zondag 06:00 UTC
+  workflow_dispatch:      # Manual trigger
+    inputs:
+      force_refresh:
+        description: 'Force refresh snippets even if <48u old'
+        required: false
+        default: 'false'
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Fetch live homepage + regenerate whitelist
+        id: refresh
+        env:
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import requests, re, json, os
+          from datetime import date
+
+          REPO = os.environ['GH_REPO']
+          source_pages = ['index.html', 'voor-werkgevers.html', 'voor-werknemers.html']
+          classes = set()
+          snippets_head_classes = set()
+
+          for p in source_pages:
+              r = requests.get(f"https://raw.githubusercontent.com/{REPO}/main/{p}")
+              if r.status_code != 200:
+                  print(f"  WARN: cannot fetch {p}")
+                  continue
+              h = r.text
+              for style in re.findall(r'<style[^>]*>([\s\S]*?)</style>', h):
+                  for c in re.findall(r'\.([a-z][\w-]*)\s*[,{]', style):
+                      classes.add(c)
+                      snippets_head_classes.add(c)
+              for u in re.findall(r'class="([^"]+)"', h):
+                  for c in u.split():
+                      classes.add(c)
+
+          whitelist = sorted(classes)
+          print(f"Extracted {len(whitelist)} classes from {len(source_pages)} pages")
+
+          with open('class-whitelist-new.json', 'w') as f:
+              json.dump({
+                  "extracted_at": date.today().isoformat(),
+                  "from_pages": source_pages,
+                  "total": len(whitelist),
+                  "classes": whitelist
+              }, f, indent=2)
+
+          # Compare with previous
+          prev_path = '4 - Automatisering & AI/Page-Builder Agent/class-whitelist.json'
+          drift_detected = False
+          if os.path.exists(prev_path):
+              prev = json.load(open(prev_path))
+              prev_classes = set(prev.get('classes', []))
+              new_classes = set(whitelist)
+              added = new_classes - prev_classes
+              removed = prev_classes - new_classes
+              if added or removed:
+                  drift_detected = True
+                  print(f"DRIFT DETECTED:")
+                  if added: print(f"  + new: {sorted(added)[:10]}")
+                  if removed: print(f"  - gone: {sorted(removed)[:10]}")
+              else:
+                  print("No drift detected.")
+
+          # Output to GitHub env
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"drift_detected={'true' if drift_detected else 'false'}\n")
+              f.write(f"class_count={len(whitelist)}\n")
+          PY
+
+      - name: Validate all SEO pages
+        id: validate
+        run: |
+          python3 - <<'PY'
+          import requests, re, os
+
+          slugs = [
+              # Functie pages (10)
+              'functie-orderpicker', 'functie-magazijnmedewerker', 'functie-heftruckchauffeur',
+              'functie-reachtruckchauffeur', 'functie-expeditiemedewerker', 'functie-inpakker',
+              'functie-logistiek-medewerker', 'functie-productiemedewerker', 'functie-chauffeur',
+              'functie-teamleider-logistiek',
+              # City pages (15)
+              'uitzendbureau-logistiek-rotterdam', 'uitzendbureau-horeca-amsterdam',
+              'uitzendbureau-zorg-den-haag', 'uitzendbureau-techniek-eindhoven',
+              'uitzendbureau-logistiek-tilburg', 'uitzendbureau-logistiek-utrecht',
+              'uitzendbureau-horeca-utrecht', 'uitzendbureau-logistiek-groningen',
+              'uitzendbureau-techniek-tilburg', 'uitzendbureau-zorg-eindhoven',
+              'uitzendbureau-logistiek-breda', 'uitzendbureau-horeca-rotterdam',
+              'uitzendbureau-zorg-amsterdam', 'uitzendbureau-techniek-rotterdam',
+              'uitzendbureau-logistiek-arnhem',
+              # Hub pages (2)
+              'functies', 'regios'
+          ]
+
+          FORBIDDEN = {
+              'cta-banner-blue': 'Use .cta-band',
+              'faq-item': 'Use .qa',
+              'faq-body': 'Use .ans'
+          }
+
+          failed = []
+          warned = []
+          for s in slugs:
+              r = requests.get(f"https://www.holland-recruitment.nl/{s}.html")
+              if r.status_code != 200:
+                  failed.append(f"{s}: HTTP {r.status_code}")
+                  continue
+              h = r.text
+              fails = []
+              for cls, msg in FORBIDDEN.items():
+                  if f'class="{cls}"' in h or f'"{cls} ' in h or f' {cls}"' in h:
+                      fails.append(f".{cls}")
+              reveals = len(re.findall(r'\breveal\b', h))
+              if reveals < 30: fails.append(f"reveals={reveals}")
+              if '#003366' in h or '#3AB54A' in h: fails.append("old brand colors")
+              if 'reloadvisor' in h.lower(): fails.append("reloadvisor leak")
+              if fails:
+                  failed.append(f"{s}: {', '.join(fails)}")
+
+          print(f"Validated {len(slugs)} pages")
+          print(f"  PASS: {len(slugs) - len(failed)}")
+          print(f"  FAIL: {len(failed)}")
+          for f in failed:
+              print(f"     ✗ {f}")
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"total_pages={len(slugs)}\n")
+              f.write(f"failed_count={len(failed)}\n")
+              f.write(f"failed_list={'|'.join(failed)[:500]}\n")
+          PY
+
+      - name: Mail report to Can via Resend
+        if: always()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          DRIFT: ${{ steps.refresh.outputs.drift_detected }}
+          CLASS_COUNT: ${{ steps.refresh.outputs.class_count }}
+          TOTAL_PAGES: ${{ steps.validate.outputs.total_pages }}
+          FAILED_COUNT: ${{ steps.validate.outputs.failed_count }}
+          FAILED_LIST: ${{ steps.validate.outputs.failed_list }}
+        run: |
+          STATUS_ICON="✅"
+          if [ "$DRIFT" = "true" ] || [ "$FAILED_COUNT" != "0" ]; then
+            STATUS_ICON="⚠️"
+          fi
+
+          curl -X POST "https://api.resend.com/emails" \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"info@holland-recruitment.nl\",
+              \"to\": \"muhammed.can@hollandrecruitment.nl\",
+              \"subject\": \"$STATUS_ICON Website Guardian wekelijks rapport — $FAILED_COUNT fails\",
+              \"html\": \"<h2>Wekelijks Drift + Validatie rapport</h2><p><strong>Class whitelist:</strong> $CLASS_COUNT classes extracted</p><p><strong>Drift detected:</strong> $DRIFT</p><p><strong>SEO pages gevalideerd:</strong> $TOTAL_PAGES</p><p><strong>FAILED:</strong> $FAILED_COUNT</p><p>Details: $FAILED_LIST</p>\"
+            }"
