@@ -197,6 +197,7 @@ button{font-family:inherit;cursor:pointer;}
       <button class="tab" data-tab="prospects" onclick="switchTab('prospects')">🎯 Prospects <span class="count" id="c-pros">·</span></button>
       <button class="tab" data-tab="trending" onclick="switchTab('trending')">🔥 Trending <span class="count" id="c-trend">·</span></button>
       <button class="tab" data-tab="triggers" onclick="switchTab('triggers')">💾 Triggers <span class="count" id="c-trig">·</span></button>
+      <button class="tab" data-tab="conversion" onclick="switchTab('conversion')">🎯 Conversie <span class="count" id="c-conv">·</span></button>
       <button class="tab" data-tab="brain" onclick="switchTab('brain')">🧠 Brein <span class="count" id="c-brain">·</span></button>
       <button class="tab" data-tab="health" onclick="switchTab('health')">⚙️ System</button>
     </div>
@@ -492,6 +493,17 @@ button{font-family:inherit;cursor:pointer;}
       <div id="list-triggers" class="list"></div>
     </div>
 
+    <!-- View: Conversie (Agent #287a) -->
+    <div id="view-conversion" class="view">
+      <div class="stats" id="conv-stats-cards" style="margin-bottom:18px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">📊 Funnel laatste 30 dagen</h2>
+      <div id="conv-funnel-box" style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">🚪 Top verkeersbronnen</h2>
+      <div id="conv-sources-box" style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:18px;"></div>
+      <h2 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin:18px 0 12px;color:var(--blue);">🧪 Popups (research-grounded · A/B)</h2>
+      <div id="list-conversion" class="list"></div>
+    </div>
+
     <!-- View: Brain -->
     <div id="view-brain" class="view">
       <div class="stats" id="brain-stats-cards" style="margin-bottom:22px;"></div>
@@ -587,8 +599,9 @@ var state = {
   prospects: [],
   trending: [],
   triggers: [],
+  conversion: [],
   emailStats: null,
-  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false },
+  loaded: { overzicht:false, vacatures:false, kandidaten:false, chats:false, matches:false, werkgevers:false, alerts:false, emails:false, brain:false, health:false, social:false, calendar:false, trends:false, blogs:false, engagement:false, hashtags:false, carousels:false, prospects:false, trending:false, triggers:false, conversion:false },
   activeTab: 'overzicht',
   notitieId: null
 };
@@ -727,6 +740,8 @@ function loadTab(t){
     loadTrending();
   } else if(t==='triggers'){
     loadTriggers();
+  } else if(t==='conversion'){
+    loadConversion();
   }
 }
 
@@ -767,6 +782,86 @@ function loadTriggers(){
         +(t.cta_template?'<div class="meta"><span style="color:var(--blue);"><b>CTA:</b> "'+esc(t.cta_template)+'"</span></div>':'')
         +(t.source_note?'<div class="meta"><span style="color:var(--muted);font-size:11px;">📚 '+esc(t.source_note)+'</span></div>':'')
         +'</div>';
+    }).join('');
+  });
+}
+
+function loadConversion(){
+  document.getElementById('conv-stats-cards').innerHTML = '<div class="loader" style="grid-column:1/-1;"></div>';
+  document.getElementById('list-conversion').innerHTML = '<div class="loader"></div>';
+  document.getElementById('conv-funnel-box').innerHTML = '<div class="loader"></div>';
+  document.getElementById('conv-sources-box').innerHTML = '<div class="loader"></div>';
+  api('conversion-overview', { days: 30 }).then(function(d){
+    state.loaded.conversion = true;
+    state.conversion = (d && d.popups) || [];
+    var stats = (d && d.stats) || {};
+    var funnel = (d && d.funnel) || {};
+    var sources = (d && d.top_sources) || [];
+    document.getElementById('c-conv').textContent = stats.active || state.conversion.length || '·';
+
+    // Stats cards
+    var cards = [
+      { label:'Popups actief', val: stats.active || 0, sub: stats.external_seeds + ' research-grounded', cls: '' },
+      { label:'Sessies (30d)', val: funnel.sessions_total || 0, sub: (funnel.mobile_sessions||0)+' mobile · '+(funnel.desktop_sessions||0)+' desktop', cls: '' },
+      { label:'Conversie %', val: (funnel.conversion_rate_pct||0)+'%', sub: (funnel.sessions_converted||0)+' leads van '+(funnel.sessions_total||0)+' sessies', cls: (funnel.conversion_rate_pct>0?'ok':'') },
+      { label:'Top popup', val: stats.best_conv_rate ? stats.best_conv_rate+'%' : '—', sub: stats.best_popup || 'wacht op data', cls: 'ok' }
+    ];
+    document.getElementById('conv-stats-cards').innerHTML = cards.map(function(c){
+      return '<div class="stat '+c.cls+'"><div class="label">'+esc(c.label)+'</div><div class="val">'+c.val+'</div><div class="sub">'+esc(c.sub)+'</div></div>';
+    }).join('');
+
+    // Funnel box
+    document.getElementById('conv-funnel-box').innerHTML =
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;font-size:13px;">'
+      +'<div><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">Page views</div><div style="font-size:22px;font-weight:700;color:var(--blue);font-family:Poppins,sans-serif;">'+(funnel.sessions_total||0)+'</div></div>'
+      +'<div><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">Exit-intent</div><div style="font-size:22px;font-weight:700;color:#f59e0b;font-family:Poppins,sans-serif;">'+(funnel.sessions_with_exit_intent||0)+'</div></div>'
+      +'<div><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">Sanne geopend</div><div style="font-size:22px;font-weight:700;color:#06b6d4;font-family:Poppins,sans-serif;">'+(funnel.sessions_with_sanne||0)+'</div></div>'
+      +'<div><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">Leads</div><div style="font-size:22px;font-weight:700;color:var(--green);font-family:Poppins,sans-serif;">'+(funnel.sessions_converted||0)+'</div></div>'
+      +'<div><div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">Avg scroll</div><div style="font-size:22px;font-weight:700;color:var(--blue);font-family:Poppins,sans-serif;">'+(funnel.avg_scroll_pct||0)+'%</div></div>'
+      +'</div>';
+
+    // Top sources
+    if (sources.length === 0) {
+      document.getElementById('conv-sources-box').innerHTML = '<div style="color:var(--muted);text-align:center;padding:18px;">Geen herkenbare verkeersbronnen nog. Sessies komen binnen zodra bezoekers de site openen.</div>';
+    } else {
+      document.getElementById('conv-sources-box').innerHTML = '<table style="width:100%;font-size:13px;border-collapse:collapse;">'
+        +'<thead><tr style="background:#f5f5f5;text-align:left;"><th style="padding:10px 12px;border-radius:8px 0 0 8px;">Bron</th><th style="padding:10px 12px;text-align:right;">Sessies</th><th style="padding:10px 12px;text-align:right;">Leads</th><th style="padding:10px 12px;text-align:right;border-radius:0 8px 8px 0;">Conv. %</th></tr></thead>'
+        +'<tbody>'+sources.map(function(s){
+          return '<tr style="border-bottom:1px solid var(--border);"><td style="padding:10px 12px;"><b>'+esc(s.source||'direct')+'</b></td><td style="padding:10px 12px;text-align:right;">'+s.sessions+'</td><td style="padding:10px 12px;text-align:right;color:var(--green);font-weight:600;">'+s.conversions+'</td><td style="padding:10px 12px;text-align:right;">'+s.conv_rate+'%</td></tr>';
+        }).join('')+'</tbody></table>';
+    }
+
+    // Popups list
+    if(!state.conversion.length){
+      document.getElementById('list-conversion').innerHTML='<div class="empty"><b>Geen popups geseed.</b><br><span style="color:var(--muted);font-size:13px;">Run 00-sql-COMBINED + 02-sql-popups-research-corrected uit /Agent #287a/.</span></div>';
+      return;
+    }
+    var triggerColors = {'exit_intent':'#ef4444','scroll_depth':'#3b82f6','time_on_page':'#f59e0b','sticky_cta':'#10b981','sanne_proactive':'#06b6d4'};
+    document.getElementById('list-conversion').innerHTML = state.conversion.map(function(p){
+      var tc = triggerColors[p.trigger_type] || '#6b7280';
+      var ds = p.data_source === 'external_research' ? '🌍 extern' : p.data_source === 'hybrid' ? '🔀 hybrid' : '📈 intern';
+      var convRate = p.conversion_rate || 0;
+      var ctrRate = p.click_through_rate || 0;
+      return '<div class="card" style="cursor:default;">'
+        +'<div class="top">'
+          +'<div><div class="title">'+esc(p.name)+'</div>'
+          +(p.headline?'<div class="sub">"'+esc(p.headline)+'"</div>':'<div class="sub" style="color:var(--muted);">(sticky CTA — geen heading)</div>')+'</div>'
+          +'<div class="right">'
+            +'<span class="badge" style="background:'+tc+'20;color:'+tc+';">'+esc(p.trigger_type)+'</span>'
+            +'<span class="badge b-active">score '+(p.performance_score||0)+'</span>'
+            +'<span class="badge b-neutral">'+ds+'</span>'
+            +(p.sector && p.sector !== 'all' ? '<span class="badge b-neutral">'+esc(p.sector)+'</span>' : '')
+            +(p.audience_side && p.audience_side !== 'all' ? '<span class="badge b-neutral">'+esc(p.audience_side)+'</span>' : '')
+          +'</div>'
+        +'</div>'
+        +'<div class="meta" style="margin-top:8px;display:flex;gap:14px;font-size:12px;flex-wrap:wrap;">'
+          +'<span><b>'+(p.impressions||0)+'</b> impressies</span>'
+          +'<span style="color:var(--blue);"><b>'+(p.clicks||0)+'</b> clicks ('+ctrRate+'%)</span>'
+          +'<span style="color:var(--green);"><b>'+(p.conversions||0)+'</b> leads ('+convRate+'%)</span>'
+          +'<span style="color:#ef4444;"><b>'+(p.dismissals||0)+'</b> dismiss</span>'
+        +'</div>'
+        +'<div class="meta"><span style="color:var(--blue);font-size:12px;"><b>CTA:</b> "'+esc(p.primary_cta_text||'')+'"</span></div>'
+      +'</div>';
     }).join('');
   });
 }
