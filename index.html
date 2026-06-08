@@ -328,7 +328,7 @@ section{position:relative;}
 <div class="nav-outer">
   <div class="wrap">
     <nav class="nav">
-      <a href="#top" class="brand" aria-label="Holland Recruitment">
+      <a href="/" class="brand" aria-label="Holland Recruitment">
         <svg class="logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="120" height="120" rx="34" fill="#3551E6"/>
           <rect x="34" y="31" width="17" height="58" rx="5.5" fill="#fff"/>
@@ -345,7 +345,7 @@ section{position:relative;}
       </div>
       <div class="nav-right">
         <a href="/inschrijven.html" class="btn btn-line nav-cta">Inschrijven</a>
-        <a href="/personeel-aanvragen.html" class="btn btn-blue nav-cta" data-tab="emp">Personeel aanvragen</a>
+        <a href="#formulier" class="btn btn-blue nav-cta" data-tab="emp">Personeel aanvragen</a>
         <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
       </div>
     </nav>
@@ -357,7 +357,7 @@ section{position:relative;}
       <a href="/over-ons.html">Over ons</a>
       <a href="/contact.html">Contact</a>
       <a href="/inschrijven.html" style="color:var(--blue);">Inschrijven →</a>
-      <a href="/personeel-aanvragen.html" style="color:var(--blue);" data-tab="emp">Personeel aanvragen →</a>
+      <a href="#formulier" style="color:var(--blue);" data-tab="emp">Personeel aanvragen →</a>
     </div>
   </div>
 </div>
@@ -372,16 +372,10 @@ section{position:relative;}
         <h1 class="reveal d1">Logistiek personeel, <span class="blue">geregeld</span> in <span class="hl"><span>24&nbsp;uur</span></span>.</h1>
         <p class="hero-sub reveal d2">Holland Recruitment matcht warehouse-personeel aan logistieke bedrijven — met slimme technologie én een mens die opneemt. Jij plaatst de aanvraag, wij regelen contract, verloning en risico.</p>
         <div class="hero-cta reveal d3">
-          <a href="/personeel-aanvragen.html" class="btn btn-blue" data-tab="emp">Personeel aanvragen
+          <a href="#formulier" class="btn btn-blue" data-tab="emp">Personeel aanvragen
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </a>
           <a href="/inschrijven.html" class="btn btn-line">Ik zoek werk</a>
-        </div>
-        <div class="reveal d3" style="margin:-12px 0 22px;font-size:14px;">
-          <a href="/personeel-aanvragen-chat.html" style="color:var(--blue);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Liever direct chatten? Praat met Sanne in 2 minuten →
-          </a>
         </div>
         <div class="hero-trust reveal d4">
           <span><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> Geen risico — wij zijn de juridische werkgever</span>
@@ -494,6 +488,53 @@ section{position:relative;}
       </div>
     </div>
 
+    <div class="frm-divider reveal" id="formulier" style="scroll-margin-top:110px"><span>Klaar? Plaats hier je aanvraag</span></div>
+    <div class="frm-shell reveal">
+      <div class="frm-tabs">
+        <button class="frm-tab active" data-frm="emp" type="button">Ik zoek personeel</button>
+        <button class="frm-tab" data-frm="wrk" type="button">Ik zoek werk</button>
+      </div>
+      <div class="frm-body" id="frm-emp">
+        <form id="form-emp" novalidate>
+          <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
+          <input type="hidden" name="subject" value="Nieuwe personeelsaanvraag via de website">
+          <input type="hidden" name="herkomst" value="">
+          <input type="checkbox" name="botcheck" style="display:none">
+          <div class="frm-grid">
+            <div class="frm-field"><label>Bedrijfsnaam *</label><input type="text" name="bedrijf" required></div>
+            <div class="frm-field"><label>Contactpersoon *</label><input type="text" name="naam" required></div>
+            <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
+            <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
+            <div class="frm-field"><label>Type personeel *</label><select name="functie" required><option value="">Maak een keuze</option><option>Orderpicker</option><option>Magazijnmedewerker</option><option>Heftruckchauffeur</option><option>Reachtruckchauffeur</option><option>Inpakker</option><option>Logistiek medewerker</option><option>Anders</option></select></div>
+            <div class="frm-field"><label>Aantal medewerkers *</label><select name="aantal" required><option value="">Maak een keuze</option><option>1 medewerker</option><option>2 – 5 medewerkers</option><option>6 – 10 medewerkers</option><option>Meer dan 10</option></select></div>
+            <div class="frm-field"><label>Gewenste startdatum *</label><select name="startdatum" required><option value="">Maak een keuze</option><option>Zo snel mogelijk</option><option>Binnen 2 weken</option><option>Binnen 1 maand</option><option>Datum nog niet bekend</option></select></div>
+            <div class="frm-field"><label>Werktijden *</label><select name="werktijden" required><option value="">Maak een keuze</option><option>Dagdienst</option><option>2-ploegendienst</option><option>3-ploegendienst</option><option>Alleen weekend</option><option>Wisselende diensten</option><option>Nog niet bekend</option></select></div>
+            <div class="frm-field full"><label>Locatie / plaats *</label><input type="text" name="locatie" required placeholder="Plaats waar het werk is"></div>
+            <div class="frm-field full"><label>Vereiste certificaten of ervaring <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="text" name="certificaten" placeholder="Bijv. heftruckcertificaat, VCA, ervaring met scanners"></div>
+            <div class="frm-field full"><label>Extra toelichting <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><textarea name="toelichting" placeholder="Bijzonderheden die we moeten weten"></textarea></div>
+          </div>
+          <p style="font-size:.85rem;color:var(--muted);margin:12px 2px 0;">Velden met <b>*</b> zijn verplicht. De overige velden zijn optioneel, maar helpen ons sneller de juiste mensen te vinden.</p>
+          <div class="frm-foot">
+            <button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Aanvraag versturen</button>
+            <p class="frm-note">Vrijblijvend. We reageren binnen één werkdag.</p>
+          </div>
+        </form>
+        <div class="frm-success" id="ok-emp">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h3>Bedankt voor je aanvraag!</h3>
+          <p>We nemen binnen één werkdag contact met je op met een passend voorstel.</p>
+        </div>
+      </div>
+      <div class="frm-body" id="frm-wrk" style="display:none;">
+        <div style="text-align:center;padding:36px 24px;">
+          <h3 style="font-family:'Poppins',sans-serif;font-size:1.4rem;color:var(--ink);margin-bottom:10px;">Werk zoeken? Schrijf je gratis in.</h3>
+          <p style="color:var(--muted);font-size:1rem;max-width:440px;margin:0 auto 22px;">Vul in twee minuten je profiel in — je beschikbaarheid, wat je zoekt en, als je wilt, je cv. Wij matchen jou aan passend werk in de logistiek.</p>
+          <a href="/inschrijven.html" class="btn btn-blue" style="justify-content:center;">Naar het inschrijfformulier
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -670,7 +711,7 @@ section{position:relative;}
     <h2>Klaar om je personeelstekort op te lossen?</h2>
     <p>Plaats vrijblijvend een aanvraag. Binnen één werkdag hoor je van ons.</p>
     <div class="hero-cta">
-      <a href="/personeel-aanvragen.html" class="btn btn-lime" data-tab="emp">Personeel aanvragen
+      <a href="#formulier" class="btn btn-lime" data-tab="emp">Personeel aanvragen
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
       <a href="/inschrijven.html" class="btn btn-white">Ik zoek werk</a>
@@ -697,27 +738,25 @@ section{position:relative;}
       </div>
       <div class="footer-col">
         <h4>Functies</h4>
-        <a href="/functies.html"><strong>Alle functies →</strong></a>
         <a href="/functie-orderpicker.html">Orderpicker</a>
         <a href="/functie-magazijnmedewerker.html">Magazijnmedewerker</a>
         <a href="/functie-heftruckchauffeur.html">Heftruckchauffeur</a>
         <a href="/functie-reachtruckchauffeur.html">Reachtruckchauffeur</a>
-        <a href="/functie-expeditiemedewerker.html">Expeditiemedewerker</a>
         <a href="/functie-inpakker.html">Inpakker</a>
-        <a href="/functie-logistiek-medewerker.html">Logistiek medewerker</a>
         <a href="/functie-productiemedewerker.html">Productiemedewerker</a>
-        <a href="/functie-chauffeur.html">Chauffeur</a>
-        <a href="/functie-teamleider-logistiek.html">Teamleider logistiek</a>
+        <a href="/functie-expeditiemedewerker.html">Expeditiemedewerker</a>
+        <a href="/functie-logistiek-medewerker.html">Logistiek medewerker</a>
       </div>
       <div class="footer-col">
         <h4>Regio's</h4>
-        <a href="/regios.html"><strong>Alle regio's →</strong></a>
-        <a href="/uitzendbureau-logistiek-rotterdam.html">Logistiek Rotterdam</a>
-        <a href="/uitzendbureau-horeca-amsterdam.html">Horeca Amsterdam</a>
-        <a href="/uitzendbureau-zorg-den-haag.html">Zorg Den Haag</a>
-        <a href="/uitzendbureau-techniek-eindhoven.html">Techniek Eindhoven</a>
-        <a href="/uitzendbureau-logistiek-tilburg.html">Logistiek Tilburg</a>
-        <a href="/personeel-aanvragen.html">Andere regio? →</a>
+        <a href="/uitzendbureau-logistiek-rotterdam.html">Rotterdam</a>
+        <a href="/uitzendbureau-logistiek-amsterdam.html">Amsterdam</a>
+        <a href="/uitzendbureau-logistiek-utrecht.html">Utrecht</a>
+        <a href="/uitzendbureau-logistiek-den-haag.html">Den Haag</a>
+        <a href="/uitzendbureau-logistiek-leiden.html">Leiden</a>
+        <a href="/uitzendbureau-logistiek-hoofddorp.html">Hoofddorp</a>
+        <a href="/uitzendbureau-logistiek-almere.html">Almere</a>
+        <a href="/uitzendbureau-logistiek-dordrecht.html">Dordrecht</a>
       </div>
       <div class="footer-col">
         <h4>Pagina's</h4>
@@ -726,8 +765,6 @@ section{position:relative;}
         <a href="/inschrijven.html">Inschrijven</a>
         <a href="/hoe-het-werkt.html">Hoe het werkt</a>
         <a href="/over-ons.html">Over ons</a>
-                <a href="/over-onze-ai.html">Hoe werkt onze AI?</a>
-        <a href="/onze-tarieven.html">Onze tarieven</a>
         <a href="/kenniscentrum.html">Kenniscentrum</a>
         <a href="/contact.html">Contact</a>
       </div>
@@ -737,17 +774,6 @@ section{position:relative;}
       <span><a href="/privacyverklaring.html" style="color:inherit;text-decoration:underline;">Privacyverklaring</a> · <a href="/voorwaarden.html" style="color:inherit;text-decoration:underline;">Voorwaarden</a></span>
     </div>
   </div>
-<style>
-.trust-badges{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;padding:28px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:24px;}
-.trust-badge{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#9aa0c4;font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;}
-.trust-badge svg{width:14px;height:14px;flex-shrink:0;}
-</style>
-<div class="trust-badges">
-  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>EU AI Act traject — gereed 2 aug 2026</div>
-  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>AVG-compliant met audit trail</div>
-  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>KvK 96618914</div>
-  <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="#D6F24E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Traject naar ABU-norm 2026</div>
-</div>
 </footer>
 
 <script>
@@ -778,12 +804,12 @@ document.querySelectorAll('.qa').forEach(function(qa){
 
 /* finder widget */
 var data = {
-  'Orderpicker':       {uur:'€14,80', klant:'€24,50', dagen:'24 uur'},
-  'Magazijnmedewerker':{uur:'€14,80', klant:'€23,50', dagen:'24 uur'},
-  'Heftruckchauffeur': {uur:'€16,20', klant:'€26,50', dagen:'48 uur'},
-  'Reachtruckchauffeur':{uur:'€16,90', klant:'€27,50', dagen:'48 uur'},
-  'Inpakker':          {uur:'€14,40', klant:'€22,00', dagen:'24 uur'},
-  'Logistiek medewerker':{uur:'€15,30', klant:'€23,50', dagen:'36 uur'}
+  'Orderpicker':       {uur:'€14,80', dagen:'24 uur'},
+  'Magazijnmedewerker':{uur:'€14,80', dagen:'24 uur'},
+  'Heftruckchauffeur': {uur:'€16,20', dagen:'48 uur'},
+  'Reachtruckchauffeur':{uur:'€16,90', dagen:'48 uur'},
+  'Inpakker':          {uur:'€14,40', dagen:'24 uur'},
+  'Logistiek medewerker':{uur:'€15,30', dagen:'36 uur'}
 };
 function runFinder(){
   var f = document.getElementById('f-func').value;
@@ -801,8 +827,7 @@ function runFinder(){
       '<div class="frl-sub">Op basis van de huidige vraag in deze regio.</div>' +
       '<div class="fr-stats">' +
         '<div class="fr-stat"><b>' + d.dagen + '</b><span>indicatieve levertijd</span></div>' +
-        '<div class="fr-stat"><b>vanaf ' + d.klant + '</b><span>klanttarief / uur (all-in)</span></div>' +
-        '<div class="fr-stat" style="background:#FBF6EC;"><b>vanaf ' + d.uur + '</b><span>brutoloon werknemer (CAO)</span></div>' +
+        '<div class="fr-stat"><b>vanaf ' + d.uur + '</b><span>indicatie uurloon (cao)</span></div>' +
       '</div>' +
     '</div>';
 }
@@ -874,43 +899,5 @@ bindForm('form-emp','ok-emp','employer','website-werkgever');
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wvk55mww7c");</script>
 <script>(function(){if(document.querySelector('.hr-ask'))return;var s=document.createElement('style');s.textContent='.hr-ask{position:fixed;bottom:22px;right:22px;z-index:9999;display:inline-flex;align-items:center;gap:10px;background:#3551E6;color:#fff;text-decoration:none;padding:14px 22px;border-radius:100px;font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(53,81,230,0.30);transition:all .18s ease;cursor:pointer;}.hr-ask:hover{background:#2A41C2;transform:translateY(-2px);box-shadow:0 12px 28px rgba(53,81,230,0.40);}.hr-ask svg{width:20px;height:20px;}@media(max-width:640px){.hr-ask{bottom:16px;right:16px;padding:12px 18px;font-size:14px;}.hr-ask svg{width:18px;height:18px;}}';document.head.appendChild(s);var a=document.createElement('a');a.className='hr-ask';a.href='mailto:info@holland-recruitment.nl?subject=Vraag%20via%20de%20website';a.setAttribute('aria-label','Stel een vraag');a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Vraag?</span>';a.addEventListener('click',function(){try{window.clarity&&window.clarity("event","vraag-click");}catch(e){}});document.body.appendChild(a);})();</script>
-
-<style>.nav-links a.current,.mobile-menu a.current{color:var(--blue) !important;font-weight:700;}</style>
-<script>
-(function(){
-  var path = window.location.pathname;
-  if(path === '/' || path.endsWith('/index.html')) path = '/';
-  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(function(a){
-    var href = a.getAttribute('href');
-    if(!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-    if(href === path || (path === '/' && href === '/')) a.classList.add('current');
-  });
-})();
-</script>
-<style>
-.sticky-cta-mobile{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;background:var(--blue);color:#fff;padding:14px 24px;border-radius:100px;box-shadow:0 12px 30px rgba(53,81,230,.32);font-family:Poppins,sans-serif;font-weight:700;font-size:14px;text-decoration:none;display:none;align-items:center;gap:8px;}
-.sticky-cta-mobile.show{display:inline-flex;animation:slideUp .35s ease;}
-.sticky-cta-mobile svg{width:16px;height:16px;}
-@keyframes slideUp{from{opacity:0;transform:translate(-50%,30px);}to{opacity:1;transform:translate(-50%,0);}}
-@media (min-width:769px){.sticky-cta-mobile{display:none !important;}}
-@media (max-width:768px){body.hide-question-bubble #question-bubble,body.hide-question-bubble .question-bubble,body.hide-question-bubble .qa-floating,body.hide-question-bubble .floating-question{display:none !important;}}
-</style>
-<a href="/personeel-aanvragen.html" class="sticky-cta-mobile" id="sticky-cta-mobile">
-  Personeel aanvragen
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-</a>
-<script>
-(function(){
-  document.body.classList.add('hide-question-bubble');
-  var cta = document.getElementById('sticky-cta-mobile');
-  var shown = false;
-  function check(){
-    if(window.scrollY > 400 && !shown){ cta.classList.add('show'); shown = true; }
-    else if(window.scrollY < 200 && shown){ cta.classList.remove('show'); shown = false; }
-  }
-  window.addEventListener('scroll', check, {passive: true});
-})();
-</script>
-  <script src="/conversion-engine.js" defer></script>
 </body>
 </html>
