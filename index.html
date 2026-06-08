@@ -488,53 +488,47 @@ section{position:relative;}
       </div>
     </div>
 
-    <div class="frm-divider reveal" id="formulier" style="scroll-margin-top:110px"><span>Klaar? Plaats hier je aanvraag</span></div>
-    <div class="frm-shell reveal">
-      <div class="frm-tabs">
-        <button class="frm-tab active" data-frm="emp" type="button">Ik zoek personeel</button>
-        <button class="frm-tab" data-frm="wrk" type="button">Ik zoek werk</button>
-      </div>
-      <div class="frm-body" id="frm-emp">
-        <form id="form-emp" novalidate>
-          <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
-          <input type="hidden" name="subject" value="Nieuwe personeelsaanvraag via de website">
-          <input type="hidden" name="herkomst" value="">
-          <input type="checkbox" name="botcheck" style="display:none">
-          <div class="frm-grid">
-            <div class="frm-field"><label>Bedrijfsnaam *</label><input type="text" name="bedrijf" required></div>
-            <div class="frm-field"><label>Contactpersoon *</label><input type="text" name="naam" required></div>
-            <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
-            <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
-            <div class="frm-field"><label>Type personeel *</label><select name="functie" required><option value="">Maak een keuze</option><option>Orderpicker</option><option>Magazijnmedewerker</option><option>Heftruckchauffeur</option><option>Reachtruckchauffeur</option><option>Inpakker</option><option>Logistiek medewerker</option><option>Anders</option></select></div>
-            <div class="frm-field"><label>Aantal medewerkers *</label><select name="aantal" required><option value="">Maak een keuze</option><option>1 medewerker</option><option>2 – 5 medewerkers</option><option>6 – 10 medewerkers</option><option>Meer dan 10</option></select></div>
-            <div class="frm-field"><label>Gewenste startdatum *</label><select name="startdatum" required><option value="">Maak een keuze</option><option>Zo snel mogelijk</option><option>Binnen 2 weken</option><option>Binnen 1 maand</option><option>Datum nog niet bekend</option></select></div>
-            <div class="frm-field"><label>Werktijden *</label><select name="werktijden" required><option value="">Maak een keuze</option><option>Dagdienst</option><option>2-ploegendienst</option><option>3-ploegendienst</option><option>Alleen weekend</option><option>Wisselende diensten</option><option>Nog niet bekend</option></select></div>
-            <div class="frm-field full"><label>Locatie / plaats *</label><input type="text" name="locatie" required placeholder="Plaats waar het werk is"></div>
-            <div class="frm-field full"><label>Vereiste certificaten of ervaring <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="text" name="certificaten" placeholder="Bijv. heftruckcertificaat, VCA, ervaring met scanners"></div>
-            <div class="frm-field full"><label>Extra toelichting <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><textarea name="toelichting" placeholder="Bijzonderheden die we moeten weten"></textarea></div>
+    <div class="frm-divider reveal" id="formulier" style="scroll-margin-top:110px"><span>Klaar? Kies jouw pad</span></div>
+    <div class="frm-shell reveal" style="background:transparent;box-shadow:none;padding:0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:880px;margin:0 auto;">
+        <a href="/personeel-aanvragen.html" class="path-card path-card--primary" style="display:block;padding:32px 28px;background:#3551E6;color:#fff;border-radius:18px;text-decoration:none;transition:transform .25s ease, box-shadow .25s ease;box-shadow:0 12px 28px rgba(53,81,230,.25);">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+            <div style="width:48px;height:48px;background:rgba(255,255,255,.18);border-radius:12px;display:grid;place-items:center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div style="font-family:'Poppins',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600;">Werkgever</div>
           </div>
-          <p style="font-size:.85rem;color:var(--muted);margin:12px 2px 0;">Velden met <b>*</b> zijn verplicht. De overige velden zijn optioneel, maar helpen ons sneller de juiste mensen te vinden.</p>
-          <div class="frm-foot">
-            <button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Aanvraag versturen</button>
-            <p class="frm-note">Vrijblijvend. We reageren binnen één werkdag.</p>
+          <h3 style="font-family:'Poppins',sans-serif;font-size:1.5rem;line-height:1.25;margin:0 0 10px;color:#fff;font-weight:700;">Personeel aanvragen</h3>
+          <p style="color:rgba(255,255,255,.85);margin:0 0 22px;font-size:.95rem;line-height:1.5;">Eén aanvraag, wij regelen matching, contract en verloning. Binnen 24-48u kandidaten in beeld.</p>
+          <div style="display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#fff;font-size:.95rem;">
+            Start jouw aanvraag
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
           </div>
-        </form>
-        <div class="frm-success" id="ok-emp">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-          <h3>Bedankt voor je aanvraag!</h3>
-          <p>We nemen binnen één werkdag contact met je op met een passend voorstel.</p>
-        </div>
+        </a>
+        <a href="/inschrijven.html" class="path-card path-card--secondary" style="display:block;padding:32px 28px;background:#fff;color:#15183A;border:2px solid #15183A;border-radius:18px;text-decoration:none;transition:transform .25s ease, box-shadow .25s ease;">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+            <div style="width:48px;height:48px;background:#D6F24E;border-radius:12px;display:grid;place-items:center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#15183A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div style="font-family:'Poppins',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:#5C6178;font-weight:600;">Werknemer</div>
+          </div>
+          <h3 style="font-family:'Poppins',sans-serif;font-size:1.5rem;line-height:1.25;margin:0 0 10px;color:#15183A;font-weight:700;">Ik zoek werk</h3>
+          <p style="color:#5C6178;margin:0 0 22px;font-size:.95rem;line-height:1.5;">Schrijf je gratis in. Wij matchen jou aan passend werk in jouw regio — vaak binnen een week aan de slag.</p>
+          <div style="display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#15183A;font-size:.95rem;">
+            Naar het inschrijfformulier
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </div>
+        </a>
       </div>
-      <div class="frm-body" id="frm-wrk" style="display:none;">
-        <div style="text-align:center;padding:36px 24px;">
-          <h3 style="font-family:'Poppins',sans-serif;font-size:1.4rem;color:var(--ink);margin-bottom:10px;">Werk zoeken? Schrijf je gratis in.</h3>
-          <p style="color:var(--muted);font-size:1rem;max-width:440px;margin:0 auto 22px;">Vul in twee minuten je profiel in — je beschikbaarheid, wat je zoekt en, als je wilt, je cv. Wij matchen jou aan passend werk in de logistiek.</p>
-          <a href="/inschrijven.html" class="btn btn-blue" style="justify-content:center;">Naar het inschrijfformulier
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-      </div>
+      <p style="text-align:center;color:#5C6178;font-size:.9rem;margin:22px auto 0;max-width:520px;">Of klik rechtsonder op <strong>Vraag?</strong> — Sanne, onze AI-recruiter, helpt je direct.</p>
     </div>
+    <style>
+      .path-card:hover{transform:translateY(-3px);box-shadow:0 18px 38px rgba(53,81,230,.32)}
+      .path-card--secondary:hover{box-shadow:0 18px 38px rgba(21,24,58,.18)}
+      @media (max-width:720px){
+        .frm-shell > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+      }
+    </style>
   </div>
 </section>
 
