@@ -291,16 +291,30 @@ textarea{resize:vertical;min-height:78px;}
     document.getElementById('cv-doc').innerHTML=h;
   }
 
-  /* registreer de kandidaat (upsert op e-mail) en koppel het cv */
+  /* V8 — registreer kandidaat via portaal-API (maakt account + magic-link + welkom-mail) */
   function registreer(data,cvPath){
     try{
-      var p=new URLSearchParams();
-      p.append('first_name',data.voornaam); p.append('last_name',data.achternaam);
-      p.append('email',data.email); p.append('phone',data.telefoon); p.append('city',data.woonplaats);
-      p.append('notes','Profiel via cv-generator: '+(data.over_jou||''));
-      p.append('cv_path',cvPath||'');
-      p.append('source',(window.hrHerkomst?window.hrHerkomst():'Direct / geen verwijzing'));
-      fetch(INTAKE_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+      var body={
+        firstName: data.voornaam,
+        lastName: data.achternaam,
+        email: data.email,
+        phone: data.telefoon,
+        city: data.woonplaats,
+        preferredRoles: '',
+        availability: 'Fulltime',
+        experienceYears: null,
+        certificates: data.vaardigheden||'',
+        cvUrl: cvPath||null,
+        avgConsent: true,
+        source: 'website-cv-maken',
+        herkomst: (window.hrHerkomst?window.hrHerkomst():'Direct / geen verwijzing'),
+        toelichting: 'Profiel via cv-generator: '+(data.over_jou||'')
+      };
+      fetch('https://app.holland-recruitment.nl/api/website-signup-candidate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      }).catch(function(){});
     }catch(e){}
   }
   /* koppel certificaten ~6s later, zodat de kandidaat al bestaat */

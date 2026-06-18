@@ -411,8 +411,9 @@ section{position:relative;}
     </form>
     <div class="frm-success" id="ok-kandidaat">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <h3>Bedankt voor je inschrijving!</h3>
-      <p>We hebben je profiel ontvangen en nemen binnen één werkdag contact met je op.</p>
+      <h3>Check je mail!</h3>
+      <p>We hebben je profiel aangemaakt en een directe inloglink naar je portaal gestuurd. Open de mail en klik op de knop om in te loggen — daar kun je je cv toevoegen en zie je passende vacatures.</p>
+      <p style="margin-top:12px;font-size:.92rem;color:var(--muted);">Geen mail gekregen na 2 minuten? Check spam of <a href="https://wa.me/31851249654" style="color:var(--blue);font-weight:600;">app ons via WhatsApp</a>.</p>
     </div>
   </div></div>
 </section>
@@ -430,29 +431,58 @@ section{position:relative;}
   var origLabel=btn?btn.textContent:'';
   function endsWithAny(s,arr){for(var i=0;i<arr.length;i++){if(s.length>=arr[i].length&&s.slice(-arr[i].length)===arr[i])return true;}return false;}
   function fail(msg){if(btn){btn.disabled=false;btn.textContent=origLabel;}alert(msg);}
-  function postWebhook(cvPath){
-    try{
-      var p=new URLSearchParams();
-      p.append('first_name',val('voornaam'));
-      p.append('last_name',val('achternaam'));
-      p.append('email',val('email'));
-      p.append('phone',val('telefoon'));
-      p.append('city',val('woonplaats'));
-      p.append('preferred_roles',val('functie'));
-      p.append('availability',val('beschikbaarheid'));
-      p.append('certificates',val('certificaten'));
-      p.append('notes','Ervaring: '+val('ervaring')+' | Toelichting: '+val('toelichting'));
-      p.append('cv_path',cvPath||'');
-      p.append('source',(window.hrHerkomst?window.hrHerkomst():'Direct / geen verwijzing'));
-      fetch('https://hollandrecruitment.app.n8n.cloud/webhook/kandidaat',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
-    }catch(e){}
-  }
+  // V8 — Form posts NU naar portaal-API. Maakt account + magic-link + welkom-mail +
+  // admin-notify + admin_inbox actie. Bezoeker blijft op www. domein.
   function finish(cvPath){
-    postWebhook(cvPath);
-    var fd=new FormData(f); fd.delete('cv');
-    fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Accept':'application/json'},body:fd})
-      .then(function(){f.style.display='none';var ok=document.getElementById('ok-kandidaat');ok.style.display='block';ok.scrollIntoView({behavior:'smooth',block:'center'});})
-      .catch(function(){fail('Er ging iets mis. Controleer je verbinding en probeer opnieuw.');});
+    // Map experience-string naar getal (voor portaal completeness-score)
+    function expToYears(e){
+      if(!e) return null;
+      var s=e.toLowerCase();
+      if(s.indexOf('geen')>=0) return 0;
+      if(s.indexOf('minder')>=0) return 0;
+      if(s.indexOf('1')>=0 && s.indexOf('3')>=0) return 2;
+      if(s.indexOf('3')>=0 && s.indexOf('5')>=0) return 4;
+      if(s.indexOf('meer')>=0) return 6;
+      return null;
+    }
+    var avgEl=f.elements['avg_consent'];
+    var marketingEl=f.elements['marketing_opt_in'];
+    var body={
+      firstName: val('voornaam'),
+      lastName: val('achternaam'),
+      email: val('email'),
+      phone: val('telefoon'),
+      city: val('woonplaats'),
+      preferredRoles: val('functie'),
+      availability: val('beschikbaarheid'),
+      experienceYears: expToYears(val('ervaring')),
+      certificates: val('certificaten'),
+      cvUrl: cvPath||null,
+      avgConsent: avgEl ? !!avgEl.checked : true,
+      source: 'website-inschrijven',
+      herkomst: (window.hrHerkomst?window.hrHerkomst():'Direct / geen verwijzing'),
+      toelichting: val('toelichting'),
+      marketing_opt_in: marketingEl ? !!marketingEl.checked : false
+    };
+    fetch('https://app.holland-recruitment.nl/api/website-signup-candidate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    })
+      .then(function(r){return r.json().catch(function(){return {ok:false,message:'Onleesbaar antwoord'};});})
+      .then(function(d){
+        if(d && d.ok){
+          f.style.display='none';
+          var ok=document.getElementById('ok-kandidaat');
+          ok.style.display='block';
+          ok.scrollIntoView({behavior:'smooth',block:'center'});
+        } else {
+          fail((d && d.message) || 'Er ging iets mis. Probeer opnieuw of WhatsApp ons direct.');
+        }
+      })
+      .catch(function(){
+        fail('Er ging iets mis. Controleer je verbinding en probeer opnieuw.');
+      });
   }
   f.addEventListener('submit',function(ev){
     ev.preventDefault();

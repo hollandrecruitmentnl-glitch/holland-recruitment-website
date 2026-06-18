@@ -593,7 +593,9 @@ if (burger && mm) {
 var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.14 });
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-const WEBHOOK_URL = 'https://hollandrecruitment.app.n8n.cloud/webhook/employer-intake';
+// V8 — POST naar portaal-API. Maakt company-record + welkom-mail + magic-link +
+// admin-notify naar info@ + admin_inbox actie. Bezoeker blijft op www. domein.
+const API_URL = 'https://app.holland-recruitment.nl/api/website-signup-employer';
 const form = document.getElementById('b2b-form');
 const submitBtn = document.getElementById('submit-btn');
 const formCard = document.getElementById('form-card');
@@ -606,17 +608,43 @@ if (form) form.addEventListener('submit', async (e) => {
   const email = form.contact_email.value.toLowerCase();
   if (email.includes('reloadvisor')) { errorMsg.textContent = 'Gebruik je echte zakelijke e-mail (niet reloadvisor).'; formCard.style.display = 'none'; errorState.style.display = 'block'; window.scrollTo({top:errorState.offsetTop-40,behavior:'smooth'}); return; }
   submitBtn.disabled = true; submitBtn.innerHTML = '<span class="loading"></span>Versturen...';
-  const formData = new FormData(form); const data = {};
-  for (const [key, value] of formData.entries()) { if (value === '' || value === null) continue; data[key] = value; }
-  data.avg_consent = form.avg_consent.checked; data.marketing_opt_in = form.marketing_opt_in.checked;
-  data.submitted_at = new Date().toISOString(); data.page_url = window.location.href;
+  const formData = new FormData(form); const raw = {};
+  for (const [key, value] of formData.entries()) { if (value === '' || value === null) continue; raw[key] = value; }
+  // Map naar portaal-API field-namen
+  const body = {
+    companyName: raw.company_name || '',
+    kvk: raw.kvk_number || '',
+    branche: raw.sector || 'Logistiek',
+    city: raw.location_city || '',
+    website: raw.website || '',
+    firstName: raw.contact_first_name || '',
+    lastName: raw.contact_last_name || '',
+    contactFunction: raw.contact_role || '',
+    email: email,
+    phone: raw.contact_phone || '',
+    // Initial-request velden (worden via addInitialRequest verwerkt in API)
+    requestedRole: raw.vacancy_title || '',
+    requestedCount: raw.headcount_needed || 1,
+    urgency: raw.start_date || raw.urgency || 'Z.s.m.',
+    description: [
+      raw.vacancy_city && ('Werklocatie: ' + raw.vacancy_city),
+      raw.hours_per_week_min && ('Uren/wk: ' + raw.hours_per_week_min + '-' + (raw.hours_per_week_max || raw.hours_per_week_min)),
+      raw.shift_pattern && ('Shift: ' + raw.shift_pattern),
+      (raw.hourly_rate_min || raw.hourly_rate_max) && ('Tarief: €' + (raw.hourly_rate_min || '?') + '-' + (raw.hourly_rate_max || '?') + '/u'),
+      raw.requirements_text && ('Vereisten: ' + raw.requirements_text),
+      raw.company_size_range && ('Bedrijfsgrootte: ' + raw.company_size_range)
+    ].filter(Boolean).join(' | '),
+    source: 'website-personeel-aanvragen',
+    page_url: window.location.href
+  };
   try {
-    const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    if (!response.ok) throw new Error('Server respons ' + response.status);
+    const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await response.json().catch(() => ({ ok: false, message: 'Onleesbaar antwoord' }));
+    if (!data.ok) throw new Error(data.message || ('Server respons ' + response.status));
     formCard.style.display = 'none'; successState.style.display = 'block';
     window.scrollTo({top:successState.offsetTop-40,behavior:'smooth'});
   } catch (err) {
-    errorMsg.textContent = 'Verzenden mislukt: ' + (err.message || 'onbekend') + '. Probeer opnieuw of mail info@holland-recruitment.nl.';
+    errorMsg.textContent = 'Verzenden mislukt: ' + (err.message || 'onbekend') + '. Probeer opnieuw of WhatsApp ons direct: wa.me/31851249654.';
     formCard.style.display = 'none'; errorState.style.display = 'block';
     submitBtn.disabled = false; submitBtn.innerHTML = 'Verstuur aanvraag &rarr;';
   }
