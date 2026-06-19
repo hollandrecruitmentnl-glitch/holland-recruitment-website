@@ -477,7 +477,28 @@ section{position:relative;}
           </div>
           <div class="b2b-row"><div class="b2b-field"><label>Functie / rol <span class="hint">(optioneel)</span></label><input type="text" name="contact_role" placeholder="Bijv. HR Manager, Owner"></div></div>
         </div>
-        <div class="b2b-section"><div class="b2b-section-title">Vacature <span style="font-weight:500;font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">(optioneel — alles invullen kan ook later in het portaal)</span></div>
+        <!-- V18 — Progressive disclosure: vacature-velden collapsed by default -->
+        <style>
+          .v18-accordion{margin-bottom:34px;border:1.5px dashed var(--line);border-radius:14px;background:#fff;}
+          .v18-accordion-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:none;cursor:pointer;padding:18px 22px;text-align:left;font-family:inherit;}
+          .v18-accordion-toggle:hover{background:rgba(53,81,230,0.04);}
+          .v18-accordion-toggle .v18-tlabel{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--ink);}
+          .v18-accordion-toggle .v18-tsub{display:block;font-family:'Inter',sans-serif;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:2px;text-transform:none;letter-spacing:0;}
+          .v18-accordion-toggle .v18-chev{flex-shrink:0;width:22px;height:22px;color:var(--muted);transition:transform .25s ease;}
+          .v18-accordion.open .v18-chev{transform:rotate(180deg);}
+          .v18-accordion-body{display:none;padding:0 22px 22px;border-top:1px solid var(--line);margin-top:0;}
+          .v18-accordion.open .v18-accordion-body{display:block;}
+          .v18-accordion-body .b2b-row{margin-top:18px;}
+        </style>
+        <div class="v18-accordion" id="vac-accordion">
+          <button type="button" class="v18-accordion-toggle" id="vac-toggle" aria-expanded="false">
+            <span>
+              <span class="v18-tlabel">+ Voeg vacature-details toe</span>
+              <span class="v18-tsub">Optioneel — je kunt dit ook later in je portaal invullen</span>
+            </span>
+            <svg class="v18-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="v18-accordion-body">
           <div class="b2b-row r21">
             <div class="b2b-field"><label>Functietitel <span class="hint">(optioneel — vul aan in portaal)</span></label><input type="text" name="vacancy_title" placeholder="Bijv. Orderpicker, Magazijnmedewerker"></div>
             <div class="b2b-field"><label>Aantal mensen <span class="hint">(optioneel)</span></label><input type="number" name="headcount_needed" min="1" max="500" placeholder="1"></div>
@@ -498,14 +519,28 @@ section{position:relative;}
           </div>
           <div class="b2b-row"><div class="b2b-field"><label>Vereisten <span class="hint">(certificaten, talen, ervaring)</span></label><textarea name="requirements_text" placeholder="Bijv. VCA basis, Nederlands B1, minimaal 1 jaar magazijnervaring, eigen vervoer"></textarea></div></div>
           <div class="b2b-row"><div class="b2b-field"><label>Aanvullende informatie <span class="hint">(optioneel)</span></label><textarea name="notes" placeholder="Wat moeten we nog meer weten? Werkprocessen, cultuur, korte termijn of langdurig..."></textarea></div></div>
+          </div>
         </div>
+        <script>
+          (function(){
+            var acc=document.getElementById('vac-accordion');
+            var btn=document.getElementById('vac-toggle');
+            if(!acc||!btn)return;
+            btn.addEventListener('click',function(){
+              var open=acc.classList.toggle('open');
+              btn.setAttribute('aria-expanded',open?'true':'false');
+              var lbl=btn.querySelector('.v18-tlabel');
+              if(lbl)lbl.textContent=open?'− Verberg vacature-details':'+ Voeg vacature-details toe';
+            });
+          })();
+        </script>
         <div class="b2b-consent">
           <div class="crow"><input type="checkbox" name="avg_consent" id="avg_consent" required><label for="avg_consent"><span class="strong">Ik geef toestemming voor verwerking van deze gegevens</span> voor het uitvoeren van mijn aanvraag, conform de <a href="/privacyverklaring.html" target="_blank">privacyverklaring</a> van Holland Recruitment. <span style="color:var(--coral);font-weight:700;">*</span></label></div>
           <div class="crow"><input type="checkbox" name="marketing_opt_in" id="marketing_opt_in"><label for="marketing_opt_in">Ja, ik wil op de hoogte blijven van nieuwe diensten en sectorinzichten van Holland Recruitment (max 1× per maand).</label></div>
         </div>
         <div class="b2b-submit-row">
-          <div class="b2b-submit-info">Onze AI-matcher analyseert je aanvraag direct. Je krijgt binnen enkele minuten een bevestigingsmail met eerste inzichten.</div>
-          <button type="submit" class="btn btn-blue" id="submit-btn">Verstuur aanvraag &rarr;</button>
+          <div class="b2b-submit-info">We sturen je direct een inloglink voor je portaal. Daar kun je je aanvraag aanvullen en je shortlist bekijken zodra die klaar is.</div>
+          <button type="submit" class="btn btn-blue" id="submit-btn">Account aanmaken &amp; aanvraag versturen &rarr;</button>
         </div>
         <input type="hidden" name="source" value="website-form">
       </form>

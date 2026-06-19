@@ -374,63 +374,151 @@ section{position:relative;}
   </div></div>
 </section><section class="sec" style="padding-top:10px;">
   <div class="wrap"><div style="max-width:720px;">
-    <h3 style="font-size:1.3rem;color:var(--ink);margin-bottom:4px;">Jouw profiel</h3>
-    <p style="color:var(--muted);font-size:.97rem;margin-bottom:18px;">Gratis en vrijblijvend. We nemen meestal binnen één werkdag contact met je op.</p>
+
+    <style>
+      /* V17 — Form-redesign: brand-card stijl met focus-state */
+      .v17-card{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:28px 30px;margin-bottom:18px;box-shadow:0 1px 0 rgba(21,24,58,.02);transition:border-color .18s ease;}
+      .v17-card:hover{border-color:#e0d9c8;}
+      .v17-card-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+      .v17-card-ic{width:38px;height:38px;border-radius:12px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+      .v17-card-ic svg{width:18px;height:18px;}
+      .v17-card-num{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);}
+      .v17-card-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.15rem;color:var(--ink);letter-spacing:-.01em;}
+      .v17-card-sub{color:var(--muted);font-size:.92rem;margin-bottom:18px;margin-left:50px;}
+      .v17-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+      .v17-grid .full{grid-column:1 / -1;}
+      @media(max-width:560px){.v17-grid{grid-template-columns:1fr;}}
+      .v17-field{display:flex;flex-direction:column;gap:6px;}
+      .v17-field label{font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;color:var(--ink);}
+      .v17-field label .opt{color:var(--muted);font-weight:400;font-size:.85em;}
+      .v17-field input[type="text"],.v17-field input[type="email"],.v17-field input[type="tel"],.v17-field select,.v17-field textarea{font-family:inherit;font-size:15px;color:var(--ink);padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;width:100%;transition:border-color .15s ease,box-shadow .15s ease;}
+      .v17-field input:focus,.v17-field select:focus,.v17-field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(53,81,230,.12);}
+      .v17-field textarea{resize:vertical;min-height:90px;}
+      .v17-progress{display:flex;gap:6px;margin-bottom:24px;}
+      .v17-progress-step{flex:1;height:4px;border-radius:3px;background:var(--line);transition:background .25s;}
+      .v17-progress-step.active{background:var(--blue);}
+      .v17-microcopy{font-size:13px;color:var(--muted);margin:8px 0 16px 50px;display:flex;align-items:center;gap:8px;}
+      .v17-microcopy svg{width:14px;height:14px;color:var(--blue);flex-shrink:0;}
+      .v17-fnc{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px;margin-top:6px;}
+      .v17-fnc label{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-weight:500;font-size:.92rem;cursor:pointer;transition:all .15s ease;background:#fff;}
+      .v17-fnc label:hover{border-color:var(--blue);background:var(--blue-soft);}
+      .v17-fnc label.checked,.v17-fnc input:checked + span{color:var(--blue);}
+      .v17-fnc input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;}
+      .v17-anders{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1.5px dashed var(--line);border-radius:10px;}
+      .v17-anders input[type="text"]{flex:1;min-width:200px;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:.92rem;}
+      .v17-file{padding:18px;border:1.5px dashed var(--line);border-radius:12px;background:var(--cream);transition:border-color .15s;}
+      .v17-file:hover{border-color:var(--blue);}
+      .v17-file input[type="file"]{font-size:.92rem;width:100%;}
+      .v17-consent{display:flex;gap:11px;align-items:flex-start;padding:14px;background:var(--cream);border-radius:12px;border:1px solid var(--line);margin-bottom:8px;}
+      .v17-consent input[type="checkbox"]{margin-top:2px;width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;}
+      .v17-consent span{font-size:13.5px;color:var(--ink);line-height:1.55;}
+      .v17-submit{width:100%;justify-content:center;font-size:16px;padding:18px 28px;margin-top:8px;}
+      .v17-trust{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--muted);}
+      .v17-trust span{display:flex;align-items:center;gap:6px;}
+      .v17-trust svg{width:14px;height:14px;color:var(--blue);}
+    </style>
+
+    <!-- Progress strip -->
+    <div class="v17-progress reveal">
+      <div class="v17-progress-step active"></div>
+      <div class="v17-progress-step active"></div>
+      <div class="v17-progress-step active"></div>
+    </div>
+
     <form id="form-kandidaat" novalidate>
       <input type="hidden" name="access_key" value="35d4cbc0-83ad-4b67-b44f-d480d70de3ed">
       <input type="hidden" name="subject" value="Nieuwe kandidaat-inschrijving via de website">
       <input type="checkbox" name="botcheck" style="display:none">
-      <div class="frm-grid">
-        <div class="frm-field"><label>Voornaam *</label><input type="text" name="voornaam" required></div>
-        <div class="frm-field"><label>Achternaam *</label><input type="text" name="achternaam" required></div>
-        <div class="frm-field"><label>E-mailadres *</label><input type="email" name="email" required></div>
-        <div class="frm-field"><label>Telefoonnummer *</label><input type="tel" name="telefoon" required></div>
-        <div class="frm-field"><label>Woonplaats *</label><input type="text" name="woonplaats" required></div>
-        <div class="frm-field full">
-          <label>Welk werk zoek je? * <span style="color:var(--muted);font-weight:400;font-size:.85rem;">(meerdere mogelijk)</span></label>
-          <div id="functie-checks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px 14px;margin-top:6px;">
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Orderpicker" style="width:17px;height:17px;accent-color:var(--blue);">Orderpicker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Magazijnmedewerker" style="width:17px;height:17px;accent-color:var(--blue);">Magazijnmedewerker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Heftruckchauffeur" style="width:17px;height:17px;accent-color:var(--blue);">Heftruckchauffeur</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Reachtruckchauffeur" style="width:17px;height:17px;accent-color:var(--blue);">Reachtruckchauffeur</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Inpakker" style="width:17px;height:17px;accent-color:var(--blue);">Inpakker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Productiemedewerker" style="width:17px;height:17px;accent-color:var(--blue);">Productiemedewerker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Logistiek medewerker" style="width:17px;height:17px;accent-color:var(--blue);">Logistiek medewerker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Expeditiemedewerker" style="width:17px;height:17px;accent-color:var(--blue);">Expeditiemedewerker</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Chauffeur" style="width:17px;height:17px;accent-color:var(--blue);">Chauffeur</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Teamleider logistiek" style="width:17px;height:17px;accent-color:var(--blue);">Teamleider logistiek</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Horeca / housekeeping" style="width:17px;height:17px;accent-color:var(--blue);">Horeca / housekeeping</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Schoonmaak" style="width:17px;height:17px;accent-color:var(--blue);">Schoonmaak</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Techniek / installatie" style="width:17px;height:17px;accent-color:var(--blue);">Techniek / installatie</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Customer support / admin" style="width:17px;height:17px;accent-color:var(--blue);">Customer support / admin</label>
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" name="functies" value="Sta open voor alles" style="width:17px;height:17px;accent-color:var(--blue);">Sta open voor alles</label>
-          </div>
-          <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:.94rem;cursor:pointer;"><input type="checkbox" id="functie-anders-toggle" style="width:17px;height:17px;accent-color:var(--blue);">Anders, namelijk:</label>
-            <input type="text" name="functie_anders" id="functie-anders-input" placeholder="Vul je gewenste functie in" style="flex:1;min-width:200px;display:none;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:.94rem;">
-          </div>
+
+      <!-- CARD 1: Wie ben je? -->
+      <div class="v17-card reveal d1">
+        <div class="v17-card-head">
+          <div class="v17-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div><span class="v17-card-num">1.</span> <span class="v17-card-title">Wie ben je?</span></div>
         </div>
-        <div class="frm-field"><label>Werkervaring *</label><select name="ervaring" required><option value="">Maak een keuze</option><option>Geen ervaring</option><option>Minder dan 1 jaar</option><option>1 – 3 jaar</option><option>3 – 5 jaar</option><option>Meer dan 5 jaar</option></select></div>
-        <div class="frm-field"><label>Beschikbaarheid *</label><select name="beschikbaarheid" required><option value="">Maak een keuze</option><option>Fulltime</option><option>Parttime</option><option>Alleen weekend</option><option>Flexibel / oproep</option></select></div>
-        <div class="frm-field full"><label>Certificaten</label><input type="text" name="certificaten" placeholder="bijv. heftruckcertificaat, reachtruckcertificaat, VCA, rijbewijs B"></div>
-        <div class="frm-field full"><label>Toelichting</label><textarea name="toelichting" placeholder="Vertel kort iets over jezelf, je ervaring of wat je zoekt."></textarea></div>
-        <div class="frm-field full"><label>Cv uploaden <span style="color:var(--muted);font-weight:400;">(optioneel)</span></label><input type="file" name="cv" accept=".pdf,application/pdf" style="font-size:.92rem;padding-top:11px;"><span style="display:block;margin-top:6px;font-size:.82rem;color:var(--muted);">PDF &middot; max 5 MB &middot; een cv is niet verplicht, maar helpt ons je sneller te matchen. Heb je geen pdf? Maak er gratis &eacute;&eacute;n via onze cv-tool.</span></div>
+        <p class="v17-card-sub">Zodat we je kunnen bereiken zodra we werk hebben dat past.</p>
+        <div class="v17-grid">
+          <div class="v17-field"><label>Voornaam <span style="color:var(--coral);">*</span></label><input type="text" name="voornaam" required autocomplete="given-name"></div>
+          <div class="v17-field"><label>Achternaam <span style="color:var(--coral);">*</span></label><input type="text" name="achternaam" required autocomplete="family-name"></div>
+          <div class="v17-field"><label>E-mailadres <span style="color:var(--coral);">*</span></label><input type="email" name="email" required autocomplete="email" placeholder="naam@email.nl"></div>
+          <div class="v17-field"><label>Telefoonnummer <span style="color:var(--coral);">*</span></label><input type="tel" name="telefoon" required autocomplete="tel" placeholder="06-12345678"></div>
+          <div class="v17-field full"><label>Woonplaats <span style="color:var(--coral);">*</span></label><input type="text" name="woonplaats" required autocomplete="address-level2" placeholder="Bijv. Rotterdam"></div>
+        </div>
       </div>
-      
-        <div class="frm-field full" style="margin-top:8px;">
-          <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink);cursor:pointer;font-weight:500;">
-            <input type="checkbox" name="avg_consent" required style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;">
-            <span><strong>Ik geef toestemming voor verwerking van mijn gegevens</strong> voor het uitvoeren van mijn inschrijving, conform de <a href="/privacyverklaring.html" target="_blank" style="color:var(--blue);">privacyverklaring</a>. <span style="color:var(--coral);font-weight:700;">*</span></span>
-          </label>
+
+      <!-- CARD 2: Welk werk zoek je? -->
+      <div class="v17-card reveal d2">
+        <div class="v17-card-head">
+          <div class="v17-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-7l-2-3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg></div>
+          <div><span class="v17-card-num">2.</span> <span class="v17-card-title">Wat zoek je?</span></div>
         </div>
-        <div class="frm-field full" style="margin-top:6px;">
-          <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);cursor:pointer;">
-            <input type="checkbox" name="marketing_opt_in" style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;">
-            <span>Ik wil op de hoogte blijven van nieuwe vacatures via mail (max 1× per week).</span>
-          </label>
+        <p class="v17-card-sub">Kies zoveel als je wilt. Hoe meer opties, hoe meer matches.</p>
+        <div class="v17-field full">
+          <label>Welk werk zoek je? <span style="color:var(--coral);">*</span> <span class="opt">(meerdere mogelijk)</span></label>
+          <div id="functie-checks" class="v17-fnc">
+            <label><input type="checkbox" name="functies" value="Orderpicker" >Orderpicker</label>
+            <label><input type="checkbox" name="functies" value="Magazijnmedewerker">Magazijnmedewerker</label>
+            <label><input type="checkbox" name="functies" value="Heftruckchauffeur">Heftruckchauffeur</label>
+            <label><input type="checkbox" name="functies" value="Reachtruckchauffeur">Reachtruckchauffeur</label>
+            <label><input type="checkbox" name="functies" value="Inpakker">Inpakker</label>
+            <label><input type="checkbox" name="functies" value="Productiemedewerker">Productiemedewerker</label>
+            <label><input type="checkbox" name="functies" value="Logistiek medewerker">Logistiek medewerker</label>
+            <label><input type="checkbox" name="functies" value="Expeditiemedewerker">Expeditiemedewerker</label>
+            <label><input type="checkbox" name="functies" value="Chauffeur">Chauffeur</label>
+            <label><input type="checkbox" name="functies" value="Teamleider logistiek">Teamleider logistiek</label>
+            <label><input type="checkbox" name="functies" value="Horeca / housekeeping">Horeca / housekeeping</label>
+            <label><input type="checkbox" name="functies" value="Schoonmaak">Schoonmaak</label>
+            <label><input type="checkbox" name="functies" value="Techniek / installatie">Techniek / installatie</label>
+            <label><input type="checkbox" name="functies" value="Customer support / admin">Customer support / admin</label>
+            <label><input type="checkbox" name="functies" value="Sta open voor alles">Sta open voor alles</label>
+          </div>
+          <div class="v17-anders">
+            <label style="border:none;padding:0;background:transparent;"><input type="checkbox" id="functie-anders-toggle">Anders, namelijk:</label>
+            <input type="text" name="functie_anders" id="functie-anders-input" placeholder="Vul je gewenste functie in" style="display:none;">
+          </div>
         </div>
 
-          <div class="frm-foot"><button type="submit" class="btn btn-blue" style="width:100%;justify-content:center;">Inschrijving versturen</button></div>
+        <div class="v17-grid" style="margin-top:18px;">
+          <div class="v17-field"><label>Werkervaring <span style="color:var(--coral);">*</span></label><select name="ervaring" required><option value="">Maak een keuze</option><option>Geen ervaring</option><option>Minder dan 1 jaar</option><option>1 – 3 jaar</option><option>3 – 5 jaar</option><option>Meer dan 5 jaar</option></select></div>
+          <div class="v17-field"><label>Beschikbaarheid <span style="color:var(--coral);">*</span></label><select name="beschikbaarheid" required><option value="">Maak een keuze</option><option>Fulltime</option><option>Parttime</option><option>Alleen weekend</option><option>Flexibel / oproep</option></select></div>
+          <div class="v17-field full"><label>Certificaten <span class="opt">(optioneel)</span></label><input type="text" name="certificaten" placeholder="bijv. heftruckcertificaat, VCA, rijbewijs B"></div>
+          <div class="v17-field full"><label>Toelichting <span class="opt">(optioneel)</span></label><textarea name="toelichting" placeholder="Vertel kort iets over jezelf, je ervaring of wat je zoekt."></textarea></div>
+        </div>
+      </div>
+
+      <!-- CARD 3: Documenten & akkoord -->
+      <div class="v17-card reveal d3">
+        <div class="v17-card-head">
+          <div class="v17-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l2 2 4-4"/></svg></div>
+          <div><span class="v17-card-num">3.</span> <span class="v17-card-title">Klaar — verstuur</span></div>
+        </div>
+        <p class="v17-card-sub">Een CV maakt matching sneller, maar is niet verplicht.</p>
+
+        <div class="v17-field full" style="margin-bottom:14px;">
+          <label>Cv uploaden <span class="opt">(optioneel)</span></label>
+          <div class="v17-file">
+            <input type="file" name="cv" accept=".pdf,application/pdf">
+            <div style="margin-top:8px;font-size:.85rem;color:var(--muted);">PDF · max 5 MB · geen CV? <a href="/cv-maken.html" style="color:var(--blue);font-weight:600;">Maak er gratis één →</a></div>
+          </div>
+        </div>
+
+        <div class="v17-consent">
+          <input type="checkbox" name="avg_consent" id="avg_consent" required>
+          <span><strong>Ik geef toestemming voor verwerking van mijn gegevens</strong> voor het uitvoeren van mijn inschrijving, conform de <a href="/privacyverklaring.html" target="_blank" style="color:var(--blue);font-weight:600;">privacyverklaring</a>. <span style="color:var(--coral);font-weight:700;">*</span></span>
+        </div>
+        <div class="v17-consent" style="background:#fff;border-color:var(--line);">
+          <input type="checkbox" name="marketing_opt_in">
+          <span style="color:var(--muted);">Ik wil op de hoogte blijven van nieuwe vacatures via mail (max 1× per week).</span>
+        </div>
+
+        <button type="submit" class="btn btn-blue v17-submit">Inschrijving versturen →</button>
+
+        <div class="v17-trust">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> AVG-veilig opgeslagen</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Gratis &amp; vrijblijvend</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Direct inloglink in je mail</span>
+        </div>
+      </div>
     </form>
     <div class="frm-success" id="ok-kandidaat">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
