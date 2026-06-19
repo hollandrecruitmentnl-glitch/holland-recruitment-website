@@ -457,11 +457,11 @@ section{position:relative;}
             <div class="b2b-field"><label>KvK nummer <span class="hint">(optioneel)</span></label><input type="text" name="kvk_number" placeholder="12345678" pattern="[0-9]{8}" maxlength="8"></div>
           </div>
           <div class="b2b-row r2">
-            <div class="b2b-field"><label>Sector <span class="req">*</span></label><select name="sector" required><option value="">Kies een sector...</option><option value="logistiek">Logistiek</option><option value="warehousing">Warehousing / Magazijn</option><option value="horeca">Horeca</option><option value="housekeeping">Housekeeping / Schoonmaak</option><option value="technisch">Technisch / Installatie</option><option value="klantenservice">Klantenservice</option><option value="administratief">Administratief</option><option value="zorg">Zorg</option><option value="overig">Overig</option></select></div>
+            <div class="b2b-field"><label>Sector <span class="hint">(optioneel)</span></label><select name="sector"><option value="">Kies een sector...</option><option value="logistiek">Logistiek</option><option value="warehousing">Warehousing / Magazijn</option><option value="horeca">Horeca</option><option value="housekeeping">Housekeeping / Schoonmaak</option><option value="technisch">Technisch / Installatie</option><option value="klantenservice">Klantenservice</option><option value="administratief">Administratief</option><option value="zorg">Zorg</option><option value="overig">Overig</option></select></div>
             <div class="b2b-field"><label>Bedrijfsgrootte <span class="hint">(optioneel)</span></label><select name="company_size_range"><option value="">—</option><option value="1-10">1-10 medewerkers</option><option value="11-50">11-50 medewerkers</option><option value="51-200">51-200 medewerkers</option><option value="201-1000">201-1000 medewerkers</option><option value="1000+">1000+ medewerkers</option></select></div>
           </div>
           <div class="b2b-row r21">
-            <div class="b2b-field"><label>Vestiging stad <span class="req">*</span></label><input type="text" name="location_city" required placeholder="Bijv. Rotterdam"></div>
+            <div class="b2b-field"><label>Vestiging stad <span class="hint">(optioneel)</span></label><input type="text" name="location_city" placeholder="Bijv. Rotterdam"></div>
             <div class="b2b-field"><label>Postcode <span class="hint">(optioneel)</span></label><input type="text" name="location_postal_code" placeholder="1234 AB" maxlength="8"></div>
           </div>
           <div class="b2b-row"><div class="b2b-field"><label>Website <span class="hint">(optioneel)</span></label><input type="url" name="website" placeholder="https://..."></div></div>
@@ -477,10 +477,10 @@ section{position:relative;}
           </div>
           <div class="b2b-row"><div class="b2b-field"><label>Functie / rol <span class="hint">(optioneel)</span></label><input type="text" name="contact_role" placeholder="Bijv. HR Manager, Owner"></div></div>
         </div>
-        <div class="b2b-section"><div class="b2b-section-title">Vacature</div>
+        <div class="b2b-section"><div class="b2b-section-title">Vacature <span style="font-weight:500;font-size:13px;color:var(--muted);text-transform:none;letter-spacing:0;">(optioneel — alles invullen kan ook later in het portaal)</span></div>
           <div class="b2b-row r21">
-            <div class="b2b-field"><label>Functietitel <span class="req">*</span></label><input type="text" name="vacancy_title" required placeholder="Bijv. Orderpicker, Magazijnmedewerker"></div>
-            <div class="b2b-field"><label>Aantal mensen <span class="req">*</span></label><input type="number" name="headcount_needed" required min="1" max="500" value="1"></div>
+            <div class="b2b-field"><label>Functietitel <span class="hint">(optioneel — vul aan in portaal)</span></label><input type="text" name="vacancy_title" placeholder="Bijv. Orderpicker, Magazijnmedewerker"></div>
+            <div class="b2b-field"><label>Aantal mensen <span class="hint">(optioneel)</span></label><input type="number" name="headcount_needed" min="1" max="500" placeholder="1"></div>
           </div>
           <div class="b2b-row r2">
             <div class="b2b-field"><label>Werklocatie stad <span class="hint">(zelfde als bedrijfsstad?)</span></label><input type="text" name="vacancy_city" placeholder="Vul in als anders"></div>
@@ -512,9 +512,9 @@ section{position:relative;}
     </div>
     <div class="b2b-form-card b2b-success" id="success-state">
       <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <h2>Aanvraag ontvangen</h2>
-      <p>Bedankt! We hebben je aanvraag binnen. Onze AI-matcher analyseert deze nu en verstuurt jou binnen enkele minuten een bevestigingsmail met eerste inzichten.</p>
-      <div class="next"><strong>Wat gebeurt er nu</strong><p><strong>Stap 1:</strong> Bevestigingsmail in je inbox<br><strong>Stap 2:</strong> Binnen 24u eerste shortlist van geschikte kandidaten<br><strong>Stap 3:</strong> Persoonlijk gesprek of direct presenteren — jij kiest</p></div>
+      <h2>Check je mail!</h2>
+      <p>We hebben je account aangemaakt en een directe inloglink naar je portaal verstuurd. Open de mail om in te loggen — daar kun je je aanvraag aanvullen en je shortlist bekijken zodra deze klaar is.</p>
+      <div class="next"><strong>Wat gebeurt er nu</strong><p><strong>Stap 1:</strong> Mail met inloglink in je inbox<br><strong>Stap 2:</strong> Klik op de knop — je komt direct in je portaal<br><strong>Stap 3:</strong> Vul je aanvraag aan of laat 'm staan — wij gaan matchen<br><strong>Stap 4:</strong> Binnen 24u eerste shortlist van geschikte kandidaten</p></div>
     </div>
     <div class="b2b-form-card b2b-error" id="error-state">
       <h2 style="font-family:'Poppins',sans-serif;color:#991b1b;">Er ging iets mis</h2>
