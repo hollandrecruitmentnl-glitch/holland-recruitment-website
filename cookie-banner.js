@@ -257,7 +257,7 @@
       <h2 class="hr-cookie-banner__title" id="hr-cookie-title">Cookies op holland-recruitment.nl</h2>
       <p class="hr-cookie-banner__body" id="hr-cookie-desc">
         Wij gebruiken essentiële cookies om de site te laten werken en (met jouw toestemming) analytics-cookies om te leren wat werkt. Geen advertentie-cookies, geen doorverkoop van data.
-        Meer info in onze <a href="/privacyverklaring.html">privacyverklaring</a>.
+        Meer info in onze <a href="/privacyverklaring">privacyverklaring</a>.
       </p>
 
       <div class="hr-cookie-prefs" id="hr-cookie-prefs">

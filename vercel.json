@@ -1,0 +1,254 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/voor-werkgevers(\\.html)?",
+      "destination": "/voor-bedrijven",
+      "permanent": true
+    },
+    {
+      "source": "/voor-werknemers(\\.html)?",
+      "destination": "/freelancers",
+      "permanent": true
+    },
+    {
+      "source": "/hoe-het-werkt(\\.html)?",
+      "destination": "/werkwijze",
+      "permanent": true
+    },
+    {
+      "source": "/personeel-aanvragen(\\.html)?",
+      "destination": "/professional-aanvragen",
+      "permanent": true
+    },
+    {
+      "source": "/inschrijven(\\.html)?",
+      "destination": "/freelancers/aanmelden",
+      "permanent": true
+    },
+    {
+      "source": "/cv-maken(\\.html)?",
+      "destination": "/freelancers/aanmelden",
+      "permanent": true
+    },
+    {
+      "source": "/cv-uploaden(\\.html)?",
+      "destination": "/freelancers/aanmelden",
+      "permanent": true
+    },
+    {
+      "source": "/kenniscentrum(\\.html)?",
+      "destination": "/kennisbank",
+      "permanent": true
+    },
+    {
+      "source": "/functies(\\.html)?",
+      "destination": "/expertises",
+      "permanent": true
+    },
+    {
+      "source": "/regios(\\.html)?",
+      "destination": "/freelancer-inhuren",
+      "permanent": true
+    },
+    {
+      "source": "/functie-teamleider-logistiek(\\.html)?",
+      "destination": "/expertises/operations-projectmanagement",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-almere(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-alphen-aan-den-rijn(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-amersfoort(\\.html)?",
+      "destination": "/freelancer-inhuren/utrecht",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-amsterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-arnhem(\\.html)?",
+      "destination": "/freelancer-inhuren/arnhem",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-breda(\\.html)?",
+      "destination": "/freelancer-inhuren/breda",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-capelle-aan-den-ijssel(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-delft(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-den-haag(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-dordrecht(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-gouda(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-groningen(\\.html)?",
+      "destination": "/freelancer-inhuren/groningen",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-haarlem(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-hoofddorp(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-leiden(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-rotterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-schiedam(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-tilburg(\\.html)?",
+      "destination": "/freelancer-inhuren/tilburg",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-utrecht(\\.html)?",
+      "destination": "/freelancer-inhuren/utrecht",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-vlaardingen(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-zaandam(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-logistiek-zoetermeer(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-techniek-eindhoven(\\.html)?",
+      "destination": "/freelancer-inhuren/eindhoven",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-techniek-rotterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-techniek-tilburg(\\.html)?",
+      "destination": "/freelancer-inhuren/tilburg",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-horeca-amsterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-horeca-rotterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/rotterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-horeca-utrecht(\\.html)?",
+      "destination": "/freelancer-inhuren/utrecht",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-zorg-amsterdam(\\.html)?",
+      "destination": "/freelancer-inhuren/amsterdam",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-zorg-den-haag(\\.html)?",
+      "destination": "/freelancer-inhuren/den-haag",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-zorg-eindhoven(\\.html)?",
+      "destination": "/freelancer-inhuren/eindhoven",
+      "permanent": true
+    },
+    {
+      "source": "/functie-:slug",
+      "destination": "/freelancer-inhuren",
+      "permanent": true
+    },
+    {
+      "source": "/uitzendbureau-:rest",
+      "destination": "/freelancer-inhuren",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    }
+  ]
+}
