@@ -3,6 +3,17 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.holland-recruitment.nl"
+        }
+      ],
+      "destination": "https://www.holland-recruitment.nl/",
+      "permanent": false
+    },
+    {
       "source": "/voor-werkgevers(\\.html)?",
       "destination": "/voor-bedrijven",
       "permanent": true
