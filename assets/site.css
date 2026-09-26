@@ -341,3 +341,12 @@ a.card:hover .more svg{transform:translateX(3px);}
 .footer-regio{padding:20px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:13.5px;line-height:2;}
 .footer-regio span{color:#fff;font-weight:600;margin-right:6px;}
 .footer-regio a:hover{color:var(--lime);}
+
+/* V4: smalle schermen (<400px) — voorkomt horizontaal scrollen door lange knoppen/grids */
+.layout-aside>*,.split>*,.grid-2>*,.grid-3>*,.hero-grid>*,.band-in>*{min-width:0;}
+@media (max-width:420px){
+  .btn{white-space:normal;text-align:center;}
+  .wrap{padding:0 16px;}
+  .form-shell{padding:22px 14px;}
+  .eyebrow{white-space:normal;}
+}
