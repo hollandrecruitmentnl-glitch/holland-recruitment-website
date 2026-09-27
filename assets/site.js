@@ -73,10 +73,15 @@
 
   /* ---------- forms ----------
      Elk formulier wordt verstuurd naar:
-     1. Web3Forms  → e-mail met ALLE velden naar info@holland-recruitment.nl (werkt altijd)
+     1. Web3Forms  → e-mail met ALLE velden (opdrachtgevers → sales@, freelancers/contact → info@)
      2. Portaal-API → lead in database + admin_inbox (best effort)
      Succes zodra minstens één kanaal slaagt, zodat geen lead verloren gaat. */
-  var WEB3FORMS_KEY = 'c41ed00f-f032-4e39-80cf-9bc3b43890ba'; // V6: nieuw formulier 'Holland Recruitment website' (account hollandrecruitment.nl@gmail.com)
+  /* V7: één Web3Forms-formulier per doelgroep — het ontvangstadres hangt aan de sleutel.
+     KEY_INFO  → info@holland-recruitment.nl  (freelancers + algemene contactvragen)
+     KEY_SALES → sales@holland-recruitment.nl (opdrachtgevers). Leeg = valt terug op KEY_INFO. */
+  var KEY_INFO = 'c41ed00f-f032-4e39-80cf-9bc3b43890ba';
+  var KEY_SALES = '';
+  function keyFor(team) { return (team === 'sales' && KEY_SALES) ? KEY_SALES : KEY_INFO; }
   var PORTAL = 'https://app.holland-recruitment.nl';
   var PORTAL_ENABLED = false;
 
@@ -93,8 +98,8 @@
   function list(v) { return v === undefined ? [] : [].concat(v).filter(Boolean); }
   function txt(v) { return list(v).join(', '); }
 
-  function sendWeb3(form, data, subject) {
-    var payload = { access_key: WEB3FORMS_KEY, subject: subject, from_name: 'Website Holland Recruitment', herkomst: herkomst() };
+  function sendWeb3(form, data, m) {
+    var payload = { access_key: keyFor(m.team), subject: m.subject, from_name: m.fromName, replyto: data.email || '', herkomst: herkomst() };
     Object.keys(data).forEach(function (k) { payload[k] = Array.isArray(data[k]) ? data[k].join(', ') : data[k]; });
     var bc = form.querySelector('[name="botcheck"]');
     if (bc && bc.checked) payload.botcheck = true;
@@ -126,7 +131,8 @@
       ].join('\n');
       var name = (d.contactpersoon || '').trim().split(' ');
       return {
-        subject: 'Nieuwe opdracht-aanvraag: ' + (d.bedrijfsnaam || '') + ' — ' + txt(d.expertise),
+        team: 'sales', fromName: 'Website — Opdrachtgever',
+        subject: 'Opdracht-aanvraag: ' + (d.bedrijfsnaam || '') + ' — ' + txt(d.type_professional) + ' · ' + txt(d.expertise),
         path: '/api/website-signup-employer',
         body: {
           bedrijfsnaam: d.bedrijfsnaam, voornaam: name.shift() || '', achternaam: name.join(' '),
@@ -139,7 +145,8 @@
     freelancer: function (d) {
       var name = (d.naam || '').trim().split(' ');
       return {
-        subject: 'Nieuwe freelancer-aanmelding: ' + (d.naam || '') + ' — ' + (d.titel || ''),
+        team: 'info', fromName: 'Website — Freelancer',
+        subject: 'Freelancer-aanmelding: ' + (d.naam || '') + ' — ' + (d.titel || '') + ' · ' + txt(d.expertise),
         path: '/api/website-signup-candidate',
         body: {
           voornaam: name.shift() || '', achternaam: name.join(' '), email: d.email, telefoon: d.telefoon,
@@ -150,7 +157,9 @@
       };
     },
     contact: function (d) {
-      return { subject: 'Contactformulier: ' + (d.onderwerp || '') + ' — ' + (d.naam || ''), path: null, body: null };
+      var sales = /^Opdrachtgever/.test(d.onderwerp || '');
+      return { team: sales ? 'sales' : 'info', fromName: 'Website — Contact',
+        subject: 'Contact' + (sales ? ' (opdrachtgever)' : '') + ': ' + (d.naam || '') + (d.organisatie ? ' — ' + d.organisatie : ''), path: null, body: null };
     }
   };
 
@@ -183,7 +192,7 @@
       var m = mappers[kind](data);
       if (btn) { btn.disabled = true; btn.textContent = 'Bezig met versturen…'; }
 
-      var jobs = [sendWeb3(form, data, m.subject)];
+      var jobs = [sendWeb3(form, data, m)];
       // Portaal staat tijdelijk offline (besluit 26-09-2026). Zet PORTAL_ENABLED op true zodra het portaal weer live is.
       if (PORTAL_ENABLED && m.path) jobs.push(sendPortal(m.path, m.body));
 
