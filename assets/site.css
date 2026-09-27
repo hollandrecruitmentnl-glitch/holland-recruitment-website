@@ -411,3 +411,6 @@ a.card:hover .more svg{transform:translateX(3px);}
   .photo-card{position:relative;z-index:2;right:auto;margin:-40px 14px 0;max-width:none;}
   .photo-stack{padding-bottom:0;}
 }
+
+/* V11 */
+.form-success .mail-note{margin-top:12px;font-size:14px;color:var(--muted);}

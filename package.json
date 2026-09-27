@@ -1,0 +1,9 @@
+{
+  "name": "holland-recruitment-website",
+  "private": true,
+  "description": "Statische site (gegenereerd door build.py) + serverless bevestigingsmail (api/bevestiging.js)",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}

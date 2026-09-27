@@ -221,6 +221,13 @@
           try { window.gtag && window.gtag('event', 'generate_lead', { form: kind }); } catch (e) {}
           form.style.display = 'none';
           if (success) { success.classList.add('show'); success.setAttribute('tabindex', '-1'); success.focus(); }
+          // V11: bevestigingsmail in huisstijl naar de invuller (best effort, blokkeert niets)
+          try {
+            fetch('/api/bevestiging', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: kind, data: data }) })
+              .then(function (r) { return r.json(); })
+              .then(function (j) { var n = success && success.querySelector('.mail-note'); if (j && j.ok && n) n.hidden = false; })
+              .catch(function () {});
+          } catch (e) {}
         } else {
           if (btn) { btn.disabled = false; btn.innerHTML = btnLabel; }
           if (err) {
