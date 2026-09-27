@@ -407,7 +407,7 @@ a.card:hover .more svg{transform:translateX(3px);}
 }
 @media (max-width:940px){
   .ph-grid{grid-template-columns:1fr;gap:28px;}
-  .ph-chips{position:static;max-width:none;margin-top:-34px;margin-left:14px;margin-right:14px;}
-  .photo-card{position:relative;right:auto;margin:-40px 14px 0;max-width:none;}
+  .ph-chips{position:relative;z-index:2;left:auto;bottom:auto;max-width:none;margin-top:-34px;margin-left:14px;margin-right:14px;}
+  .photo-card{position:relative;z-index:2;right:auto;margin:-40px 14px 0;max-width:none;}
   .photo-stack{padding-bottom:0;}
 }
