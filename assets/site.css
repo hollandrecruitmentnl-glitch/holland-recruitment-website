@@ -32,6 +32,8 @@ ul{list-style:none;}
 .js .reveal{opacity:0;transform:translateY(24px);}
 .reveal{transition:opacity .7s var(--ease),transform .7s var(--ease);}
 .js .reveal.in{opacity:1;transform:none;}
+/* V8: boven de vouw nooit verbergen (LCP + eerste indruk) */
+.js .hero .reveal,.js .page-hero .reveal,.js .reveal.now{opacity:1;transform:none;transition:none;}
 .js .reveal.d1{transition-delay:.06s;} .js .reveal.d2{transition-delay:.12s;} .js .reveal.d3{transition-delay:.18s;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.js .reveal{opacity:1;transform:none;}html{scroll-behavior:auto;}}
 

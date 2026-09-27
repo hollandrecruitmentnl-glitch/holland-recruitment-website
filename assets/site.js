@@ -4,6 +4,8 @@
 
   /* ---------- reveal on scroll ---------- */
   var els = document.querySelectorAll('.reveal');
+  // V8: wat bij laden al in beeld is direct tonen, zonder fade
+  els.forEach(function (el) { if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in', 'now'); });
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
