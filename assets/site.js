@@ -80,7 +80,7 @@
      KEY_INFO  → info@holland-recruitment.nl  (freelancers + algemene contactvragen)
      KEY_SALES → sales@holland-recruitment.nl (opdrachtgevers). Leeg = valt terug op KEY_INFO. */
   var KEY_INFO = 'c41ed00f-f032-4e39-80cf-9bc3b43890ba';
-  var KEY_SALES = '';
+  var KEY_SALES = 'b99c0639-779f-4a15-bfe4-67307e9621e5';
   function keyFor(team) { return (team === 'sales' && KEY_SALES) ? KEY_SALES : KEY_INFO; }
   var PORTAL = 'https://app.holland-recruitment.nl';
   var PORTAL_ENABLED = false;
