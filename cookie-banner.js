@@ -101,6 +101,9 @@
         .hr-cookie-banner.is-open { transform: none !important; }
         .hr-cookie-banner__title { font-size: 16px !important; }
         .hr-cookie-banner__body { font-size: 13px !important; }
+        .hr-cookie-banner { max-width: 500px !important; }
+        .hr-cookie-banner__actions { flex-wrap: nowrap !important; gap: 8px !important; }
+        .hr-cookie-banner__actions > * { white-space: nowrap !important; padding-left: 14px !important; padding-right: 14px !important; }
       }
 
       .hr-cookie-banner {
