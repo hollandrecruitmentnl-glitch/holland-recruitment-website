@@ -141,8 +141,9 @@ module.exports = async (req, res) => {
 
   const mail = build(kind, d);
   const U = mail.team === 'sales' ? 'SALES' : 'INFO';
-  const user = process.env['SMTP_USER_' + U];
-  const pass = process.env['SMTP_PASS_' + U];
+  // trim: bij kopiëren/plakken in Vercel komen er soms spaties of een regeleinde mee
+  const user = String(process.env['SMTP_USER_' + U] || '').trim();
+  const pass = String(process.env['SMTP_PASS_' + U] || '').replace(/[\r\n]+$/g, '').trim();
   if (!user || !pass) return res.status(503).json({ ok: false, error: 'not-configured' });
 
   try {
@@ -153,7 +154,7 @@ module.exports = async (req, res) => {
     await t.sendMail({ from: `"Holland Recruitment" <${user}>`, to, replyTo: user, subject: mail.subject, html: mail.html });
     return res.status(200).json({ ok: true });
   } catch (e) {
-    console.error('bevestiging-fout', e && e.code, e && e.message);
+    console.error('bevestiging-fout', U, 'userlen=' + user.length, 'passlen=' + pass.length, e && e.code, e && e.message);
     return res.status(502).json({ ok: false, error: 'send' });
   }
 };
