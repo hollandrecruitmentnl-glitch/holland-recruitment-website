@@ -9,6 +9,7 @@
  * Wachtwoorden staan ALLEEN als Environment Variables in Vercel (door Can ingevuld), nooit in code.
  * Misbruik-bescherming: alleen vanaf holland-recruitment.nl, vaste tekst (geen vrije HTML van
  * bezoekers), honeypot, max. 3 mails per IP per 10 min per instance.
+ * Env vars door Can ingesteld op 27-09-2026 (SMTP_USER_/SMTP_PASS_ SALES en INFO).
  */
 const nodemailer = require('nodemailer');
 
