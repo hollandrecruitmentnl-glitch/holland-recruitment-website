@@ -352,3 +352,12 @@ a.card:hover .more svg{transform:translateX(3px);}
   .form-shell{padding:22px 14px;}
   .eyebrow{white-space:normal;}
 }
+
+/* V9: petrochemie — rolgroepen + CTA-kaart in expertise-grid */
+.rg-h{font-size:.95rem;margin:16px 0 8px;color:var(--muted);font-family:'Poppins',sans-serif;font-weight:700;}
+.rg-h:first-of-type{margin-top:0;}
+.grid-3 .card-cta{background:var(--blue);border-color:var(--blue);color:#fff;display:flex;flex-direction:column;justify-content:center;}
+.grid-3 .card-cta h3,.grid-3 .card-cta p,.grid-3 .card-cta .more{color:#fff;}
+.grid-3 .card-cta.span-rest{grid-column:span 2;}
+@media (max-width:940px){.grid-3 .card-cta.span-rest{grid-column:auto;}}
+@media (max-width:640px){.grid-3 .card-cta.span-rest{grid-column:auto;}}
