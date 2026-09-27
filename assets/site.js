@@ -76,7 +76,7 @@
      1. Web3Forms  → e-mail met ALLE velden naar info@holland-recruitment.nl (werkt altijd)
      2. Portaal-API → lead in database + admin_inbox (best effort)
      Succes zodra minstens één kanaal slaagt, zodat geen lead verloren gaat. */
-  var WEB3FORMS_KEY = '35d4cbc0-83ad-4b67-b44f-d480d70de3ed';
+  var WEB3FORMS_KEY = 'c41ed00f-f032-4e39-80cf-9bc3b43890ba'; // V6: nieuw formulier 'Holland Recruitment website' (account hollandrecruitment.nl@gmail.com)
   var PORTAL = 'https://app.holland-recruitment.nl';
   var PORTAL_ENABLED = false;
 
