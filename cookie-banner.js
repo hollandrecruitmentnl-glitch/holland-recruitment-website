@@ -105,6 +105,16 @@
         .hr-cookie-banner__actions { flex-wrap: nowrap !important; gap: 8px !important; }
         .hr-cookie-banner__actions > * { white-space: nowrap !important; padding-left: 14px !important; padding-right: 14px !important; }
       }
+      @media (max-width: 720px) {
+        .hr-cookie-banner { padding: 14px 16px !important; bottom: 10px !important; }
+        .hr-cookie-banner__title { font-size: 15px !important; margin-bottom: 4px !important; }
+        .hr-cookie-banner__body { font-size: 12.5px !important; line-height: 1.45 !important; }
+        .hr-cookie-banner__actions { flex-direction: row !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 10px !important; }
+        .hr-cookie-banner__actions [data-action="accept-all"] { order: 1; flex: 1 1 48% !important; }
+        .hr-cookie-banner__actions [data-action="essential-only"] { order: 2; flex: 1 1 48% !important; border: 1px solid #ECE5D6 !important; }
+        .hr-cookie-banner__actions [data-action="prefs"] { order: 3; flex: 1 1 100% !important; border: 0 !important; background: none !important; padding: 2px !important; font-size: 13px !important; text-decoration: underline; }
+        .hr-cookie-banner__actions > * { padding-top: 10px !important; padding-bottom: 10px !important; }
+      }
 
       .hr-cookie-banner {
         position: fixed;
