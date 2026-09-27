@@ -93,6 +93,15 @@
         pointer-events: none;
       }
       .hr-cookie-backdrop.is-open { opacity: 1; pointer-events: auto; }
+      /* V10: geen donkere laag over de pagina; compacte kaart linksonder */
+      .hr-cookie-backdrop { display: none !important; }
+      @media (min-width: 721px) {
+        .hr-cookie-banner { left: 24px !important; bottom: 24px !important; max-width: 440px !important; padding: 18px 20px !important;
+          transform: translateY(20px) !important; }
+        .hr-cookie-banner.is-open { transform: none !important; }
+        .hr-cookie-banner__title { font-size: 16px !important; }
+        .hr-cookie-banner__body { font-size: 13px !important; }
+      }
 
       .hr-cookie-banner {
         position: fixed;

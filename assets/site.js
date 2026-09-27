@@ -53,6 +53,22 @@
     });
   }
 
+  /* ---------- V10: expertise vooraf aanvinken via ?expertise=<slug> ---------- */
+  try {
+    var pre = new URLSearchParams(location.search).get('expertise');
+    if (pre) {
+      var cb = document.querySelector('input[name="expertise"][data-slug="' + pre.replace(/[^a-z-]/g, '') + '"]');
+      if (cb) cb.checked = true;
+    }
+  } catch (e) {}
+
+  /* ---------- V10: mobiele actiebalk pas tonen na de hero ---------- */
+  var sticky = document.querySelector('.m-sticky');
+  if (sticky) {
+    var onScroll = function () { sticky.classList.toggle('show', window.scrollY > 420); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  }
+
   /* ---------- FAQ ---------- */
   document.querySelectorAll('.qa button').forEach(function (b) {
     b.addEventListener('click', function () {

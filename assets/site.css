@@ -361,3 +361,53 @@ a.card:hover .more svg{transform:translateX(3px);}
 .grid-3 .card-cta.span-rest{grid-column:span 2;}
 @media (max-width:940px){.grid-3 .card-cta.span-rest{grid-column:auto;}}
 @media (max-width:640px){.grid-3 .card-cta.span-rest{grid-column:auto;}}
+
+/* ================= V10 ================= */
+/* kaarten: link altijd onderaan */
+.card{display:flex;flex-direction:column;}
+.card .more{margin-top:auto;padding-top:18px;}
+.card .roles-list{margin-bottom:0;}
+/* page-hero met foto */
+.page-hero.has-photo{padding:52px 0 56px;}
+.ph-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;}
+.ph-grid>*{min-width:0;}
+.ph-media{position:relative;}
+.ph-photo,.photo{margin:0;border-radius:28px;overflow:hidden;aspect-ratio:9/7;background:var(--line);box-shadow:0 24px 48px rgba(21,24,58,.12);}
+.ph-photo img,.photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.ph-chips{position:absolute;left:-28px;bottom:-22px;background:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 16px 36px rgba(21,24,58,.14);display:flex;flex-direction:column;gap:7px;max-width:88%;}
+.ph-chips li{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--ink);}
+.ph-chips .ck,.trust-line svg{flex:none;}
+/* home: foto met kaart */
+.photo-stack{position:relative;padding-bottom:40px;}
+.photo-card{position:absolute;right:-18px;bottom:0;background:#fff;border-radius:20px;padding:20px 22px;box-shadow:0 16px 36px rgba(21,24,58,.14);max-width:360px;}
+.photo-card li{font-size:14.5px;}
+/* freelancer-band: tekstlink */
+.text-link-light{display:inline-flex;align-items:center;gap:6px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;padding:12px 6px;}
+.text-link-light svg{width:16px;height:16px;}
+/* CTA kalenderknop */
+.btn-cal{gap:8px;border-color:rgba(255,255,255,.7);}
+.btn-cal svg{width:18px;height:18px;}
+/* formulier */
+.more-fields .opt,.more-fields small{font-weight:500;font-size:13px;color:var(--muted);font-family:'Inter',sans-serif;}
+.trust-line{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+.trust-line li{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--muted);font-weight:500;}
+.trust-line svg{width:15px;height:15px;color:#6b8f00;}
+/* opdrachten-voorbeelden */
+.ex-tag{align-self:flex-start;font-size:12px;font-weight:700;background:var(--cream);color:var(--ink);padding:5px 11px;border-radius:999px;margin-bottom:12px;}
+.ex-card h3{margin-bottom:6px;}
+/* mobiele actiebalk */
+.m-sticky{display:none;}
+@media (max-width:720px){
+  .m-sticky{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:90;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(21,24,58,.08);transform:translateY(110%);transition:transform .25s ease;}
+  .m-sticky.show{transform:none;}
+  .m-sticky .btn{flex:1;justify-content:center;padding:13px 16px;}
+  .m-sticky .m-cal{flex:0 0 52px;padding:0;}
+  .m-sticky .m-cal svg{width:20px;height:20px;}
+  body{padding-bottom:76px;}
+}
+@media (max-width:940px){
+  .ph-grid{grid-template-columns:1fr;gap:28px;}
+  .ph-chips{position:static;max-width:none;margin-top:-34px;margin-left:14px;margin-right:14px;}
+  .photo-card{position:relative;right:auto;margin:-40px 14px 0;max-width:none;}
+  .photo-stack{padding-bottom:0;}
+}
