@@ -62,6 +62,16 @@
     }
   } catch (e) {}
 
+  /* ---------- V13: reactie op een specifieke opdracht (?opdracht=<slug>) ---------- */
+  try {
+    var op = new URLSearchParams(location.search).get('opdracht');
+    var ff = document.querySelector('form[data-hr-form="freelancer"]');
+    if (op && ff) {
+      var h = document.createElement('input'); h.type = 'hidden'; h.name = 'opdracht'; h.value = op.replace(/[^a-z0-9-]/g, '').slice(0, 80);
+      ff.appendChild(h);
+    }
+  } catch (e) {}
+
   /* ---------- V10: mobiele actiebalk pas tonen na de hero ---------- */
   var sticky = document.querySelector('.m-sticky');
   if (sticky) {
@@ -164,7 +174,7 @@
       var name = (d.naam || '').trim().split(' ');
       return {
         team: 'info', fromName: 'Website — Freelancer',
-        subject: 'Freelancer-aanmelding: ' + (d.naam || '') + ' — ' + (d.titel || '') + ' · ' + txt(d.expertise),
+        subject: (d.opdracht ? 'Reactie op opdracht ' + d.opdracht + ': ' : 'Freelancer-aanmelding: ') + (d.naam || '') + ' — ' + (d.titel || '') + ' · ' + txt(d.expertise),
         path: '/api/website-signup-candidate',
         body: {
           voornaam: name.shift() || '', achternaam: name.join(' '), email: d.email, telefoon: d.telefoon,
