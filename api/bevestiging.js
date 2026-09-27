@@ -154,7 +154,7 @@ module.exports = async (req, res) => {
     await t.sendMail({ from: `"Holland Recruitment" <${user}>`, to, replyTo: user, subject: mail.subject, html: mail.html });
     return res.status(200).json({ ok: true });
   } catch (e) {
-    console.error('bevestiging-fout', U, 'userlen=' + user.length, 'passlen=' + pass.length, e && e.code, e && e.message);
+    console.error('bevestiging-fout', U, 'user=' + user.replace(/^(.{2}).*(@.*)$/, '$1…$2') + ' (' + user.length + ')', 'passlen=' + pass.length, e && e.code, e && e.message);
     return res.status(502).json({ ok: false, error: 'send' });
   }
 };
