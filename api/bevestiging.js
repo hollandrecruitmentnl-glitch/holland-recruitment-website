@@ -145,6 +145,7 @@ module.exports = async (req, res) => {
   const user = String(process.env['SMTP_USER_' + U] || '').trim();
   const pass = String(process.env['SMTP_PASS_' + U] || '').replace(/[\r\n]+$/g, '').trim();
   if (!user || !pass) return res.status(503).json({ ok: false, error: 'not-configured' });
+  if (!/^[^@\s]+@holland-recruitment\.nl$/i.test(user)) { console.error('bevestiging-fout', U, 'SMTP_USER is geen @holland-recruitment.nl-adres'); return res.status(503).json({ ok: false, error: 'user-not-email' }); }
 
   try {
     const t = nodemailer.createTransport({
@@ -154,7 +155,7 @@ module.exports = async (req, res) => {
     await t.sendMail({ from: `"Holland Recruitment" <${user}>`, to, replyTo: user, subject: mail.subject, html: mail.html });
     return res.status(200).json({ ok: true });
   } catch (e) {
-    console.error('bevestiging-fout', U, 'user=' + user.replace(/^(.{2}).*(@.*)$/, '$1…$2') + ' (' + user.length + ')', 'passlen=' + pass.length, e && e.code, e && e.message);
+    console.error('bevestiging-fout', U, 'user-is-emailadres=' + /^[^@\s]+@holland-recruitment\.nl$/i.test(user), // NOOIT inhoud van user/pass loggen 'passlen=' + pass.length, e && e.code, e && e.message);
     return res.status(502).json({ ok: false, error: 'send' });
   }
 };
