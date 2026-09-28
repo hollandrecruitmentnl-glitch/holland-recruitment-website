@@ -216,16 +216,49 @@
         return;
       }
 
+      // V16: cv-bestand (freelancers) — controleren vóór verzenden
+      var cvInput = form.querySelector('input[type="file"][name="cv"]');
+      var cvFile = cvInput && cvInput.files && cvInput.files[0];
+      if (cvFile) {
+        var ext = (cvFile.name.split('.').pop() || '').toLowerCase();
+        var cvErr = ['pdf', 'doc', 'docx'].indexOf(ext) < 0 ? 'Upload je cv als PDF of Word-bestand (.pdf, .doc of .docx).'
+          : cvFile.size > 3 * 1024 * 1024 ? 'Je cv is groter dan 3 MB. Maak het bestand kleiner of stuur het later naar info@holland-recruitment.nl.' : '';
+        if (cvErr) {
+          cvInput.setAttribute('aria-invalid', 'true');
+          if (err) { err.textContent = cvErr; err.classList.add('show'); }
+          cvInput.focus();
+          return;
+        }
+      }
+
       var data = collect(form);
+      if (cvFile) data.cv_bestand = cvFile.name + ' (als bijlage in aparte mail "CV: …")';
       var m = mappers[kind](data);
       if (btn) { btn.disabled = true; btn.textContent = 'Bezig met versturen…'; }
 
       var jobs = [sendWeb3(form, data, m)];
+      var cvJob = cvFile ? new Promise(function (resolve) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          var b64 = String(fr.result).split(',')[1] || '';
+          fetch('/api/cv', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: cvFile.name, data: b64, naam: data.naam, email: data.email, telefoon: data.telefoon, titel: data.titel, opdracht: data.opdracht || '' }) })
+            .then(function (r) { return r.json(); }).then(function (j) { resolve(!!(j && j.ok)); }).catch(function () { resolve(false); });
+        };
+        fr.onerror = function () { resolve(false); };
+        fr.readAsDataURL(cvFile);
+      }) : Promise.resolve(null);
       // Portaal staat tijdelijk offline (besluit 26-09-2026). Zet PORTAL_ENABLED op true zodra het portaal weer live is.
       if (PORTAL_ENABLED && m.path) jobs.push(sendPortal(m.path, m.body));
 
-      Promise.all(jobs).then(function (res) {
+      Promise.all([Promise.all(jobs), cvJob]).then(function (all) {
+        var res = all[0], cvOk = all[1];
         var ok = res.some(Boolean);
+        if (ok && cvOk === false && success) {
+          var cn = document.createElement('p'); cn.className = 'mail-note';
+          cn.innerHTML = 'Je gegevens zijn ontvangen, maar je cv kon niet worden meegestuurd. Mail het naar <a href="mailto:info@holland-recruitment.nl">info@holland-recruitment.nl</a>.';
+          success.appendChild(cn);
+        }
         if (ok) {
           try { window.clarity && window.clarity('event', 'form-' + kind); } catch (e) {}
           try { window.gtag && window.gtag('event', 'generate_lead', { form: kind }); } catch (e) {}
