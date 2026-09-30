@@ -1,6 +1,12 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/herinnering",
+      "schedule": "0 8 * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/",

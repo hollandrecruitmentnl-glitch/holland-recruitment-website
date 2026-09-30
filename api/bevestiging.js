@@ -161,3 +161,4 @@ module.exports = async (req, res) => {
 };
 
 module.exports.build = build; // voor lokale test/preview
+module.exports.layout = layout; // hergebruikt door _lib.js (aanvulmails in dezelfde huisstijl)

@@ -88,6 +88,51 @@
     });
   });
 
+  /* ---------- V17: profiel aanvullen via persoonlijke link ---------- */
+  var pf = document.querySelector('form[data-hr-profile]');
+  if (pf) {
+    var q = new URLSearchParams(location.search), pid = q.get('id') || '', ptk = q.get('t') || '';
+    var stat = document.getElementById('profiel-status'), hallo = document.getElementById('profiel-hallo');
+    var showStatus = function (html) { stat.innerHTML = html; stat.style.display = 'block'; };
+    fetch('/api/profiel?id=' + encodeURIComponent(pid) + '&t=' + encodeURIComponent(ptk))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { showStatus('<b>Deze link werkt niet (meer).</b> Mail je gegevens naar <a href="mailto:info@holland-recruitment.nl" style="color:var(--blue);text-decoration:underline">info@holland-recruitment.nl</a>, dan voegen we ze toe.'); return; }
+        if (!j.missing || !j.missing.length) { showStatus('<b>Je profiel is al compleet.</b> Bedankt! Past er een opdracht bij je, dan nemen we contact met je op.'); return; }
+        if (j.voornaam) hallo.textContent = 'Hoi ' + j.voornaam + ', dit missen we nog:';
+        pf.querySelectorAll('[data-need]').forEach(function (el) { el.style.display = j.missing.indexOf(el.getAttribute('data-need')) >= 0 ? '' : 'none'; });
+        pf.hidden = false;
+      })
+      .catch(function () { showStatus('Er ging iets mis bij het laden. Probeer het later opnieuw of mail naar info@holland-recruitment.nl.'); });
+
+    pf.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var perr = pf.querySelector('.form-error'); perr.classList.remove('show');
+      if (!pf.checkValidity()) { perr.textContent = 'Controleer de gemarkeerde velden (KvK = 8 cijfers).'; perr.classList.add('show'); return; }
+      var data = {}; new FormData(pf).forEach(function (v, k) { if (typeof v === 'string' && v.trim()) data[k] = v.trim(); });
+      var f = pf.querySelector('input[name="cv"]'), file = f && f.files && f.files[0];
+      if (file) {
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (['pdf', 'doc', 'docx'].indexOf(ext) < 0 || file.size > 3 * 1024 * 1024) { perr.textContent = 'Upload je cv als PDF of Word, max. 3 MB.'; perr.classList.add('show'); return; }
+      }
+      var pbtn = pf.querySelector('button[type="submit"]'), plabel = pbtn.innerHTML; pbtn.disabled = true; pbtn.textContent = 'Bezig met opslaan…';
+      var send = function (cv) {
+        fetch('/api/profiel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: pid, t: ptk, data: data, cv: cv }) })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (!j.ok) throw new Error(j.error || 'fout');
+            pf.style.display = 'none'; hallo.style.display = 'none';
+            var ok = document.getElementById('profiel-ok');
+            if (j.missing && j.missing.length) ok.querySelector('[data-done-text]').textContent = 'Opgeslagen. Wat nu nog ontbreekt, kun je later via dezelfde link aanvullen of in het gesprek met ons doorgeven.';
+            ok.classList.add('show');
+          })
+          .catch(function () { pbtn.disabled = false; pbtn.innerHTML = plabel; perr.innerHTML = 'Opslaan is niet gelukt. Probeer het opnieuw of mail naar <a href="mailto:info@holland-recruitment.nl">info@holland-recruitment.nl</a>.'; perr.classList.add('show'); });
+      };
+      if (file) { var fr = new FileReader(); fr.onload = function () { send({ filename: file.name, data: String(fr.result).split(',')[1] || '' }); }; fr.readAsDataURL(file); }
+      else send(null);
+    });
+  }
+
   /* ---------- herkomst (UTM / referrer) ---------- */
   function herkomst() {
     try {
@@ -232,6 +277,9 @@
       }
 
       var data = collect(form);
+      // V17: uniek ID per aanmelding (koppelt formulier, cv en aanvullingen in de Sheet)
+      var leadId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('hr-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12));
+      data.herkomst = herkomst();
       if (cvFile) data.cv_bestand = cvFile.name + ' (als bijlage in aparte mail "CV: …")';
       var m = mappers[kind](data);
       if (btn) { btn.disabled = true; btn.textContent = 'Bezig met versturen…'; }
@@ -242,7 +290,7 @@
         fr.onload = function () {
           var b64 = String(fr.result).split(',')[1] || '';
           fetch('/api/cv', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: cvFile.name, data: b64, naam: data.naam, email: data.email, telefoon: data.telefoon, titel: data.titel, opdracht: data.opdracht || '' }) })
+            body: JSON.stringify({ id: leadId, filename: cvFile.name, data: b64, naam: data.naam, email: data.email, telefoon: data.telefoon, titel: data.titel, opdracht: data.opdracht || '' }) })
             .then(function (r) { return r.json(); }).then(function (j) { resolve(!!(j && j.ok)); }).catch(function () { resolve(false); });
         };
         fr.onerror = function () { resolve(false); };
@@ -264,6 +312,8 @@
           try { window.gtag && window.gtag('event', 'generate_lead', { form: kind }); } catch (e) {}
           form.style.display = 'none';
           if (success) { success.classList.add('show'); success.setAttribute('tabindex', '-1'); success.focus(); }
+          // V17: aanmelding als rij in de Google Sheet (best effort)
+          try { fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: kind, id: leadId, data: data }) }).catch(function () {}); } catch (e) {}
           // V11: bevestigingsmail in huisstijl naar de invuller (best effort, blokkeert niets)
           try {
             fetch('/api/bevestiging', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: kind, data: data }) })

@@ -8,6 +8,7 @@
  * alleen PDF/DOC/DOCX (extensie én bestandshandtekening), honeypot, max 3 per IP per 10 min.
  */
 const nodemailer = require('nodemailer');
+const { sheet, validId } = require('./_lib.js');
 
 const ALLOWED = ['https://www.holland-recruitment.nl', 'https://holland-recruitment.nl'];
 const PREVIEW = /^https:\/\/holland-recruitment-website-[a-z0-9-]+-can-s-projects8\.vercel\.app$/;
@@ -70,6 +71,10 @@ module.exports = async (req, res) => {
       subject: `CV: ${naam || 'onbekend'}${titel ? ' — ' + titel : ''}`,
       text, attachments: [{ filename: safeName, content: buf, contentType: type.mime }],
     });
+    // V17: ook opslaan in Google Drive + link in de Sheet (best effort)
+    if (validId(body.id)) {
+      try { await sheet('cv', { id: body.id, filename: safeName, mime: type.mime, data: buf.toString('base64') }); } catch (e) { console.error('cv-sheet-fout', e && e.message); }
+    }
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error('cv-fout', e && e.code, e && e.message); // nooit inhoud van gegevens loggen
