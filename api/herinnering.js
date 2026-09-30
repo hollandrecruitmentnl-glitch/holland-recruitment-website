@@ -9,9 +9,12 @@ const { sheet, sendAanvulMail } = require('./_lib.js');
 const parse = (s) => { const d = new Date(String(s || '').replace(' ', 'T') + ':00+02:00'); return isNaN(d) ? null : d; };
 
 module.exports = async (req, res) => {
+  // Met CRON_SECRET (aanbevolen): alleen Vercel Cron met die sleutel. Zonder: alleen de Vercel Cron-agent.
+  // Veilig omdat de run idempotent is: per persoon max. 1 aanvulverzoek en 1 herinnering (bijgehouden in de Sheet).
   const cs = String(process.env.CRON_SECRET || '').trim();
   const auth = req.headers.authorization || '';
-  if (!cs || auth !== `Bearer ${cs}`) return res.status(401).json({ ok: false });
+  const ua = String(req.headers['user-agent'] || '');
+  if (cs ? auth !== `Bearer ${cs}` : !/^vercel-cron\//.test(ua)) return res.status(401).json({ ok: false });
   const r = await sheet('incomplete', {});
   if (!r.ok) return res.status(502).json({ ok: false, error: r.error });
   const now = Date.now(), done = { verzoek: 0, herinnering: 0, fout: 0 };
