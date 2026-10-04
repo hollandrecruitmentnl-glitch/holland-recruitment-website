@@ -254,6 +254,8 @@ a.card:hover .more svg{transform:translateX(3px);}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);}
 .field input[aria-invalid="true"],.field select[aria-invalid="true"],.field textarea[aria-invalid="true"]{border-color:var(--coral);}
 .choice-row{display:flex;flex-wrap:wrap;gap:8px;}
+.other-field{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:420px;}
+.other-field[hidden]{display:none;}
 .choice{position:relative;}
 .choice input{position:absolute;opacity:0;width:1px;height:1px;}
 .choice span{display:inline-block;padding:10px 16px;border:2px solid var(--line);border-radius:var(--r-pill);font-size:14px;font-weight:500;cursor:pointer;transition:.15s;}

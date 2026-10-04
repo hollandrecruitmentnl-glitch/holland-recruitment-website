@@ -166,8 +166,25 @@
       if (data[k] !== undefined) data[k] = [].concat(data[k], v);
       else data[k] = v;
     });
+    // V21: "Anders" + eigen vakgebied samenvoegen tot "Anders: …" in expertise (komt zo in mail én Sheet)
+    var other = String(data.expertise_anders || '').trim();
+    delete data.expertise_anders;
+    if (data.expertise !== undefined) {
+      data.expertise = [].concat(data.expertise).map(function (e) { return e === 'Anders' ? (other ? 'Anders: ' + other : 'Anders') : e; });
+      if (data.expertise.length === 1) data.expertise = data.expertise[0];
+    }
     return data;
   }
+
+  // V21: tekstveld tonen (en verplicht maken) zodra "Anders" is aangevinkt
+  document.querySelectorAll('input[data-other]').forEach(function (cb) {
+    var input = document.getElementById(cb.getAttribute('data-other'));
+    var wrap = input && input.parentNode;
+    if (!input) return;
+    var sync = function () { wrap.hidden = !cb.checked; input.required = cb.checked; if (cb.checked) input.focus(); };
+    cb.addEventListener('change', sync);
+    wrap.hidden = !cb.checked; input.required = cb.checked;
+  });
   function list(v) { return v === undefined ? [] : [].concat(v).filter(Boolean); }
   function txt(v) { return list(v).join(', '); }
 
