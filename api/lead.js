@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
   if (d.botcheck) return res.status(200).json({ ok: true });
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
   const now = Date.now(), list = (hits.get(ip) || []).filter((t) => now - t < 600000);
-  if (list.length >= 6) return res.status(429).json({ ok: false, error: 'rate' });
+  if (list.length >= 10) return res.status(429).json({ ok: false, error: 'rate' });
   list.push(now); hits.set(ip, list);
   delete d.privacy; delete d.botcheck;
   try {

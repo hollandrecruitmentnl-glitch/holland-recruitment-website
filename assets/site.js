@@ -299,9 +299,21 @@
       // Portaal staat tijdelijk offline (besluit 26-09-2026). Zet PORTAL_ENABLED op true zodra het portaal weer live is.
       if (PORTAL_ENABLED && m.path) jobs.push(sendPortal(m.path, m.body));
 
-      Promise.all([Promise.all(jobs), cvJob]).then(function (all) {
-        var res = all[0], cvOk = all[1];
-        var ok = res.some(Boolean);
+      // V20: Sheet tegelijk met Web3Forms opslaan; lukt één van beide, dan is de aanmelding binnen
+      var post = function (path, body) {
+        return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+          .then(function (r) { return r.json(); }).then(function (j) { return !!(j && j.ok); }).catch(function () { return false; });
+      };
+      var leadJob = post('/api/lead', { kind: kind, id: leadId, data: data });
+
+      Promise.all([Promise.all(jobs), cvJob, leadJob]).then(function (all) {
+        var res = all[0], cvOk = all[1], leadOk = all[2];
+        var web3Ok = res.some(Boolean);
+        // Web3Forms mislukt (spamfilter/storing/adblocker) → reserve-melding via eigen mailserver
+        var fallback = web3Ok ? Promise.resolve(true) : post('/api/melding', { kind: kind, id: leadId, data: data });
+        return fallback.then(function (mailOk) { return [web3Ok || leadOk || mailOk, cvOk]; });
+      }).then(function (out) {
+        var ok = out[0], cvOk = out[1];
         if (ok && cvOk === false && success) {
           var cn = document.createElement('p'); cn.className = 'mail-note';
           cn.innerHTML = 'Je gegevens zijn ontvangen, maar je cv kon niet worden meegestuurd. Mail het naar <a href="mailto:info@holland-recruitment.nl">info@holland-recruitment.nl</a>.';
@@ -312,8 +324,6 @@
           try { window.gtag && window.gtag('event', 'generate_lead', { form: kind }); } catch (e) {}
           form.style.display = 'none';
           if (success) { success.classList.add('show'); success.setAttribute('tabindex', '-1'); success.focus(); }
-          // V17: aanmelding als rij in de Google Sheet (best effort)
-          try { fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: kind, id: leadId, data: data }) }).catch(function () {}); } catch (e) {}
           // V11: bevestigingsmail in huisstijl naar de invuller (best effort, blokkeert niets)
           try {
             fetch('/api/bevestiging', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind: kind, data: data }) })

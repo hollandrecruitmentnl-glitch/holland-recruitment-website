@@ -136,7 +136,7 @@ module.exports = async (req, res) => {
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
   const now = Date.now();
   const list = (hits.get(ip) || []).filter(t => now - t < 10 * 60 * 1000);
-  if (list.length >= 3) return res.status(429).json({ ok: false, error: 'rate' });
+  if (list.length >= 5) return res.status(429).json({ ok: false, error: 'rate' });
   list.push(now); hits.set(ip, list);
 
   const mail = build(kind, d);
