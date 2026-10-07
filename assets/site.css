@@ -283,6 +283,10 @@ a.card:hover .more svg{transform:translateX(3px);}
 .footer .brand b{color:#fff;}
 .footer .brand b span{color:var(--lime);}
 .footer-about{font-size:14px;margin-top:14px;max-width:290px;}
+.footer-social{display:flex;gap:10px;margin-top:18px;}
+.footer-social a{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);color:#fff;transition:.15s;}
+.footer-social a:hover{background:var(--lime);color:var(--ink);}
+.footer-social svg{width:19px;height:19px;}
 .footer-col h2{font-family:'Poppins',sans-serif;font-size:13.5px;color:#fff;font-weight:700;margin-bottom:12px;}
 .footer-col a,.footer-col p{display:block;font-size:14px;padding:5px 0;}
 .footer-col a:hover{color:var(--lime);}
