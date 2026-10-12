@@ -1,5 +1,5 @@
 'use client';
-import { startTransition, useActionState, useEffect, useState } from 'react';
+import { startTransition, useActionState, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 
@@ -45,13 +45,20 @@ export function Toast({ tekst }: { tekst?: string }) {
 }
 
 export function WachtwoordVeld({ id, name, label, autoComplete, invalid, describedBy, hint }: { id: string; name: string; label: string; autoComplete: string; invalid?: boolean; describedBy?: string; hint?: string }) {
+  // Bij "Tonen" maken we een nieuw invoerveld met dezelfde waarde. Safari houdt een automatisch
+  // ingevuld (sterk) wachtwoord anders verborgen, ook als het type naar "text" gaat.
   const [toon, setToon] = useState(false);
+  const waarde = useRef('');
+  const veld = useRef<HTMLInputElement>(null);
+  const wissel = () => { waarde.current = veld.current?.value ?? waarde.current; setToon(t => !t); };
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
       <div style={{ position: 'relative' }}>
-        <input id={id} name={name} type={toon ? 'text' : 'password'} autoComplete={autoComplete} minLength={8} required aria-invalid={invalid || undefined} aria-describedby={describedBy} style={{ paddingRight: 92 }} />
-        <button type="button" onClick={() => setToon(!toon)} className="p-linkbtn" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)' }} aria-pressed={toon}>{toon ? 'Verbergen' : 'Tonen'}</button>
+        <input key={toon ? 'tekst' : 'verborgen'} ref={veld} id={id} name={name} type={toon ? 'text' : 'password'} defaultValue={waarde.current}
+          onChange={e => { waarde.current = e.target.value; }} autoComplete={toon ? 'off' : autoComplete} minLength={8} required
+          aria-invalid={invalid || undefined} aria-describedby={describedBy} style={{ paddingRight: 92 }} spellCheck={false} autoCapitalize="off" autoCorrect="off" />
+        <button type="button" onClick={wissel} className="p-linkbtn" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)' }} aria-pressed={toon} aria-controls={id}>{toon ? 'Verbergen' : 'Tonen'}</button>
       </div>
       {hint && <span className="hint">{hint}</span>}
     </div>
