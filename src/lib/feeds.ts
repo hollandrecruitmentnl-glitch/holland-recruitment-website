@@ -56,7 +56,9 @@ async function adzuna(): Promise<Extern[]> {
 
 const NL_PLAATS = /nederland|netherlands|holland|amsterdam|rotterdam|den haag|'s-gravenhage|utrecht|eindhoven|groningen|tilburg|almere|breda|nijmegen|arnhem|haarlem|zwolle|leiden|dordrecht|delft|amersfoort|den bosch|'s-hertogenbosch|maastricht|leeuwarden|enschede|apeldoorn|zoetermeer|schiedam|vlaardingen|spijkenisse|middelburg|assen|lelystad|venlo|hengelo|deventer|alkmaar|hilversum|emmen|helmond|gouda|purmerend|roosendaal|oss|zaandam|amstelveen|hoofddorp|schiphol|botlek|pernis|europoort|maasvlakte|noord-holland|zuid-holland|noord-brabant|gelderland|overijssel|limburg|friesland|drenthe|flevoland|zeeland|^remote$|thuiswerk/i;
 
+let diag = '';
 async function jooble(): Promise<Extern[]> {
+  let ontvangen = 0, nl = 0; const voorbeeld: string[] = [];
   const key = process.env.JOOBLE_KEY;
   if (!key) throw new Error('JOOBLE_KEY ontbreekt');
   const hosts = process.env.JOOBLE_HOST ? [process.env.JOOBLE_HOST] : ['nl.jooble.org', 'jooble.org'];
@@ -72,7 +74,9 @@ async function jooble(): Promise<Extern[]> {
       }
       for (const x of j?.jobs || []) {
         const titel = strip(x.title), oms = strip(x.snippet), loc = strip(x.location);
+        ontvangen++; if (voorbeeld.length < 4) voorbeeld.push(loc);
         if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
+        nl++;
         if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel)) continue;
         out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
           vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
@@ -80,6 +84,7 @@ async function jooble(): Promise<Extern[]> {
       if ((j?.jobs || []).length < 20) break;
     }
   }
+  diag = `info: host ${host}, ontvangen ${ontvangen}, in NL ${nl}, freelance ${out.length}; plaatsen bv. ${voorbeeld.join(' | ')}`.slice(0, 290);
   return out;
 }
 
@@ -165,7 +170,7 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
     // Wat de bron niet meer levert (2 dagen niet gezien) → verlopen
     const dagen = bron === 'jobicy' ? 10 : bron === 'remotive' ? 4 : 2;
     const verlopen = await q(`update opdrachten set status = 'verlopen' where bron = $1 and status = 'live' and laatst_gecontroleerd < now() - make_interval(days => $2) returning id`, [bron, dagen]);
-    await q(`update feed_runs set klaar = now(), nieuw = $2, bijgewerkt = $3, verlopen = $4 where id = $1`, [run!.id, nieuw, bij, verlopen.length]);
+    await q(`update feed_runs set klaar = now(), nieuw = $2, bijgewerkt = $3, verlopen = $4, fout = $5 where id = $1`, [run!.id, nieuw, bij, verlopen.length, bron === 'jooble' && diag ? diag : null]);
   } catch (e) {
     await q(`update feed_runs set klaar = now(), fout = $2 where id = $1`, [run!.id, (e as Error).message.slice(0, 300)]);
   }
