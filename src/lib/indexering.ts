@@ -1,6 +1,7 @@
 import 'server-only';
 import { createSign } from 'node:crypto';
 import { after } from 'next/server';
+import { getVercelOidcToken } from '@vercel/oidc';
 import { q } from './db';
 import { SITE } from './mail';
 
@@ -16,6 +17,13 @@ const INDEXNOW_KEY = '68715e21ed860bafed0d61ea7dfdfee9'; // openbaar sleutelbest
 
 export const indexeringActief = () => SITE === WWW || process.env.INDEXERING_FORCEER === '1';
 
+/**
+ * Twee manieren om bij Google in te loggen:
+ * 1. Zonder sleutel (aanbevolen): Vercel OIDC → Google Workload Identity Federation → serviceaccount.
+ *    Env (geen geheimen): GCP_PROJECT_NUMBER, GCP_WORKLOAD_IDENTITY_POOL_ID, GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID, GCP_SERVICE_ACCOUNT_EMAIL.
+ * 2. Met sleutelbestand (alleen als de organisatie dat toestaat): GOOGLE_INDEXING_KEY.
+ */
+const SCOPE = 'https://www.googleapis.com/auth/indexing';
 type GoogleKey = { client_email: string; private_key: string };
 function googleKey(): GoogleKey | null {
   const raw = process.env.GOOGLE_INDEXING_KEY;
@@ -27,15 +35,19 @@ function googleKey(): GoogleKey | null {
     return { client_email: k.client_email, private_key: String(k.private_key).replace(/\\n/g, '\n') };
   } catch { return null; }
 }
+function federatie() {
+  const { GCP_PROJECT_NUMBER: nr, GCP_WORKLOAD_IDENTITY_POOL_ID: pool, GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID: prov, GCP_SERVICE_ACCOUNT_EMAIL: sa } = process.env;
+  return nr && pool && prov && sa ? { audience: `//iam.googleapis.com/projects/${nr}/locations/global/workloadIdentityPools/${pool}/providers/${prov}`, sa } : null;
+}
+export const googleManier = (): 'federatie' | 'sleutel' | null => (federatie() ? 'federatie' : googleKey() ? 'sleutel' : null);
 
 const b64url = (s: string | Buffer) => Buffer.from(s).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 
 let token: { waarde: string; tot: number } | null = null;
-async function googleToken(k: GoogleKey): Promise<string> {
-  if (token && token.tot > Date.now() + 60_000) return token.waarde;
+async function tokenViaSleutel(k: GoogleKey) {
   const nu = Math.floor(Date.now() / 1000);
   const kop = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const claims = b64url(JSON.stringify({ iss: k.client_email, scope: 'https://www.googleapis.com/auth/indexing', aud: 'https://oauth2.googleapis.com/token', iat: nu, exp: nu + 3600 }));
+  const claims = b64url(JSON.stringify({ iss: k.client_email, scope: SCOPE, aud: 'https://oauth2.googleapis.com/token', iat: nu, exp: nu + 3600 }));
   const handtekening = b64url(createSign('RSA-SHA256').update(`${kop}.${claims}`).sign(k.private_key));
   const r = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -43,20 +55,60 @@ async function googleToken(k: GoogleKey): Promise<string> {
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.access_token) throw new Error(`token ${r.status} ${j.error || ''}`.trim());
-  token = { waarde: j.access_token, tot: Date.now() + (j.expires_in ?? 3600) * 1000 };
+  return { waarde: j.access_token as string, tot: Date.now() + (j.expires_in ?? 3600) * 1000 };
+}
+async function tokenViaFederatie(f: { audience: string; sa: string }) {
+  const oidc = await getVercelOidcToken();
+  // 1. Vercel-token inwisselen bij Google STS
+  const sts = await fetch('https://sts.googleapis.com/v1/token', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grantType: 'urn:ietf:params:oauth:grant-type:token-exchange', audience: f.audience, scope: 'https://www.googleapis.com/auth/cloud-platform',
+      requestedTokenType: 'urn:ietf:params:oauth:token-type:access_token', subjectToken: oidc, subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt' }),
+  });
+  const s = await sts.json().catch(() => ({}));
+  if (!sts.ok || !s.access_token) throw new Error(`sts ${sts.status} ${s.error_description || s.error || ''}`.trim());
+  // 2. Kortlevend token van het serviceaccount (alleen indexing-scope)
+  const r = await fetch(`https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${encodeURIComponent(f.sa)}:generateAccessToken`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${s.access_token}` },
+    body: JSON.stringify({ scope: [SCOPE], lifetime: '3600s' }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.accessToken) throw new Error(`impersonatie ${r.status} ${j?.error?.message || ''}`.trim());
+  return { waarde: j.accessToken as string, tot: j.expireTime ? Date.parse(j.expireTime) : Date.now() + 3600_000 };
+}
+async function googleToken(): Promise<string> {
+  if (token && token.tot > Date.now() + 60_000) return token.waarde;
+  const f = federatie(), k = googleKey();
+  if (f) token = await tokenViaFederatie(f);
+  else if (k) token = await tokenViaSleutel(k);
+  else throw new Error('geen Google-koppeling');
   return token.waarde;
 }
 
-async function meldGoogle(k: GoogleKey, url: string, type: 'URL_UPDATED' | 'URL_DELETED'): Promise<string> {
+async function meldGoogle(url: string, type: 'URL_UPDATED' | 'URL_DELETED'): Promise<string> {
   try {
-    const t = await googleToken(k);
+    const t = await googleToken();
     const r = await fetch('https://indexing.googleapis.com/v3/urlNotifications:publish', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` }, body: JSON.stringify({ url, type }),
     });
     if (r.ok) return 'ok';
     const j = await r.json().catch(() => ({}));
     return `fout ${r.status}${j?.error?.message ? `: ${String(j.error.message).slice(0, 120)}` : ''}`;
-  } catch (e: any) { return `fout: ${String(e?.message || e).slice(0, 120)}`; }
+  } catch (e: any) { return `fout: ${String(e?.message || e).slice(0, 160)}`; }
+}
+
+/** Test de Google-koppeling zonder iets te melden (voor de knop in beheer). */
+export async function testGoogleKoppeling(): Promise<string> {
+  if (!googleManier()) return 'Geen Google-koppeling ingesteld.';
+  try {
+    token = null;
+    const t = await googleToken();
+    // Metadata opvragen van de homepage: bewijst dat het token geldig is voor de Indexing API.
+    const r = await fetch(`https://indexing.googleapis.com/v3/urlNotifications/metadata?url=${encodeURIComponent(WWW + '/')}`, { headers: { Authorization: `Bearer ${t}` } });
+    if (r.ok || r.status === 404) return `Werkt (${googleManier()}). Google accepteert de koppeling.`;
+    const j = await r.json().catch(() => ({}));
+    return `Token ok, maar Indexing API gaf ${r.status}: ${String(j?.error?.message || '').slice(0, 160)}`;
+  } catch (e: any) { return `Fout: ${String(e?.message || e).slice(0, 200)}`; }
 }
 
 async function meldIndexNow(urls: string[]): Promise<string> {
@@ -90,14 +142,14 @@ export async function synchroniseerIndexering(): Promise<{ gemeld: number; statu
   const lijst = await teMelden();
   if (!lijst.length) return { gemeld: 0, status: 'niets te melden' };
   const droog = process.env.INDEXERING_DROOG === '1'; // test: niets versturen
-  const k = googleKey();
+  const google = googleManier();
   const inNow = droog ? 'droog' : await meldIndexNow(lijst.map(l => WWW + l.pad));
   for (const l of lijst) {
-    const g = droog ? 'droog' : k ? await meldGoogle(k, WWW + l.pad, l.gewenst) : 'geen sleutel';
+    const g = droog ? 'droog' : google ? await meldGoogle(WWW + l.pad, l.gewenst) : 'geen koppeling';
     await q(`insert into indexering (pad, type, gemeld_op, google, indexnow) values ($1,$2,now(),$3,$4)
       on conflict (pad) do update set type = excluded.type, gemeld_op = now(), google = excluded.google, indexnow = excluded.indexnow`, [l.pad, l.gewenst, g, inNow]);
   }
-  return { gemeld: lijst.length, status: `Google: ${k ? 'aan' : 'geen sleutel'} · IndexNow: ${inNow}` };
+  return { gemeld: lijst.length, status: `Google: ${google ?? 'geen koppeling'} · IndexNow: ${inNow}` };
 }
 
 /** Voor in server actions: na het antwoord, zonder de gebruiker te laten wachten. */

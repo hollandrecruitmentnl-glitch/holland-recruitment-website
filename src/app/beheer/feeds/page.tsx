@@ -1,15 +1,16 @@
 import { q } from '@/lib/db';
-import { indexeringActief } from '@/lib/indexering';
+import { indexeringActief, googleManier } from '@/lib/indexering';
 import { BRON_NAAM } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
-import { draaiFeedsNu } from '@/app/actions/beheer';
+import { draaiFeedsNu, testGoogle } from '@/app/actions/beheer';
 
 export const metadata = { title: 'Externe feeds' };
-export default async function Feeds() {
+export default async function Feeds({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const sp = await searchParams;
   const runs = await q(`select * from feed_runs order by gestart desc limit 30`);
   const live = await q(`select bron, count(*) filter (where status='live')::int as live, count(*) filter (where status='verlopen')::int as verlopen from opdrachten where bron <> 'direct' group by bron`);
   const meldingen = await q(`select pad, type, gemeld_op, google, indexnow from indexering order by gemeld_op desc limit 10`).catch(() => [] as any[]);
-  const idxAan = indexeringActief(), googleAan = !!process.env.GOOGLE_INDEXING_KEY;
+  const idxAan = indexeringActief(), google = googleManier();
   const bronnen = [
     { k: 'adzuna', actief: !!process.env.ADZUNA_APP_ID, uitleg: 'Officiële API. Elke advertentie krijgt het label “Adzuna” met link (voorwaarde van Adzuna). Standaardlimiet 250 calls per dag; we gebruiken er ±12.' },
     { k: 'jooble', actief: !!process.env.JOOBLE_KEY, uitleg: 'Partner-API. Omschrijving is een fragment; reageren gaat via Jooble.' },
@@ -35,8 +36,10 @@ export default async function Feeds() {
       <p className="p-small p-muted">Nieuwe, gewijzigde en gesloten eigen opdrachten worden direct gemeld aan Google (Indexing API, alleen voor vacaturepagina’s) en aan Bing e.a. (IndexNow). Elke nacht controleert de cron of alles gemeld is. Externe opdrachten worden niet gemeld: die staan op noindex.</p>
       <div className="p-row" style={{ gap: 8 }}>
         <span className={`p-status ${idxAan ? 'live' : ''}`}>{idxAan ? 'Actief op www' : 'Uit: alleen actief op www.holland-recruitment.nl'}</span>
-        <span className={`p-status ${googleAan ? 'live' : ''}`}>{googleAan ? 'Google-sleutel aanwezig' : 'Geen Google-sleutel (GOOGLE_INDEXING_KEY)'}</span>
+        <span className={`p-status ${google ? 'live' : ''}`}>{google === 'federatie' ? 'Google gekoppeld zonder sleutel (Vercel OIDC)' : google === 'sleutel' ? 'Google gekoppeld met sleutel' : 'Google nog niet gekoppeld'}</span>
+        {google && <form action={testGoogle}><button className="btn btn-line btn-sm">Test Google-koppeling</button></form>}
       </div>
+      {sp.google && <p className="p-note p-small" role="status">{sp.google}</p>}
       {meldingen.length > 0 && <div className="p-table-wrap"><table className="p-table"><caption className="sr-only">Laatste meldingen aan zoekmachines</caption>
         <thead><tr><th scope="col">Pagina</th><th scope="col">Soort</th><th scope="col">Gemeld</th><th scope="col">Google</th><th scope="col">IndexNow</th></tr></thead>
         <tbody>{meldingen.map((m: any) => <tr key={m.pad}><td>{m.pad}</td><td>{m.type === 'URL_UPDATED' ? 'Nieuw/gewijzigd' : 'Verwijderd'}</td><td>{datumNL(m.gemeld_op)}</td><td>{m.google || '–'}</td><td>{m.indexnow || '–'}</td></tr>)}</tbody>

@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { indexeringNaAfloop } from '@/lib/indexering';
+import { indexeringNaAfloop, testGoogleKoppeling } from '@/lib/indexering';
 import { redirect } from 'next/navigation';
 import { vereis, hashWachtwoord } from '@/lib/auth';
 import { q, one } from '@/lib/db';
@@ -116,6 +116,13 @@ export async function nodigBeheerderUit(fd: FormData) {
   await mails.wachtwoordReset(email, `${SITE}/wachtwoord-vergeten/nieuw?token=${t}`);
   await logboek(a.id, 'beheerder_toegevoegd', 'account', acc.id, { email });
   redirect('/beheer/instellingen?melding=uitgenodigd');
+}
+
+export async function testGoogle() {
+  const a = await beheer();
+  const uitkomst = await testGoogleKoppeling();
+  await logboek(a.id, 'google_koppeling_getest', 'feed', undefined, { uitkomst });
+  redirect(`/beheer/feeds?google=${encodeURIComponent(uitkomst)}`);
 }
 
 export async function draaiFeedsNu() {
