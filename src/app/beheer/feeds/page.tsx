@@ -10,6 +10,10 @@ export default async function Feeds() {
   const bronnen = [
     { k: 'adzuna', actief: !!process.env.ADZUNA_APP_ID, uitleg: 'Officiële API. Elke advertentie krijgt het label “Adzuna” met link (voorwaarde van Adzuna). Standaardlimiet 250 calls per dag; we gebruiken er ±12.' },
     { k: 'jooble', actief: !!process.env.JOOBLE_KEY, uitleg: 'Partner-API. Omschrijving is een fragment; reageren gaat via Jooble.' },
+    { k: 'remotive', actief: true, uitleg: 'Gratis, geen sleutel. Alleen contract/freelance, remote voor Europa. Bronvermelding + link verplicht; max. 4× per dag ophalen.' },
+    { k: 'remoteok', actief: true, uitleg: 'Gratis, geen sleutel. Filter op freelance/contract. Link terug zonder nofollow is verplicht.' },
+    { k: 'jobicy', actief: true, uitleg: 'Gratis, geen sleutel. Remote opdrachten voor Nederland en Europa, alleen Contract/Freelance.' },
+    { k: 'careerjet', actief: !!process.env.CAREERJET_KEY, uitleg: 'Partner-API: alleen live getoond onder de zoekresultaten, niet opgeslagen. Sleutel: CAREERJET_KEY.' },
     { k: 'feed', actief: !!process.env.PARTNER_FEEDS, uitleg: 'Partnerfeeds met toestemming (JSON). Instellen via PARTNER_FEEDS in Vercel.' },
   ];
   return (

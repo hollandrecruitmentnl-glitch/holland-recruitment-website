@@ -135,7 +135,7 @@ create table if not exists bedrijf_uitnodigingen (
 create table if not exists opdrachten (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
-  bron text not null default 'direct' check (bron in ('direct','adzuna','jooble','careerjet','feed')),
+  bron text not null default 'direct' check (bron in ('direct','adzuna','jooble','careerjet','feed','remotive','remoteok','jobicy')),
   bron_id text,
   aanbieder text,
   externe_url text,

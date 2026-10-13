@@ -6,6 +6,8 @@ import { Leeg, OpdrachtKaart, Paginering } from '@/components/Kaarten';
 import { BewaarZoekopdracht } from '@/components/Bewaar';
 import { VAKGEBIEDEN, WERKVORMEN, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
 import { q } from '@/lib/db';
+import { Suspense } from 'react';
+import CareerjetAanvulling from '@/components/CareerjetAanvulling';
 
 export const metadata: Metadata = {
   title: 'Freelance opdrachten',
@@ -85,7 +87,8 @@ export default async function Opdrachten({ searchParams }: { searchParams: Promi
             </Leeg>
           )}
           <Paginering pagina={res.pagina} totaal={res.totaal} per={res.perPagina} basis={p => url(z, { pagina: String(p) })} />
-          {res.items.some(o => o.bron === 'adzuna') && <p className="p-xs p-muted">Een deel van de externe opdrachten komt via <a className="p-link" href="https://www.adzuna.nl" target="_blank" rel="noopener">Adzuna</a>.</p>}
+          {z.pagina === '1' && z.bron !== 'direct' && <Suspense fallback={null}><CareerjetAanvulling q={z.q} locatie={z.locatie} /></Suspense>}
+          {res.items.some(o => o.bron !== 'direct') && <p className="p-xs p-muted">Externe opdrachten komen van andere websites. We tonen altijd de bron; reageren gaat via die website.</p>}
         </div>
       </div>
     </>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BESCHIKBAARHEID, BRON_NAAM, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
+import { BESCHIKBAARHEID, BRON_NAAM, BRON_SITE, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
 import { datumNL, initialen, relatief } from '@/lib/util';
 import { tariefTekst } from '@/lib/data/opdrachten';
 
@@ -49,7 +49,8 @@ export function FreelancerKaart({ f, compact }: { f: any; compact?: boolean }) {
 
 export function Bronlabel({ o }: { o: { bron: string; aanbieder?: string | null } }) {
   if (o.bron === 'direct') return <span className="p-src direct">Direct geplaatst</span>;
-  return <span className="p-src">Externe opdracht · via {BRON_NAAM[o.bron] || 'partner'}</span>;
+  const site = BRON_SITE[o.bron];
+  return <span className="p-src">Externe opdracht · via {site ? <a href={site} target="_blank" rel="noopener" style={{ textDecoration: 'underline' }}>{BRON_NAAM[o.bron]}</a> : BRON_NAAM[o.bron] || 'partner'}</span>;
 }
 
 export function OpdrachtKaart({ o, reageerde }: { o: any; reageerde?: boolean }) {
@@ -65,7 +66,7 @@ export function OpdrachtKaart({ o, reageerde }: { o: any; reageerde?: boolean })
       {o.omschrijving && <p className="p-small" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{o.omschrijving}</p>}
       <div className="p-between p-small">
         <strong>{tariefTekst(o)}</strong>
-        <span className="p-muted">Geplaatst {relatief(o.geplaatst_op)}{o.bron === 'adzuna' && <> · <a className="p-link" href="https://www.adzuna.nl" target="_blank" rel="noopener">Adzuna</a></>}</span>
+        <span className="p-muted">Geplaatst {relatief(o.geplaatst_op)}</span>
       </div>
     </article>
   );

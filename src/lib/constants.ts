@@ -50,8 +50,10 @@ export const BEMIDDELING_STATUS: Record<string, string> = {
   nieuw: 'Nieuw', gebeld: 'Gebeld', voorgesteld: 'Kandidaten voorgesteld', geplaatst: 'Geplaatst', gestopt: 'Gestopt',
 };
 export const BRON_NAAM: Record<string, string> = {
-  direct: 'Direct geplaatst', adzuna: 'Adzuna', jooble: 'Jooble', careerjet: 'Careerjet', feed: 'Partnerfeed',
+  direct: 'Direct geplaatst', adzuna: 'Adzuna', jooble: 'Jooble', careerjet: 'Careerjet', feed: 'Partnerfeed', remotive: 'Remotive', remoteok: 'Remote OK', jobicy: 'Jobicy',
 };
 export const GRATIS_MAILDIENSTEN = ['gmail.com','googlemail.com','hotmail.com','hotmail.nl','outlook.com','outlook.nl','live.nl','live.com','yahoo.com','yahoo.nl','icloud.com','me.com','ziggo.nl','kpnmail.nl','planet.nl','home.nl','msn.com','aol.com','proton.me','protonmail.com','gmx.com','gmx.net'];
 export const BRANCHES = ['Petrochemie en industrie','Energie','Haven en logistiek','IT en software','Financiële dienstverlening','Zakelijke dienstverlening','Bouw en infra','Overheid','Zorg','Onderwijs','Handel en retail','Productie','Food','Overig'];
 export const GROOTTES = ['1–10','11–50','51–200','201–500','501–1000','1000+'];
+
+export const BRON_SITE: Record<string, string> = { adzuna: 'https://www.adzuna.nl', jooble: 'https://nl.jooble.org', careerjet: 'https://www.careerjet.nl', remotive: 'https://remotive.com', remoteok: 'https://remoteok.com', jobicy: 'https://jobicy.com' };

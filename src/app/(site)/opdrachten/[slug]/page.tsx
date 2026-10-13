@@ -6,7 +6,7 @@ import { opdrachtDetail, tariefTekst, urenTekst } from '@/lib/data/opdrachten';
 import { Bronlabel, Logo } from '@/components/Kaarten';
 import Reageren from '@/components/Reageren';
 import BerichtStarter from '@/components/BerichtStarter';
-import { BRON_NAAM, PERSPECTIEF, REACTIETERMIJN, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
+import { BRON_NAAM, BRON_SITE, PERSPECTIEF, REACTIETERMIJN, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
 import { datumNL, relatief } from '@/lib/util';
 import { one } from '@/lib/db';
 
@@ -88,7 +88,7 @@ export default async function Opdracht({ params }: P) {
         <aside className="p-stack">
           <div className="p-panel p-stack" style={{ gap: 16 }}>
             <dl className="p-facts">{feiten.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-            {extern ? (open && <a className="btn btn-line btn-block" href={o.externe_url} target="_blank" rel="noopener nofollow">Bekijk bij aanbieder ↗</a>)
+            {extern ? (open && <a className="btn btn-line btn-block" href={o.externe_url} target="_blank" rel={o.bron === 'remoteok' ? 'noopener' : 'noopener nofollow'}>Bekijk bij {BRON_NAAM[o.bron] && o.bron !== 'feed' ? BRON_NAAM[o.bron] : 'aanbieder'} ↗</a>)
               : eigen ? <Link className="btn btn-blue btn-block" href={`/mijn/opdrachten/${o.id}`}>Bekijk reacties ({o.aantal_reacties})</Link>
               : a?.rol === 'freelancer' ? (mijnReactie ? <p className="p-ok p-small" role="status">Je hebt gereageerd op {datumNL(mijnReactie.aangemaakt)}. <Link className="p-link" href="/mijn/reacties">Bekijk status</Link></p>
                 : open && <a className="btn btn-blue btn-block" href="#reageren">Reageer op deze opdracht</a>)
@@ -98,7 +98,7 @@ export default async function Opdracht({ params }: P) {
           {extern && (
             <div className="p-card p-small p-stack" style={{ gap: 4, borderStyle: 'dashed' }}>
               <strong>Over deze externe opdracht</strong>
-              <span>Bron: {o.bron === 'adzuna' ? <a className="p-link" href="https://www.adzuna.nl" target="_blank" rel="noopener">Adzuna</a> : BRON_NAAM[o.bron]}</span>
+              <span>Bron: {BRON_SITE[o.bron] ? <a className="p-link" href={o.externe_url || BRON_SITE[o.bron]} target="_blank" rel="noopener">{BRON_NAAM[o.bron]}</a> : BRON_NAAM[o.bron]}</span>
               {o.aanbieder && <span>Aanbieder: {o.aanbieder}</span>}
               {o.laatst_gecontroleerd && <span>Laatst gecontroleerd: {datumNL(o.laatst_gecontroleerd)}</span>}
               <span className="p-muted">Reageren gaat via de website van de aanbieder. Holland Recruitment is geen partij bij deze opdracht.</span>

@@ -2,11 +2,12 @@ import 'server-only';
 import { q, one } from './db';
 import { slugify, kort } from './util';
 
-type Extern = { bron: 'adzuna' | 'jooble' | 'feed'; bron_id: string; titel: string; omschrijving: string; url: string; aanbieder: string | null; locatie: string; vakgebied: string | null; tarief_min: number | null; tarief_max: number | null; geplaatst: Date; werkvorm: string | null };
+type Extern = { bron: 'adzuna' | 'jooble' | 'feed' | 'remotive' | 'remoteok' | 'jobicy'; bron_id: string; titel: string; omschrijving: string; url: string; aanbieder: string | null; locatie: string; vakgebied: string | null; tarief_min: number | null; tarief_max: number | null; geplaatst: Date; werkvorm: string | null };
 
 const FREELANCE = /\b(freelance|freelancer|zzp|zzp'er|interim|zelfstandige?|opdracht|contract|inhuur|detachering)\b/i;
 const VAST = /\b(vast contract|vaste baan|in loondienst|cao)\b/i;
-const strip = (s: string) => String(s || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const herstel = (s: string) => (/Ã.|Â./.test(s) ? (() => { try { return Buffer.from(s, 'latin1').toString('utf8'); } catch { return s; } })() : s);
+const strip = (s: string) => herstel(String(s || '')).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 
 const TAGS: Record<string, string> = {
   'it-jobs': 'it-software', 'engineering-jobs': 'engineering', 'accounting-finance-jobs': 'finance-control', 'pr-advertising-marketing-jobs': 'marketing-communicatie',
@@ -17,7 +18,7 @@ const TAGS: Record<string, string> = {
 };
 const WOORDEN: [RegExp, string][] = [
   [/developer|software|devops|cloud|it[- ]|ict|security|netwerk/i, 'it-software'], [/data|analist|analytics|bi[- ]|power bi/i, 'data-analytics'],
-  [/controller|finance|financ|accountant|boekhoud|fiscal/i, 'finance-control'], [/marketing|communicatie|content|seo|sea|campagne/i, 'marketing-communicatie'],
+  [/controller|finance|financ|accountant|boekhoud|fiscal/i, 'finance-control'], [/marketing|communicatie|content|seo|sea|campagne|copywriter|writer|editor/i, 'marketing-communicatie'],
   [/project ?manager|projectleider|programma/i, 'projectmanagement'], [/engineer|ontwerp|constructeur/i, 'engineering'],
   [/monteur|technicus|onderhoud|maintenance|operator|e&i|elektro|werkvoorbereider/i, 'techniek-onderhoud'], [/hr|recruit|p&o/i, 'hr-recruitment'],
   [/inkoop|buyer|procurement/i, 'inkoop'], [/jurist|juridisch|compliance|legal/i, 'juridisch-compliance'], [/hse|veiligheid|kwaliteit|qa/i, 'hse-kwaliteit'],
@@ -56,7 +57,7 @@ async function adzuna(): Promise<Extern[]> {
 async function jooble(): Promise<Extern[]> {
   const key = process.env.JOOBLE_KEY;
   if (!key) throw new Error('JOOBLE_KEY ontbreekt');
-  const host = process.env.JOOBLE_HOST || 'nl.jooble.org';
+  const host = process.env.JOOBLE_HOST || 'jooble.org';
   const out: Extern[] = [];
   for (const keywords of ['freelance', 'zzp', 'interim']) {
     for (let page = 1; page <= 3; page++) {
@@ -91,6 +92,51 @@ async function partners(): Promise<Extern[]> {
   return out;
 }
 
+
+// ---------- Remote-bronnen zonder sleutel (bronvermelding + link naar origineel verplicht) ----------
+const UA = { 'User-Agent': 'Mozilla/5.0 (compatible; HollandRecruitmentPlatform/1.0; +https://www.holland-recruitment.nl)', Accept: 'application/json' };
+const EU = /worldwide|anywhere|europe|emea|netherlands|nederland|cet|gmt|global|remote/i;
+const FREELANCE_EN = /\b(freelance|freelancer|contract|contractor|interim|part[- ]time contract)\b/i;
+
+/** Remotive: max. 4 calls per dag; alleen contract/freelance; geen doorplaatsing naar Google Jobs e.d. */
+async function remotive(): Promise<Extern[]> {
+  const r = await fetch('https://remotive.com/api/remote-jobs?limit=500', { headers: UA, signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error(`Remotive ${r.status}`);
+  const j: any = await r.json();
+  return (j.jobs || []).filter((x: any) => ['contract', 'freelance'].includes(x.job_type) && EU.test(x.candidate_required_location || ''))
+    .map((x: any): Extern => ({ bron: 'remotive', bron_id: String(x.id), titel: strip(x.title), omschrijving: strip(x.description).slice(0, 1200), url: x.url, aanbieder: x.company_name || null,
+      locatie: `Remote (${strip(x.candidate_required_location || 'wereldwijd')})`.slice(0, 80), vakgebied: raadVakgebied(`${x.title} ${x.category}`), tarief_min: null, tarief_max: null, geplaatst: new Date(x.publication_date), werkvorm: 'remote' }));
+}
+
+/** Remote OK: link terug zonder nofollow en noem "Remote OK" als bron. */
+async function remoteok(): Promise<Extern[]> {
+  const r = await fetch('https://remoteok.com/api', { headers: UA, signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error(`Remote OK ${r.status}`);
+  const j: any[] = await r.json();
+  return j.filter(x => x && x.id && x.position).filter(x => FREELANCE_EN.test(`${x.position} ${(x.tags || []).join(' ')}`) && (!x.location || EU.test(x.location)))
+    .map((x): Extern => ({ bron: 'remoteok', bron_id: String(x.id), titel: strip(x.position), omschrijving: strip(x.description).slice(0, 1200), url: x.url || `https://remoteok.com/remote-jobs/${x.slug}`, aanbieder: x.company || null,
+      locatie: `Remote${x.location ? ` (${strip(x.location)})` : ''}`.slice(0, 80), vakgebied: raadVakgebied(`${x.position} ${(x.tags || []).join(' ')}`), tarief_min: null, tarief_max: null, geplaatst: new Date(x.date), werkvorm: 'remote' }));
+}
+
+/** Jobicy: remote opdrachten voor Nederland/Europa, alleen Contract/Freelance; link naar de Jobicy-URL. */
+async function jobicy(): Promise<Extern[]> {
+  const out: Extern[] = [];
+  for (const geo of ['netherlands', 'europe']) {
+    const r = await fetch(`https://jobicy.com/api/v2/remote-jobs?count=200&geo=${geo}`, { headers: UA, signal: AbortSignal.timeout(20000) });
+    if (!r.ok) throw new Error(`Jobicy ${r.status}`);
+    const j: any = await r.json();
+    for (const x of j.jobs || []) {
+      const types: string[] = x.jobType || [];
+      if (!types.some(t => /contract|freelance/i.test(t)) && !FREELANCE_EN.test(x.jobTitle)) continue;
+      out.push({ bron: 'jobicy', bron_id: String(x.id), titel: strip(x.jobTitle), omschrijving: strip(x.jobExcerpt || x.jobDescription).slice(0, 1200), url: x.url, aanbieder: x.companyName || null,
+        locatie: `Remote (${strip(x.jobGeo || 'Europa')})`.slice(0, 80), vakgebied: raadVakgebied(`${x.jobTitle} ${(x.jobIndustry || []).join(' ')}`),
+        tarief_min: x.salaryPeriod === 'hourly' && x.salaryCurrency === 'EUR' ? Math.round(x.salaryMin) || null : null, tarief_max: x.salaryPeriod === 'hourly' && x.salaryCurrency === 'EUR' ? Math.round(x.salaryMax) || null : null,
+        geplaatst: new Date(x.pubDate), werkvorm: 'remote' });
+    }
+  }
+  return out;
+}
+
 async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
   const run = await one<{ id: number; gestart: string }>(`insert into feed_runs (bron) values ($1) returning id, gestart`, [bron]);
   try {
@@ -110,7 +156,8 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
       if (r?.ins) nieuw++; else bij++;
     }
     // Wat de bron niet meer levert (2 dagen niet gezien) → verlopen
-    const verlopen = await q(`update opdrachten set status = 'verlopen' where bron = $1 and status = 'live' and laatst_gecontroleerd < now() - interval '2 days' returning id`, [bron]);
+    const dagen = bron === 'jobicy' ? 10 : bron === 'remotive' ? 4 : 2;
+    const verlopen = await q(`update opdrachten set status = 'verlopen' where bron = $1 and status = 'live' and laatst_gecontroleerd < now() - make_interval(days => $2) returning id`, [bron, dagen]);
     await q(`update feed_runs set klaar = now(), nieuw = $2, bijgewerkt = $3, verlopen = $4 where id = $1`, [run!.id, nieuw, bij, verlopen.length]);
   } catch (e) {
     await q(`update feed_runs set klaar = now(), fout = $2 where id = $1`, [run!.id, (e as Error).message.slice(0, 300)]);
@@ -121,6 +168,9 @@ export async function draaiFeeds() {
   if (process.env.ADZUNA_APP_ID) await importeer('adzuna', adzuna);
   if (process.env.JOOBLE_KEY) await importeer('jooble', jooble);
   if (process.env.PARTNER_FEEDS) await importeer('feed', partners);
+  await importeer('remotive', remotive);
+  await importeer('remoteok', remoteok);
+  await importeer('jobicy', jobicy);
   // Oude externe opdrachten na 60 dagen opruimen
   await q(`delete from opdrachten where bron <> 'direct' and status = 'verlopen' and laatst_gecontroleerd < now() - interval '60 days'`);
 }

@@ -9,6 +9,7 @@ if (vers) fs.rmSync('.pgdata', { recursive: true, force: true });
 const db = await PGlite.create('./.pgdata');
 await db.exec(fs.readFileSync('db/schema.sql', 'utf8'));
 await db.exec(fs.readFileSync('db/seed_basis.sql', 'utf8'));
+for (const f of fs.readdirSync('db').filter(f => f.startsWith('migratie_')).sort()) await db.exec(fs.readFileSync('db/' + f, 'utf8'));
 if (process.argv.includes('--demo')) {
   const n = (await db.query('select count(*)::int as n from accounts')).rows[0].n;
   if (!n) {
