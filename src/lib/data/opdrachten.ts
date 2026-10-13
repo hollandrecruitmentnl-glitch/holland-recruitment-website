@@ -42,15 +42,15 @@ export async function landingTellingen(): Promise<LandingTelling[]> {
   const open = `o.status = 'live' and (o.bedrijf_id is null or exists (select 1 from bedrijven b where b.id = o.bedrijf_id and b.status = 'actief')) and (o.reageren_tot is null or o.reageren_tot >= current_date)`;
   const namen = REGIOS.map(r => r.naam.toLowerCase());
   const vak = await q<{ vakgebied: string; n: number; laatst: string }>(`select o.vakgebied, count(*)::int as n, max(o.geplaatst_op)::text as laatst from opdrachten o where ${open} and o.vakgebied is not null group by 1`);
-  const reg = await q<{ regio: string; vakgebied: string | null; n: number; laatst: string }>(`
-    select r.naam as regio, o.vakgebied, count(*)::int as n, max(o.geplaatst_op)::text as laatst
+  const reg = await q<{ regio: string; vakgebied: string | null; alleen_regio: boolean; n: number; laatst: string }>(`
+    select r.naam as regio, o.vakgebied, grouping(o.vakgebied) = 1 as alleen_regio, count(*)::int as n, max(o.geplaatst_op)::text as laatst
     from opdrachten o join unnest($1::text[]) as r(naam) on lower(o.locatie) like '%' || r.naam || '%'
     where ${open} group by grouping sets ((r.naam), (r.naam, o.vakgebied))`, [namen]);
   const slugVan = (naam: string) => REGIOS.find(r => r.naam.toLowerCase() === naam)!.slug;
   const uit: LandingTelling[] = vak.filter(v => VAKGEBIEDEN.some(x => x.slug === v.vakgebied)).map(v => ({ pad: `/freelance-opdrachten/${v.vakgebied}`, vakgebied: v.vakgebied, regio: null, n: v.n, laatst: v.laatst }));
   for (const r of reg) {
-    if (r.vakgebied === null) uit.push({ pad: `/freelance-opdrachten/${slugVan(r.regio)}`, vakgebied: null, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
-    else if (VAKGEBIEDEN.some(x => x.slug === r.vakgebied)) uit.push({ pad: `/freelance-opdrachten/${r.vakgebied}/${slugVan(r.regio)}`, vakgebied: r.vakgebied, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
+    if (r.alleen_regio) uit.push({ pad: `/freelance-opdrachten/${slugVan(r.regio)}`, vakgebied: null, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
+    else if (r.vakgebied && VAKGEBIEDEN.some(x => x.slug === r.vakgebied)) uit.push({ pad: `/freelance-opdrachten/${r.vakgebied}/${slugVan(r.regio)}`, vakgebied: r.vakgebied, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
   }
   return uit;
 }
