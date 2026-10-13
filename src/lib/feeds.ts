@@ -54,23 +54,30 @@ async function adzuna(): Promise<Extern[]> {
   return out;
 }
 
+const NL_PLAATS = /nederland|netherlands|holland|amsterdam|rotterdam|den haag|'s-gravenhage|utrecht|eindhoven|groningen|tilburg|almere|breda|nijmegen|arnhem|haarlem|zwolle|leiden|dordrecht|delft|amersfoort|den bosch|'s-hertogenbosch|maastricht|leeuwarden|enschede|apeldoorn|zoetermeer|schiedam|vlaardingen|spijkenisse|middelburg|assen|lelystad|venlo|hengelo|deventer|alkmaar|hilversum|emmen|helmond|gouda|purmerend|roosendaal|oss|zaandam|amstelveen|hoofddorp|schiphol|botlek|pernis|europoort|maasvlakte|noord-holland|zuid-holland|noord-brabant|gelderland|overijssel|limburg|friesland|drenthe|flevoland|zeeland|^remote$|thuiswerk/i;
+
 async function jooble(): Promise<Extern[]> {
   const key = process.env.JOOBLE_KEY;
   if (!key) throw new Error('JOOBLE_KEY ontbreekt');
-  const host = process.env.JOOBLE_HOST || 'jooble.org';
+  const hosts = process.env.JOOBLE_HOST ? [process.env.JOOBLE_HOST] : ['nl.jooble.org', 'jooble.org'];
   const out: Extern[] = [];
+  let host = '';
   for (const keywords of ['freelance', 'zzp', 'interim']) {
     for (let page = 1; page <= 3; page++) {
-      const r = await fetch(`https://${host}/api/${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keywords, location: 'Nederland', page: String(page) }), signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error(`Jooble ${r.status}`);
-      const j: any = await r.json();
-      for (const x of j.jobs || []) {
-        const titel = strip(x.title), oms = strip(x.snippet);
+      let j: any = null;
+      for (const h of host ? [host] : hosts) {
+        const r = await fetch(`https://${h}/api/${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keywords, location: 'Nederland', page: String(page) }), signal: AbortSignal.timeout(15000) });
+        if (r.ok) { j = await r.json(); host = h; break; }
+        if (h === hosts[hosts.length - 1]) throw new Error(`Jooble ${r.status}`);
+      }
+      for (const x of j?.jobs || []) {
+        const titel = strip(x.title), oms = strip(x.snippet), loc = strip(x.location);
+        if (!NL_PLAATS.test(loc)) continue; // alleen Nederlandse (of remote) opdrachten
         if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel)) continue;
-        out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: x.company || x.source || null, locatie: x.location || '',
+        out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
           vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
       }
-      if ((j.jobs || []).length < 20) break;
+      if ((j?.jobs || []).length < 20) break;
     }
   }
   return out;
