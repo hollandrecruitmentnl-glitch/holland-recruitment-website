@@ -8,6 +8,8 @@ export const VAKGEBIEDEN: { slug: string; naam: string }[] = [
   ['management-interim','Management en interim'],['administratie-support','Administratie en support'],
 ].map(([slug, naam]) => ({ slug, naam }));
 export const vakgebiedNaam = (slug?: string | null) => VAKGEBIEDEN.find(v => v.slug === slug)?.naam ?? '';
+/** Naam midden in een zin: kleine letters, maar afkortingen (IT, HR, HSE) blijven hoofdletters. */
+export const vakKlein = (naam: string) => naam.split(' ').map(w => (w.length > 1 && w === w.toUpperCase() ? w : w.toLowerCase())).join(' ');
 
 // Regio's voor zoeken en SEO-landingspagina's (provinciehoofdsteden + grote steden + provincies)
 export const REGIOS: { slug: string; naam: string }[] = [

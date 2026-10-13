@@ -4,7 +4,7 @@ import { huidigAccount } from '@/lib/auth';
 import { q } from '@/lib/db';
 import { zoekOpdrachten, landingTellingen, MIN_LANDING } from '@/lib/data/opdrachten';
 import { Leeg, OpdrachtKaart, Paginering } from '@/components/Kaarten';
-import { REGIOS, VAKGEBIEDEN, regioNaam, vakgebiedNaam } from '@/lib/constants';
+import { REGIOS, VAKGEBIEDEN, regioNaam, vakgebiedNaam, vakKlein } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
 import { SITE } from '@/lib/mail';
 
@@ -25,13 +25,13 @@ export function leesLanding(a: string, b?: string): Landing | null {
 export const landingPad = (l: Landing) => `/freelance-opdrachten/${[l.vakgebied, l.regio].filter(Boolean).join('/')}`;
 
 function teksten(l: Landing) {
-  const v = l.vakgebied ? vakgebiedNaam(l.vakgebied) : '', r = l.regio ? regioNaam(l.regio) : '';
-  const titel = v && r ? `Freelance opdrachten ${v.toLowerCase()} in ${r}` : v ? `Freelance opdrachten ${v.toLowerCase()}` : `Freelance opdrachten in ${r}`;
-  const kort = v && r ? `${v.toLowerCase()} in ${r}` : v ? v.toLowerCase() : `in ${r}`;
+  const v = l.vakgebied ? vakKlein(vakgebiedNaam(l.vakgebied)) : '', r = l.regio ? regioNaam(l.regio) : '';
+  const titel = v && r ? `Freelance opdrachten ${v} in ${r}` : v ? `Freelance opdrachten ${v}` : `Freelance opdrachten in ${r}`;
+  const kort = v && r ? `${v} in ${r}` : v ? v : `in ${r}`;
   const intro = v && r
-    ? `Actuele freelance en interim opdrachten in ${v.toLowerCase()} in en rond ${r}. Direct geplaatst door bedrijven op ons platform, aangevuld met opdrachten van andere platforms. De lijst wordt elke dag bijgewerkt.`
+    ? `Actuele freelance en interim opdrachten in ${v} in en rond ${r}. Direct geplaatst door bedrijven op ons platform, aangevuld met opdrachten van andere platforms. De lijst wordt elke dag bijgewerkt.`
     : v
-      ? `Actuele freelance en interim opdrachten in ${v.toLowerCase()} in heel Nederland, op locatie, hybride en remote. Direct geplaatst door bedrijven op ons platform, aangevuld met opdrachten van andere platforms. De lijst wordt elke dag bijgewerkt.`
+      ? `Actuele freelance en interim opdrachten in ${v} in heel Nederland, op locatie, hybride en remote. Direct geplaatst door bedrijven op ons platform, aangevuld met opdrachten van andere platforms. De lijst wordt elke dag bijgewerkt.`
       : `Actuele freelance en interim opdrachten in en rond ${r}, in alle vakgebieden. Direct geplaatst door bedrijven op ons platform, aangevuld met opdrachten van andere platforms. De lijst wordt elke dag bijgewerkt.`;
   return { titel, kort, intro };
 }

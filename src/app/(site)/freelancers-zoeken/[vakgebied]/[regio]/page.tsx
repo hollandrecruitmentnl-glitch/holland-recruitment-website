@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ZoekFreelancersView, { parseFZoek } from '@/components/ZoekFreelancersView';
-import { REGIOS, VAKGEBIEDEN, regioNaam, vakgebiedNaam } from '@/lib/constants';
+import { REGIOS, VAKGEBIEDEN, regioNaam, vakgebiedNaam, vakKlein } from '@/lib/constants';
 import { one } from '@/lib/db';
 
 type P = { params: Promise<{ vakgebied: string; regio: string }>; searchParams: Promise<Record<string, string | string[]>> };
@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   if (!v || !r) return {};
   const n = await aantal(vakgebied, r);
   return {
-    title: `Freelancers ${v.toLowerCase()} in ${r}`,
-    description: `Vind zelfstandige professionals in ${v.toLowerCase()} in en rond ${r}. Bekijk profielen, tarieven en beschikbaarheid en neem direct contact op.`,
+    title: `Freelancers ${vakKlein(v)} in ${r}`,
+    description: `Vind zelfstandige professionals in ${vakKlein(v)} in en rond ${r}. Bekijk profielen, tarieven en beschikbaarheid en neem direct contact op.`,
     alternates: { canonical: `/freelancers-zoeken/${vakgebied}/${regio}` },
     robots: n === 0 ? { index: false, follow: true } : undefined,
   };
@@ -35,8 +35,8 @@ export default async function Landing({ params, searchParams }: P) {
   return (
     <>
       <ZoekFreelancersView z={z} basis={`/freelancers-zoeken/${vakgebied}/${regio}`} vast={{ vakgebied, regio: r }}
-        titel={`Freelancers ${v.toLowerCase()} in ${r}`}
-        intro={`Zelfstandige professionals in ${v.toLowerCase()} in en rond ${r}. Bekijk profielen en beschikbaarheid, en stuur direct een bericht. Liever dat wij zoeken? Vraag bemiddeling aan.`} />
+        titel={`Freelancers ${vakKlein(v)} in ${r}`}
+        intro={`Zelfstandige professionals in ${vakKlein(v)} in en rond ${r}. Bekijk profielen en beschikbaarheid, en stuur direct een bericht. Liever dat wij zoeken? Vraag bemiddeling aan.`} />
       <section className="p-wrap" style={{ paddingBottom: 40 }}>
         <div className="p-grid2">
           <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>{v} in andere regio’s</h2><div className="p-row" style={{ gap: 8 }}>{andereRegios.map(x => <Link key={x.slug} className="p-chip" href={`/freelancers-zoeken/${vakgebied}/${x.slug}`}>{x.naam}</Link>)}</div></div>
