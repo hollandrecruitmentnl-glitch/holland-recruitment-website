@@ -72,7 +72,7 @@ async function jooble(): Promise<Extern[]> {
       }
       for (const x of j?.jobs || []) {
         const titel = strip(x.title), oms = strip(x.snippet), loc = strip(x.location);
-        if (!NL_PLAATS.test(loc)) continue; // alleen Nederlandse (of remote) opdrachten
+        if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
         if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel)) continue;
         out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
           vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
