@@ -1,5 +1,6 @@
 import 'server-only';
 import { q, one } from '../db';
+import { REGIOS, VAKGEBIEDEN } from '../constants';
 
 export type OpdrachtKaart = {
   id: string; slug: string; titel: string; bron: string; aanbieder: string | null; bedrijf_naam: string | null; bedrijf_slug: string | null;
@@ -8,13 +9,13 @@ export type OpdrachtKaart = {
   bemiddeling: boolean;
 };
 
-export type ZoekOpdrachten = { q?: string; locatie?: string; vakgebied?: string[]; werkvorm?: string[]; bron?: string; sorteer?: string; pagina?: number; perPagina?: number; bedrijfId?: string; sinds?: string };
+export type ZoekOpdrachten = { q?: string; locatie?: string; vakgebied?: string[]; werkvorm?: string[]; bron?: string; sorteer?: string; pagina?: number; perPagina?: number; bedrijfId?: string; sinds?: string; zonderRemote?: boolean };
 
 export async function zoekOpdrachten(z: ZoekOpdrachten) {
   const params: unknown[] = [];
   const where = [`o.status = 'live'`, `(o.bedrijf_id is null or b.status = 'actief')`, `(o.reageren_tot is null or o.reageren_tot >= current_date)`];
   if (z.q) { params.push(`%${z.q.toLowerCase()}%`); const i = params.length; where.push(`(lower(o.titel) like $${i} or lower(o.omschrijving) like $${i} or exists (select 1 from unnest(o.vaardigheden) v where lower(v) like $${i}))`); }
-  if (z.locatie) { params.push(`%${z.locatie.toLowerCase()}%`); where.push(`(lower(o.locatie) like $${params.length} or o.werkvorm = 'remote')`); }
+  if (z.locatie) { params.push(`%${z.locatie.toLowerCase()}%`); where.push(z.zonderRemote ? `lower(o.locatie) like $${params.length}` : `(lower(o.locatie) like $${params.length} or o.werkvorm = 'remote')`); }
   if (z.vakgebied?.length) { params.push(z.vakgebied); where.push(`o.vakgebied = any($${params.length})`); }
   if (z.werkvorm?.length) { params.push(z.werkvorm); where.push(`o.werkvorm = any($${params.length})`); }
   if (z.bron === 'direct') where.push(`o.bron = 'direct'`);
@@ -32,6 +33,26 @@ export async function zoekOpdrachten(z: ZoekOpdrachten) {
     from opdrachten o left join bedrijven b on b.id = o.bedrijf_id
     where ${where.join(' and ')} order by ${order} limit ${per} offset ${(pag - 1) * per}`, params);
   return { items: rows, totaal: rows[0] ? Number(rows[0].totaal) : 0, pagina: pag, perPagina: per };
+}
+
+/** Aantallen voor de SEO-landingspagina's (/freelance-opdrachten/...). Alleen open opdrachten; regio zonder remote. */
+export const MIN_LANDING = 3;
+export type LandingTelling = { pad: string; vakgebied: string | null; regio: string | null; n: number; laatst: string };
+export async function landingTellingen(): Promise<LandingTelling[]> {
+  const open = `o.status = 'live' and (o.bedrijf_id is null or exists (select 1 from bedrijven b where b.id = o.bedrijf_id and b.status = 'actief')) and (o.reageren_tot is null or o.reageren_tot >= current_date)`;
+  const namen = REGIOS.map(r => r.naam.toLowerCase());
+  const vak = await q<{ vakgebied: string; n: number; laatst: string }>(`select o.vakgebied, count(*)::int as n, max(o.geplaatst_op)::text as laatst from opdrachten o where ${open} and o.vakgebied is not null group by 1`);
+  const reg = await q<{ regio: string; vakgebied: string | null; n: number; laatst: string }>(`
+    select r.naam as regio, o.vakgebied, count(*)::int as n, max(o.geplaatst_op)::text as laatst
+    from opdrachten o join unnest($1::text[]) as r(naam) on lower(o.locatie) like '%' || r.naam || '%'
+    where ${open} group by grouping sets ((r.naam), (r.naam, o.vakgebied))`, [namen]);
+  const slugVan = (naam: string) => REGIOS.find(r => r.naam.toLowerCase() === naam)!.slug;
+  const uit: LandingTelling[] = vak.filter(v => VAKGEBIEDEN.some(x => x.slug === v.vakgebied)).map(v => ({ pad: `/freelance-opdrachten/${v.vakgebied}`, vakgebied: v.vakgebied, regio: null, n: v.n, laatst: v.laatst }));
+  for (const r of reg) {
+    if (r.vakgebied === null) uit.push({ pad: `/freelance-opdrachten/${slugVan(r.regio)}`, vakgebied: null, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
+    else if (VAKGEBIEDEN.some(x => x.slug === r.vakgebied)) uit.push({ pad: `/freelance-opdrachten/${r.vakgebied}/${slugVan(r.regio)}`, vakgebied: r.vakgebied, regio: slugVan(r.regio), n: r.n, laatst: r.laatst });
+  }
+  return uit;
 }
 
 export async function opdrachtDetail(slug: string) {

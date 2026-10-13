@@ -1,5 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
+import { indexeringNaAfloop } from '@/lib/indexering';
 import { redirect } from 'next/navigation';
 import { vereis, hashWachtwoord } from '@/lib/auth';
 import { q, one } from '@/lib/db';
@@ -31,6 +32,7 @@ export async function keurOpdracht(fd: FormData) {
     if (contact) await mails.opdrachtVerwijderd(contact.email, o.titel, reden);
   }
   await logboek(a.id, `opdracht_${besluit}`, 'opdracht', id, { titel: o.titel, reden });
+  indexeringNaAfloop();
   revalidatePath('/beheer/opdrachten');
   redirect(terug(fd, '/beheer/opdrachten'));
 }
@@ -42,6 +44,7 @@ export async function blokkeerAccount(fd: FormData) {
   const status = actie === 'blokkeren' ? 'geblokkeerd' : 'actief';
   if (soort === 'bedrijf') {
     await q(`update bedrijven set status = $2, blok_reden = $3 where id = $1`, [id, status, actie === 'blokkeren' ? reden : null]);
+    indexeringNaAfloop();
     const leden = await q(`select a.id, a.email from bedrijf_leden bl join accounts a on a.id = bl.account_id where bl.bedrijf_id = $1`, [id]);
     for (const l of leden) {
       await q(`update accounts set status = $2, blok_reden = $3 where id = $1 and rol <> 'beheer'`, [l.id, status, actie === 'blokkeren' ? reden : null]);
@@ -70,6 +73,7 @@ export async function handelMeldingAf(fd: FormData) {
   }
   if (m.melder_email) await mails.meldingAfgehandeld(m.melder_email);
   await logboek(a.id, 'melding_afgehandeld', 'melding', id, { besluit });
+  if (besluit === 'blokkeren') indexeringNaAfloop();
   redirect('/beheer/moderatie?melding=bijgewerkt');
 }
 

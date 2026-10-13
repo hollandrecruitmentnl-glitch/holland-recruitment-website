@@ -1,5 +1,6 @@
 'use server';
 import { redirect } from 'next/navigation';
+import { indexeringNaAfloop } from '@/lib/indexering';
 import { revalidatePath } from 'next/cache';
 import { huidigAccount, vereis } from '@/lib/auth';
 import { q, one, tx } from '@/lib/db';
@@ -146,6 +147,7 @@ export async function indienen(_: FormState, fd: FormData): Promise<FormState> {
       const reageerders = await q(`select a.email from reacties r join accounts a on a.id = r.freelancer_id where r.opdracht_id = $1 and a.status = 'actief'`, [id]);
       for (const x of reageerders) await mailsExtra.opdrachtGewijzigd(x.email, v.titel, `${SITE}/opdrachten/${r?.slug}`);
     }
+    indexeringNaAfloop();
     redirect(`/mijn/opdrachten/${id}?melding=bijgewerkt`);
   }
   const handmatig = (await one<{ waarde: boolean }>(`select waarde from instellingen where sleutel = 'opdrachten_handmatig_controleren'`))?.waarde !== false;
@@ -163,6 +165,7 @@ export async function indienen(_: FormState, fd: FormData): Promise<FormState> {
   } else if (status === 'in_controle') {
     await mails.intern('sales', `Opdracht ter controle: ${v.titel}`, [['Bedrijf', a.bedrijf_naam || ''], ['Titel', v.titel]], `${SITE}/beheer/opdrachten?status=in_controle`);
   }
+  if (status === 'live') indexeringNaAfloop();
   redirect(`/mijn/opdrachten?melding=${v.bemiddeling ? 'bemiddeling' : status === 'live' ? 'live' : 'ingediend'}`);
 }
 
@@ -209,6 +212,7 @@ export async function sluitOpdracht(_: FormState, fd: FormData): Promise<FormSta
   });
   for (const x of overig) await mails.opdrachtIngevuld(x.email, o.titel, a.bedrijf_naam || 'Het bedrijf');
   await logboek(a.id, 'opdracht_gesloten', 'opdracht', id, { met });
+  indexeringNaAfloop();
   redirect(`/mijn/opdrachten?melding=gesloten`);
 }
 

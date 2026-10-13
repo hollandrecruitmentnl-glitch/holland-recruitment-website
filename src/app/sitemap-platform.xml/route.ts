@@ -1,6 +1,7 @@
 import { q } from '@/lib/db';
 import { SITE } from '@/lib/mail';
 import { REGIOS, VAKGEBIEDEN } from '@/lib/constants';
+import { landingTellingen, MIN_LANDING } from '@/lib/data/opdrachten';
 
 export const dynamic = 'force-dynamic';
 export async function GET() {
@@ -15,6 +16,8 @@ export async function GET() {
   const set = new Set<string>();
   for (const c of combi) for (const r of REGIOS) if (c.regio.includes(r.naam.toLowerCase()) && VAKGEBIEDEN.some(v => v.slug === c.vakgebied)) set.add(`/freelancers-zoeken/${c.vakgebied}/${r.slug}`);
   set.forEach(u => urls.push([u]));
+  // Landingspagina's met opdrachten per vakgebied/regio (alleen als er genoeg open opdrachten zijn)
+  for (const t of await landingTellingen()) if (t.n >= MIN_LANDING) urls.push([t.pad, new Date(t.laatst).toISOString()]);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, d]) => `<url><loc>${SITE}${u}</loc>${d ? `<lastmod>${d}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });
 }

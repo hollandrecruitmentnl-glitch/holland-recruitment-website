@@ -2,6 +2,7 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
+import pg from 'pg';
 
 const B = 'http://localhost:3100';
 const SHOTS = 'test-results';
@@ -19,6 +20,8 @@ const login = async (p, email) => {
   await Promise.all([p.waitForURL(u => !u.pathname.startsWith('/inloggen')), p.click('button[type=submit]')]);
 };
 const errors = [];
+const db = new pg.Client('postgres://postgres:postgres@127.0.0.1:5433/postgres'); await db.connect();
+const indexType = async (like) => (await db.query(`select type from indexering where pad like $1`, [like])).rows[0]?.type;
 
 try {
   console.log('1. Publieke pagina’s');
@@ -186,6 +189,8 @@ try {
   await h.click('button:has-text("Goedkeuren en live zetten")');
   await h.waitForTimeout(800);
   check('bedrijf krijgt "staat live"-mail', !!laatsteMail('eva@rijnmond-test.nl', 'live'));
+  await h.waitForTimeout(1200);
+  check('nieuwe opdracht gemeld bij zoekmachines (droog)', await indexType('/opdrachten/planner-turnaround%') === 'URL_UPDATED');
   await h.goto(`${B}/beheer/gesprekken`);
   await h.selectOption('select[name=reden] >> nth=0', 'support'); await h.click('button:has-text("Lees") >> nth=0');
   await h.waitForURL(/beheer\/gesprekken\/[0-9a-f-]+/);
@@ -218,6 +223,22 @@ try {
   await e.waitForURL(/melding=gesloten/);
   check('opdracht gesloten', true);
   check('reageerder krijgt "ingevuld"-mail', !!laatsteMail('lotte@test.local', 'Update over'));
+  await e.waitForTimeout(1200);
+  check('gesloten opdracht afgemeld bij zoekmachines (droog)', await indexType('/opdrachten/planner-turnaround%') === 'URL_DELETED');
+
+  console.log('7b. SEO-landingspagina’s en sitemap');
+  const lp = await ctx();
+  let r = await lp.goto(`${B}/freelance-opdrachten/techniek-onderhoud`);
+  check('landingspagina vakgebied', r.status() === 200 && (await lp.locator('h1').innerText()).startsWith('Freelance opdrachten techniek en onderhoud'));
+  r = await lp.goto(`${B}/freelance-opdrachten/rotterdam`);
+  check('landingspagina regio', r.status() === 200 && (await lp.locator('h1').innerText()) === 'Freelance opdrachten in Rotterdam');
+  r = await lp.goto(`${B}/freelance-opdrachten/techniek-onderhoud/rotterdam`);
+  check('landingspagina vakgebied + regio', r.status() === 200 && (await lp.locator('h1').innerText()).includes('in Rotterdam'));
+  r = await lp.goto(`${B}/freelance-opdrachten/bestaat-niet`);
+  check('onbekende landingspagina geeft 404', r.status() === 404);
+  const sm = await (await lp.request.get(`${B}/sitemap-platform.xml`)).text();
+  check('sitemap bevat eigen opdrachten, geen gesloten', sm.includes('/opdrachten/werkvoorbereider-e-i-test') && !sm.includes('/opdrachten/planner-turnaround'));
+  check('externe opdrachten niet in sitemap', !(await db.query(`select slug from opdrachten where bron <> 'direct' and status='live' limit 5`)).rows.some(x => sm.includes(x.slug)));
 
   console.log('8. Wachtwoord vergeten (neutraal) en toegang');
   const w = await ctx();

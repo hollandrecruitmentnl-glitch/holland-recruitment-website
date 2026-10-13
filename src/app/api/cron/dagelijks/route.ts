@@ -6,6 +6,7 @@ import { zoekOpdrachten } from '@/lib/data/opdrachten';
 import { mails } from '@/lib/emails';
 import { SITE } from '@/lib/mail';
 import { limiet } from '@/lib/ratelimit';
+import { synchroniseerIndexering } from '@/lib/indexering';
 
 export const maxDuration = 300;
 
@@ -42,8 +43,10 @@ export async function GET(req: NextRequest) {
     if (items.length) { await mails.bewaardeZoekopdracht(z.email, z.naam, items.length, url, items); verstuurd++; }
     await q(`update bewaarde_zoekopdrachten set laatst_verzonden = now() where id = $1`, [z.id]);
   }
+  // 4. Zoekmachines: nieuwe, gewijzigde en gesloten eigen opdrachten melden
+  const index = await synchroniseerIndexering().catch((e: any) => ({ gemeld: 0, status: `fout: ${e?.message || e}` }));
   await q(`delete from sessies where verloopt < now()`);
   await q(`delete from tokens where verloopt < now() - interval '7 days'`);
   await q(`delete from rate_limits where venster_start < now() - interval '2 days'`);
-  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd });
+  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd, indexering: index });
 }

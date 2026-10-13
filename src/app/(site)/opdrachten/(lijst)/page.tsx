@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { huidigAccount } from '@/lib/auth';
-import { zoekOpdrachten } from '@/lib/data/opdrachten';
+import { zoekOpdrachten, landingTellingen, MIN_LANDING } from '@/lib/data/opdrachten';
 import { Leeg, OpdrachtKaart, Paginering } from '@/components/Kaarten';
 import { BewaarZoekopdracht } from '@/components/Bewaar';
-import { VAKGEBIEDEN, WERKVORMEN, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
+import { VAKGEBIEDEN, WERKVORMEN, regioNaam, vakgebiedNaam, werkvormNaam } from '@/lib/constants';
 import { q } from '@/lib/db';
 import { Suspense } from 'react';
 import CareerjetAanvulling from '@/components/CareerjetAanvulling';
@@ -38,6 +38,9 @@ export default async function Opdrachten({ searchParams }: { searchParams: Promi
   z.vakgebied.forEach(v => chips.push([vakgebiedNaam(v), url(z, { vakgebied: z.vakgebied.filter(x => x !== v), pagina: '1' })]));
   z.werkvorm.forEach(v => chips.push([werkvormNaam(v), url(z, { werkvorm: z.werkvorm.filter(x => x !== v), pagina: '1' })]));
   if (z.bron) chips.push([z.bron === 'direct' ? 'Direct geplaatst' : 'Externe opdrachten', url(z, { bron: '', pagina: '1' })]);
+  const landing = (await landingTellingen()).filter(t => t.n >= MIN_LANDING);
+  const perVak = landing.filter(t => t.vakgebied && !t.regio).sort((x, y) => y.n - x.n);
+  const perRegio = landing.filter(t => t.regio && !t.vakgebied).sort((x, y) => y.n - x.n).slice(0, 15);
   const toonAlle = z.vakgebied.some(v => VAKGEBIEDEN.findIndex(x => x.slug === v) >= 6);
   return (
     <>
@@ -89,6 +92,12 @@ export default async function Opdrachten({ searchParams }: { searchParams: Promi
           <Paginering pagina={res.pagina} totaal={res.totaal} per={res.perPagina} basis={p => url(z, { pagina: String(p) })} />
           {z.pagina === '1' && z.bron !== 'direct' && <Suspense fallback={null}><CareerjetAanvulling q={z.q} locatie={z.locatie} /></Suspense>}
           {res.items.some(o => o.bron !== 'direct') && <p className="p-xs p-muted">Externe opdrachten komen van andere websites. We tonen altijd de bron; reageren gaat via die website.</p>}
+          {(perVak.length > 0 || perRegio.length > 0) && (
+            <section className="p-stack" style={{ marginTop: 18, gap: 14 }} aria-label="Opdrachten per vakgebied en regio">
+              {perVak.length > 0 && <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>Freelance opdrachten per vakgebied</h2><div className="p-row" style={{ gap: 8 }}>{perVak.map(t => <Link key={t.pad} className="p-chip" href={t.pad}>{vakgebiedNaam(t.vakgebied)} ({t.n})</Link>)}</div></div>}
+              {perRegio.length > 0 && <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>Freelance opdrachten per regio</h2><div className="p-row" style={{ gap: 8 }}>{perRegio.map(t => <Link key={t.pad} className="p-chip" href={t.pad}>{regioNaam(t.regio)} ({t.n})</Link>)}</div></div>}
+            </section>
+          )}
         </div>
       </div>
     </>
