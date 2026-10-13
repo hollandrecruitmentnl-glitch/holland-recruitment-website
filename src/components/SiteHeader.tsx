@@ -17,6 +17,7 @@ const EXPERTISES = [
   ['/expertises', 'Alle expertises'], ['/expertises/sales-business-development', 'Sales & Business Development'], ['/expertises/marketing-digital', 'Marketing & Digital'],
   ['/expertises/it-data', 'IT & Data'], ['/expertises/finance', 'Finance'], ['/expertises/engineering-technical', 'Engineering & Technical'],
   ['/expertises/petrochemie-industrie', 'Petrochemie & Industrie'], ['/expertises/operations-projectmanagement', 'Operations & Project Management'],
+  ['/expertises/zorg-welzijn', 'Zorg & Welzijn'], ['/expertises/onderwijs', 'Onderwijs'], ['/expertises/transport-logistiek', 'Transport & Logistiek'],
 ];
 
 function Dropdown({ id, label, items }: { id: string; label: string; items: string[][] }) {
