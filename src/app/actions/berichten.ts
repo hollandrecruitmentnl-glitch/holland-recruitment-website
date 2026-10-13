@@ -26,9 +26,11 @@ async function notificeer(gesprekId: string, afzender: Account, tekst: string) {
     : await q(`select a.id, a.email, a.meldingen, a.laatst_actief from bedrijf_leden bl join accounts a on a.id = bl.account_id where bl.bedrijf_id = $1 and a.status = 'actief'`, [g.bedrijf_id]);
   const van = afzender.rol === 'bedrijf' ? `${afzender.voornaam} ${afzender.achternaam} van ${g.b_naam}` : `${afzender.voornaam} ${afzender.achternaam}`;
   for (const o of ontvangers) {
-    const online = o.laatst_actief && Date.now() - new Date(o.laatst_actief).getTime() < 3 * 60_000;
-    if (online || o.meldingen?.nieuw_bericht === false) continue;
-    if (!(await limiet(`mail:gesprek:${gesprekId}:${o.id}`, 1, 3600))) continue;
+    if (o.meldingen?.nieuw_bericht === false) continue;
+    // Alleen geen e-mail als de ontvanger dit gesprek op dit moment open heeft (het venster ververst elke 5 s).
+    const kijktMee = await one(`select 1 from gelezen where gesprek_id = $1 and account_id = $2 and tot > now() - interval '20 seconds'`, [gesprekId, o.id]);
+    if (kijktMee) continue;
+    if (!(await limiet(`mail:gesprek:${gesprekId}:${o.id}`, 1, 3600))) continue; // max. 1 e-mail per gesprek per uur
     await mails.nieuwBericht(o.email, van, g.opdracht_titel || '', tekst, `${SITE}/mijn/berichten/${gesprekId}`);
   }
 }

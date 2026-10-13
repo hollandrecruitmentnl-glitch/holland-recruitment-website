@@ -16,7 +16,7 @@ export default function BottomBarLinks({ rol, ongelezen }: { rol: string; ongele
   useEffect(() => { document.body.classList.add('p-has-bottombar'); return () => document.body.classList.remove('p-has-bottombar'); }, []);
   const items = rol === 'freelancer'
     ? [['/mijn', 'Overzicht', I.home], ['/opdrachten', 'Opdrachten', I.zoek], ['/mijn/berichten', 'Berichten', I.msg], ['/mijn/profiel', 'Profiel', I.user]]
-    : [['/mijn', 'Overzicht', I.home], ['/freelancers-zoeken', 'Zoeken', I.zoek], ['/mijn/berichten', 'Berichten', I.msg], ['/mijn/opdrachten', 'Opdrachten', I.doc]];
+    : [['/mijn', 'Overzicht', I.home], ['/freelancers-zoeken', 'Freelancers', I.zoek], ['/mijn/berichten', 'Berichten', I.msg], ['/mijn/opdrachten', 'Opdrachten', I.doc]];
   return (
     <nav className="p-bottombar" aria-label="Snelmenu">
       {items.map(([h, l, ic]) => {

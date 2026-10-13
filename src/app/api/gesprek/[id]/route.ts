@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!g) return NextResponse.json({}, { status: 404 });
   const na = req.nextUrl.searchParams.get('na') || undefined;
   const nieuw = await berichtenVan(id, na && /^[0-9a-f-]{36}$/.test(na) ? na : undefined);
-  if (nieuw.length) await markeerGelezen(id, a.id);
+  await markeerGelezen(id, a.id); // ook als 'aanwezig'-signaal: wie het gesprek open heeft, krijgt geen e-mail
   const gelezen = await andereGelezenTot(id, a);
   return NextResponse.json({ berichten: nieuw.map((m: any) => ({ ...m, aangemaakt: new Date(m.aangemaakt).toISOString() })), gelezenTot: gelezen ? new Date(gelezen).toISOString() : null, label: g.statuslabel, geblokkeerd: g.geblokkeerd }, { headers: { 'Cache-Control': 'no-store' } });
 }

@@ -101,6 +101,8 @@ try {
   check('bericht nog steeds bewaard', (await g.inputValue('#bericht-tekst')).includes('stop in november'));
   await Promise.all([g.waitForURL(/mijn\/berichten\//), g.click('#bericht button:has-text("Stuur bericht")')]);
   check('gesprek gestart', await g.getByText('stop in november').count() > 0);
+  await g.waitForTimeout(800);
+  check('freelancer krijgt mail bij nieuw bericht', !!laatsteMail('sanne@test.local', 'Nieuw bericht van'));
   await g.screenshot({ path: `${SHOTS}/06-berichten-bedrijf.png` });
   const gesprekUrl = g.url().split('?')[0];
 
@@ -119,6 +121,20 @@ try {
   check('systeemregel bij statuswijziging', true);
   await g.reload(); await g.waitForTimeout(500);
   check('bedrijf ziet antwoord', await g.getByText('ja interesse').count() > 0);
+  check('geen mail als ontvanger het gesprek open heeft', !laatsteMail('peter@pan-techniek-test.nl', 'Nieuw bericht van'));
+  console.log('4b. Rolmenu en mail als het gesprek niet open staat');
+  await g.goto(`${B}/mijn`);
+  const navB = await g.locator('.site-header .nav-main').innerText();
+  check('bedrijf ziet alleen bedrijfsmenu', navB.includes('Freelancers zoeken') && navB.includes('Mijn opdrachten') && !navB.includes('Voor bedrijven') && await g.locator('#dd-freelancers').count() === 0);
+  check('bedrijf ziet volgende stap op overzicht', await g.locator('.p-next').count() === 1);
+  await g.waitForTimeout(21000);
+  await s.fill('#chat-tekst', 'Wanneer schikt een kennismaking?'); await s.keyboard.press('Enter');
+  await s.waitForTimeout(1500);
+  check('bedrijf krijgt mail als gesprek niet open staat', !!laatsteMail('peter@pan-techniek-test.nl', 'Nieuw bericht van'));
+  await s.goto(`${B}/mijn`);
+  const navF = await s.locator('.site-header .nav-main').innerText();
+  check('freelancer ziet alleen freelancermenu', navF.includes('Opdrachten') && navF.includes('Mijn profiel') && !navF.includes('Freelancers zoeken') && await s.locator('.site-header a[href="/freelancers-zoeken"]').count() === 0);
+  await s.goto(gesprekUrl); await g.goto(gesprekUrl);
   await s.waitForTimeout(6000);
   check('freelancer ziet "Gelezen"', await s.getByText('Gelezen').count() > 0);
   await s.setViewportSize({ width: 390, height: 844 }); await s.reload();

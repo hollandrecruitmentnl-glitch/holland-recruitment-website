@@ -212,3 +212,12 @@ table.p-table{width:100%;border-collapse:collapse;font-size:14.5px;}
 .p-opdracht-voorbeeld{position:sticky;top:96px;}
 @media (max-width:1080px){.p-opdracht-grid{grid-template-columns:1fr;} .p-opdracht-voorbeeld{position:static;}}
 @media (max-width:480px){.p-seg{grid-auto-flow:row;grid-template-columns:1fr 1fr;width:100%;} .p-seg a,.p-seg button{padding:0 10px;font-size:14px;white-space:normal;text-align:center;line-height:1.2;}}
+
+/* UX v2: volgende stap, takenlijst */
+.p-next{border:1.5px solid var(--blue);background:var(--blue-soft);border-radius:22px;padding:20px 24px;display:flex;gap:16px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.p-todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.p-todo li{display:flex;gap:10px;align-items:center;font-size:14.5px;padding:5px 0;}
+.p-todo .ic{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;border:1.5px solid var(--line);font-size:12px;font-weight:700;color:var(--ink);background:#fff;}
+.p-todo li.klaar{color:var(--muted);}
+.p-todo li.klaar .ic{background:var(--lime);border-color:var(--lime-deep);}
+@media (max-width:640px){.p-next{padding:18px;} .p-next .p-row{width:100%;} .p-next .btn{flex:1;justify-content:center;}}

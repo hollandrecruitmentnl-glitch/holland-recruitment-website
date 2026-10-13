@@ -35,6 +35,15 @@ export default function HeaderClient() {
     document.getElementById('mobile-menu')?.classList.remove('open');
     hdr?.querySelector('.burger')?.setAttribute('aria-expanded', 'false');
     document.querySelectorAll('details.p-acct[open]').forEach(d => d.removeAttribute('open'));
+    // Actieve link in het rolmenu markeren (langste passende pad wint).
+    const links = Array.from(document.querySelectorAll<HTMLElement>('.site-header [data-nav]'));
+    let best: HTMLElement | null = null; let len = -1;
+    for (const l of links) {
+      const h = l.dataset.nav || '';
+      const past = h === '/mijn' ? path === '/mijn' : path === h || path.startsWith(h + '/');
+      if (past && h.length > len) { best = l; len = h.length; }
+    }
+    links.forEach(l => { if (l === best) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current'); });
   }, [path]);
   return null;
 }

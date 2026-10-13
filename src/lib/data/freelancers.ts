@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { q, one } from '../db';
 import type { Account } from '../auth';
 
@@ -71,22 +72,31 @@ export async function freelancerProfiel(slug: string, kijker: Account | null) {
   return { ...p, werkervaring: werk };
 }
 
-export function volledigheid(f: any, werkAantal: number): { pct: number; volgende: string | null } {
-  const stappen: [boolean, string][] = [
-    [!!f.functietitel, 'Vul je functietitel in'],
-    [!!f.regio, 'Vul je regio in'],
-    [!!f.vakgebied, 'Kies je vakgebied'],
-    [(f.introductie || '').length >= 80, 'Schrijf een introductie van minimaal 80 tekens'],
-    [f.uurtarief != null, 'Vul je uurtarief in'],
-    [(f.vaardigheden || []).length >= 3, 'Voeg minimaal drie vaardigheden toe'],
-    [werkAantal >= 1, 'Voeg je werkervaring toe'],
-    [!!f.cv_pad, 'Upload je cv'],
-    [!!f.foto_pad, 'Voeg een foto toe'],
-    [(f.certificeringen || []).length + (f.sectoren || []).length >= 1, 'Voeg certificeringen of sectorervaring toe'],
+export type ProfielStap = { klaar: boolean; label: string; taak: string };
+export function volledigheid(f: any, werkAantal: number): { pct: number; volgende: string | null; stappen: ProfielStap[] } {
+  const stappen: ProfielStap[] = [
+    { klaar: !!f.functietitel, label: 'Functietitel', taak: 'Vul je functietitel in' },
+    { klaar: !!f.regio, label: 'Regio', taak: 'Vul je regio in' },
+    { klaar: !!f.vakgebied, label: 'Vakgebied', taak: 'Kies je vakgebied' },
+    { klaar: (f.introductie || '').length >= 80, label: 'Introductie', taak: 'Schrijf een introductie van minimaal 80 tekens' },
+    { klaar: f.uurtarief != null, label: 'Uurtarief', taak: 'Vul je uurtarief in' },
+    { klaar: (f.vaardigheden || []).length >= 3, label: 'Vaardigheden', taak: 'Voeg minimaal drie vaardigheden toe' },
+    { klaar: werkAantal >= 1, label: 'Werkervaring', taak: 'Voeg je werkervaring toe' },
+    { klaar: !!f.cv_pad, label: 'Cv', taak: 'Upload je cv' },
+    { klaar: !!f.foto_pad, label: 'Foto', taak: 'Voeg een foto toe' },
+    { klaar: (f.certificeringen || []).length + (f.sectoren || []).length >= 1, label: 'Certificeringen of sectoren', taak: 'Voeg certificeringen of sectorervaring toe' },
   ];
-  const klaar = stappen.filter(s => s[0]).length;
-  return { pct: Math.round((klaar / stappen.length) * 100), volgende: stappen.find(s => !s[0])?.[1] ?? null };
+  const klaar = stappen.filter(s => s.klaar).length;
+  return { pct: Math.round((klaar / stappen.length) * 100), volgende: stappen.find(s => !s.klaar)?.taak ?? null, stappen };
 }
+
+/** Volledigheid op basis van id (voor header en overzicht). */
+export const profielVolledigheid = cache(async (id: string) => {
+  const f = await one(`select * from freelancers where id = $1`, [id]);
+  if (!f) return { pct: 100, volgende: null, stappen: [] as ProfielStap[] };
+  const werk = await one<{ n: number }>('select count(*)::int as n from werkervaring where freelancer_id = $1', [id]);
+  return volledigheid(f, werk?.n ?? 0);
+});
 
 export async function uitgelichteFreelancers(kijker: Account | null) {
   return (await zoekFreelancers({ beschikbaar: 'nu', perPagina: 3 }, kijker)).items;
