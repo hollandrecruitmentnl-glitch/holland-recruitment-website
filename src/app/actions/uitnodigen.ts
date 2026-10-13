@@ -28,8 +28,8 @@ export async function klaarzettenActie() {
 /** Voorbeeld van de uitnodiging naar het e-mailadres van de beheerder. De knop opent een voorbeeldpagina, geen echt account. */
 export async function testmailActie() {
   const a = await vereis('beheer');
-  const v = await one(`select a.voornaam, f.functietitel, f.vakgebied, f.regio, f.cv_pad from accounts a join freelancers f on f.id = a.id where a.status = 'uitgenodigd' order by a.aangemaakt limit 1`);
-  await mails.uitnodiging(a.email, v?.voornaam || 'Sanne', `${SITE}/uitnodiging/voorbeeld`,
+  const v = await one(`select a.id, a.voornaam, f.functietitel, f.vakgebied, f.regio, f.cv_pad from accounts a join freelancers f on f.id = a.id where a.status = 'uitgenodigd' order by a.aangemaakt limit 1`);
+  await mails.uitnodiging(a.email, v?.voornaam || 'Sanne', `${SITE}/uitnodiging/voorbeeld${v ? `?id=${v.id}` : ''}`,
     { functie: v?.functietitel || 'Projectmanager', vakgebied: vakgebiedNaam(v?.vakgebied) || 'Projectmanagement', regio: v?.regio || 'Rotterdam', cv: v ? !!v.cv_pad : true }, true);
   await logboek(a.id, 'uitnodiging_testmail', 'account', a.id);
   redirect(melding(`Testmail verstuurd naar ${a.email}. De knop in de testmail opent een voorbeeldpagina.`));

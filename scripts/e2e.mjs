@@ -284,6 +284,12 @@ try {
   check('klaargezet profiel onzichtbaar', !(await (await bh.request.get(`${B}/freelancers-zoeken?q=Contracts`)).text()).includes('Iris') && (await (await ctx()).goto(`${B}/freelancer/${iris.slug}`)).status() === 404);
   await Promise.all([bh.waitForURL(u => decodeURIComponent(u.search).includes('Testmail')), bh.click('button:has-text("2. Testmail")')]);
   check('testmail naar beheer', !!laatsteMail('beheer@test.local', '[TEST]'));
+  const tl = link(laatsteMail('beheer@test.local', '[TEST]')?.html || '', /http[^"]*\/uitnodiging\/voorbeeld[^"]*/);
+  await bh.goto(tl.replace(/^https?:\/\/[^/]+/, B));
+  check('testmail-voorbeeld toont hetzelfde profiel als de mail (alleen voor beheer)', (await bh.locator('h1').innerText()).includes('Iris') && await bh.locator('button:has-text("Profiel activeren")').count() === 0);
+  const anoniem = await ctx(); await anoniem.goto(tl.replace(/^https?:\/\/[^/]+/, B));
+  check('voorbeeld zonder beheer toont fictief profiel', (await anoniem.locator('h1').innerText()).includes('Sanne'));
+  await bh.goto(`${B}/beheer/uitnodigen`);
   await Promise.all([bh.waitForURL(u => decodeURIComponent(u.search).includes('uitnodigingen verstuurd')), bh.click('button:has-text("3. Verstuur uitnodigingen")')]);
   const um = laatsteMail('iris@test.local', 'klaar');
   check('uitnodiging verstuurd', !!um);

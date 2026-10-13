@@ -3,6 +3,7 @@ import { one } from '@/lib/db';
 import { sha256 } from '@/lib/util';
 import { vakgebiedNaam, werkvormNaam } from '@/lib/constants';
 import UitnodigingForm from '@/components/UitnodigingForm';
+import { huidigAccount } from '@/lib/auth';
 
 export const metadata = { title: 'Profiel activeren', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -10,10 +11,15 @@ export const dynamic = 'force-dynamic';
 const VOORBEELD = { voornaam: 'Sanne', achternaam: 'de Vries', functietitel: 'Projectmanager', vakgebied: 'projectmanagement', regio: 'Rotterdam', jaren_ervaring: 12,
   vaardigheden: ['Prince2', 'Stakeholdermanagement', 'Planning'], talen: ['Nederlands', 'Engels'], werkvormen: ['hybride'], uren_per_week: 32, cv_naam: 'cv-sanne.pdf' };
 
-export default async function Activeren({ params }: { params: Promise<{ token: string }> }) {
+export default async function Activeren({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<Record<string, string>> }) {
   const { token } = await params;
+  const { id } = await searchParams;
   const voorbeeld = token === 'voorbeeld';
-  const p = voorbeeld ? VOORBEELD : await one(`select a.voornaam, a.achternaam, a.status, f.functietitel, f.vakgebied, f.regio, f.jaren_ervaring, f.vaardigheden, f.talen, f.werkvormen, f.uren_per_week, f.cv_naam
+  // Voorbeeld uit de testmail: beheer ziet het echte klaargezette profiel (alleen lezen), anderen een fictief voorbeeld.
+  const echtVoorbeeld = voorbeeld && id && /^[0-9a-f-]{36}$/.test(id) && (await huidigAccount())?.rol === 'beheer'
+    ? await one(`select a.voornaam, a.achternaam, f.functietitel, f.vakgebied, f.regio, f.jaren_ervaring, f.vaardigheden, f.talen, f.werkvormen, f.uren_per_week, f.cv_naam
+        from accounts a join freelancers f on f.id = a.id where a.id = $1 and a.status = 'uitgenodigd'`, [id]) : null;
+  const p = voorbeeld ? (echtVoorbeeld || VOORBEELD) : await one(`select a.voornaam, a.achternaam, a.status, f.functietitel, f.vakgebied, f.regio, f.jaren_ervaring, f.vaardigheden, f.talen, f.werkvormen, f.uren_per_week, f.cv_naam
       from tokens t join accounts a on a.id = t.account_id join freelancers f on f.id = a.id
       where t.token_hash = $1 and t.soort = 'uitnodiging' and t.gebruikt is null and t.verloopt > now() and a.status = 'uitgenodigd'`, [sha256(token)]);
   if (!p) return (
