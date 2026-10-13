@@ -7,7 +7,7 @@ import { logboek } from './log';
  * Verwijdert een account met alle bijbehorende gegevens en bestanden (cv, foto, logo, bijlagen in gesprekken).
  * Database-rijen gaan via "on delete cascade"; bestanden in de opslag ruimen we hier zelf op.
  */
-export async function verwijderAccountVolledig(accountId: string, reden: 'zelf' | 'inactief' | 'beheer'): Promise<void> {
+export async function verwijderAccountVolledig(accountId: string, reden: 'zelf' | 'inactief' | 'beheer' | 'niet_geactiveerd'): Promise<void> {
   const a = await one<{ rol: string; bedrijf_id: string | null }>(
     `select a.rol, bl.bedrijf_id from accounts a left join bedrijf_leden bl on bl.account_id = a.id where a.id = $1`, [accountId]);
   if (!a || a.rol === 'beheer') return;

@@ -86,6 +86,19 @@ export const mails = {
     }),
   }),
 
+  uitnodiging: (aan: string, voornaam: string, url: string, p: { functie: string; vakgebied: string; regio: string; cv: boolean }, test = false) => verstuurVeilig({
+    aan, onderwerp: `${test ? '[TEST] ' : ''}Je profiel staat klaar op het platform van Holland Recruitment`,
+    html: layout({
+      preheader: 'Activeer je profiel en word gevonden door bedrijven.', titel: `${v(voornaam || 'Hallo')}, je profiel staat klaar`,
+      intro: `Je hebt je eerder bij Holland Recruitment aangemeld als freelance professional. Op ons nieuwe platform zoeken bedrijven zelf naar freelancers en nemen ze direct contact op. Op basis van je aanmelding hebben we een profiel voor je klaargezet${p.cv ? ', inclusief je cv' : ''}. Het is nog niet zichtbaar: dat bepaal jij.`,
+      blok: { kop: 'Je klaargezette profiel', rijen: [['Functie', v(p.functie || '–')], ['Vakgebied', v(p.vakgebied || 'Nog kiezen')], ['Regio', v(p.regio || '–')], ['Cv', p.cv ? 'Toegevoegd (alleen zichtbaar na contact, tenzij je dat anders kiest)' : 'Nog niet toegevoegd']] },
+      stappen: ['Kies een wachtwoord.', 'Controleer je profiel en kies wat zichtbaar is.', 'Activeer je profiel. Bedrijven kunnen je dan vinden en je een bericht sturen.'],
+      knop: { tekst: 'Profiel activeren', url },
+      klein: `De link is ${14} dagen geldig. Het platform is de eerste 6 maanden helemaal gratis. Wil je geen profiel op het platform? Dan hoef je niets te doen: we verwijderen het klaargezette profiel na 30 dagen automatisch. Je aanmelding in ons netwerk blijft gewoon bestaan.`,
+      reden: 'Je ontvangt deze e-mail omdat je je bij Holland Recruitment hebt aangemeld als freelance professional.',
+    }),
+  }),
+
   inactiefAccount: (aan: string, voornaam: string, url: string) => verstuurVeilig({
     aan, onderwerp: 'Je account wordt over 30 dagen verwijderd',
     html: layout({

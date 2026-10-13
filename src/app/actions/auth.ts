@@ -9,6 +9,7 @@ import { SITE } from '@/lib/mail';
 import { GRATIS_MAILDIENSTEN, VAKGEBIEDEN } from '@/lib/constants';
 import { kort, randomToken, sha256, slugify, str } from '@/lib/util';
 import { logboek } from '@/lib/log';
+import { stuurUitnodiging } from '@/lib/uitnodigen';
 
 export type FormState = { fouten?: Record<string, string>; melding?: string; ok?: boolean; waarden?: Record<string, string> } | undefined;
 
@@ -58,7 +59,12 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
       if (w.website && !/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/.*)?$/i.test(w.website)) f.website = 'Vul een geldig webadres in, bijvoorbeeld www.bedrijf.nl.';
     }
   }
-  if (!f.email && await one('select 1 from accounts where lower(email) = $1', [email])) f.email = 'Er bestaat al een account met dit e-mailadres. Log in of kies "Wachtwoord vergeten".';
+  const bestaand = !f.email ? await one<{ id: string; status: string }>('select id, status from accounts where lower(email) = $1', [email]) : null;
+  if (bestaand?.status === 'uitgenodigd') {
+    if (await limiet(`reset:${email}`, 3, 3600)) await stuurUitnodiging(bestaand.id);
+    return { fouten: { algemeen: 'Er staat al een profiel voor je klaar op basis van je eerdere aanmelding. We hebben je een e-mail gestuurd met een link om het te activeren.' }, waarden: w };
+  }
+  if (bestaand) f.email = 'Er bestaat al een account met dit e-mailadres. Log in of kies "Wachtwoord vergeten".';
   let uitnodiging: any = null;
   if (rol === 'bedrijf' && w.uitnodiging) {
     uitnodiging = await one(`select * from bedrijf_uitnodigingen where token_hash = $1 and geaccepteerd is null and aangemaakt > now() - interval '7 days'`, [sha256(w.uitnodiging)]);
@@ -109,6 +115,7 @@ export async function inloggen(_: FormState, fd: FormData): Promise<FormState> {
     return { fouten: { algemeen: 'Te veel inlogpogingen. Wacht een kwartier en probeer het opnieuw.' }, waarden: w };
   const a = await one<{ id: string; wachtwoord_hash: string; status: string; rol: string }>('select id, wachtwoord_hash, status, rol from accounts where lower(email) = $1', [email]);
   const ok = a ? await checkWachtwoord(pw, a.wachtwoord_hash) : await dummyCheck(pw);
+  if (a?.status === 'uitgenodigd') return { fouten: { algemeen: 'Je profiel staat klaar, maar is nog niet geactiveerd. Gebruik de link uit je uitnodiging, of vraag via "Wachtwoord vergeten" een nieuwe link aan.' }, waarden: w };
   if (!a || !ok) return { fouten: { algemeen: 'Dit e-mailadres en wachtwoord horen niet bij elkaar. Controleer ze of kies "Wachtwoord vergeten".' }, waarden: w };
   if (a.status === 'geblokkeerd') redirect('/geblokkeerd');
   await maakSessie(a.id);
@@ -124,6 +131,8 @@ export async function wachtwoordVergeten(_: FormState, fd: FormData): Promise<Fo
   const email = str(fd.get('email')).toLowerCase();
   if (!EMAIL.test(email)) return { fouten: { email: 'Vul een geldig e-mailadres in.' }, waarden: { email } };
   if (await limiet(`reset:${await clientIp()}`, 6, 3600) && await limiet(`reset:${email}`, 3, 3600)) {
+    const u = await one<{ id: string }>('select id from accounts where lower(email) = $1 and status = \'uitgenodigd\'', [email]);
+    if (u) await stuurUitnodiging(u.id); // klaargezet profiel: nieuwe activatielink
     const a = await one<{ id: string }>('select id from accounts where lower(email) = $1 and status = \'actief\'', [email]);
     if (a) {
       const t = randomToken();

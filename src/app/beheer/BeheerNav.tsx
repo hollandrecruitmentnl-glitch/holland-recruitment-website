@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 export default function BeheerNav({ tellers }: { tellers: { controle: number; meldingen: number; bemiddeling: number } | null }) {
   const p = usePathname();
   const items: [string, string, number?][] = [
-    ['/beheer', 'Dashboard'], ['/beheer/freelancers', 'Freelancers'], ['/beheer/bedrijven', 'Bedrijven'], ['/beheer/opdrachten', 'Opdrachten', tellers?.controle],
+    ['/beheer', 'Dashboard'], ['/beheer/freelancers', 'Freelancers'], ['/beheer/uitnodigen', 'Uitnodigen'], ['/beheer/bedrijven', 'Bedrijven'], ['/beheer/opdrachten', 'Opdrachten', tellers?.controle],
     ['/beheer/bemiddeling', 'Bemiddeling', tellers?.bemiddeling], ['/beheer/moderatie', 'Moderatie', tellers?.meldingen], ['/beheer/gesprekken', 'Gesprekken'],
     ['/beheer/feeds', 'Externe feeds'], ['/beheer/statistieken', 'Statistieken'], ['/beheer/instellingen', 'Instellingen'],
   ];

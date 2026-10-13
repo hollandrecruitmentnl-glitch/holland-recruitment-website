@@ -15,7 +15,8 @@ async function suggesties(kol: 'vaardigheden' | 'certificeringen' | 'sectoren', 
   return Array.from(new Set([...r.map(x => x.v), ...basis]));
 }
 
-export default async function MijnProfiel() {
+export default async function MijnProfiel({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const { welkom } = await searchParams;
   const a = await vereis('freelancer');
   const f = await one(`select *, beschikbaar_vanaf::text as beschikbaar_vanaf, beschikbaar_tot::text as beschikbaar_tot from freelancers where id = $1`, [a.id]);
   const werk = await q(`select * from werkervaring where freelancer_id = $1 order by huidig desc, coalesce(tot, 9999) desc, van desc`, [a.id]);
@@ -34,6 +35,7 @@ export default async function MijnProfiel() {
         <h1 className="p-h2">Mijn profiel</h1>
         <Link className="btn btn-line btn-sm" href={`/freelancer/${f.slug}`}>Bekijk zoals anderen</Link>
       </div>
+      {welkom && <p className="p-ok" role="status" style={{ marginBottom: 18 }}><strong>Je profiel is actief.</strong> Bedrijven kunnen je nu vinden. Vul je uurtarief, een korte introductie en je werkervaring aan, dan word je beter gevonden.</p>}
       <section className="p-card p-stack" style={{ marginBottom: 18 }}>
         <div className="p-between"><strong>Je profiel is {vol.pct}% compleet</strong>{vol.volgende && <span className="p-small p-muted">Volgende stap: {vol.volgende}</span>}</div>
         <div className="p-progress" role="progressbar" aria-valuenow={vol.pct} aria-valuemin={0} aria-valuemax={100} aria-label="Profielvolledigheid"><span style={{ width: `${vol.pct}%` }} /></div>

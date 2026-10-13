@@ -58,6 +58,11 @@ export async function GET(req: NextRequest) {
       and coalesce(laatst_actief, aangemaakt) < inactief_gewaarschuwd limit 50`)) {
     await verwijderAccountVolledig(x.id, 'inactief'); inactiefVerwijderd++;
   }
+  // Klaargezette profielen die niet zijn geactiveerd: 30 dagen na de uitnodiging (of 60 dagen na klaarzetten zonder uitnodiging) verwijderen
+  for (const x of await q(`select id from accounts where status = 'uitgenodigd' and ((uitgenodigd_op is not null and uitgenodigd_op < now() - interval '30 days')
+      or (uitgenodigd_op is null and aangemaakt < now() - interval '60 days')) limit 100`)) {
+    await verwijderAccountVolledig(x.id, 'niet_geactiveerd'); inactiefVerwijderd++;
+  }
   await q(`delete from logboek where aangemaakt < now() - interval '24 months'`);
   await q(`delete from sessies where verloopt < now()`);
   await q(`delete from tokens where verloopt < now() - interval '7 days'`);
