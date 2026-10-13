@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://www.holland-recruitment.nl/sitemap.xml
+Sitemap: https://www.holland-recruitment.nl/sitemap-platform.xml
