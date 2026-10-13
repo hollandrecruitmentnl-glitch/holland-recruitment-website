@@ -19,7 +19,7 @@ export default function GesprekkenLijst({ items, actief, rol }: { items: any[]; 
           {g.ongelezen && <span className="p-dot nu" style={{ marginTop: 8 }} aria-label="Ongelezen" />}
         </Link>
       ))}
-      <p className="p-xs p-muted" style={{ padding: '14px 16px', marginTop: 'auto' }}>Beheer van Holland Recruitment leest gesprekken alleen bij een melding, fraudecontrole, support of bemiddeling. Elke inzage wordt vastgelegd.</p>
+      <p className="p-xs p-muted" style={{ padding: '14px 16px', marginTop: 'auto' }}>Beheer van Holland Recruitment leest gesprekken alleen bij een melding, fraudecontrole, support of bemiddeling. Elke inzage wordt vastgelegd. <a className="p-link" href="/privacyverklaring">Privacyverklaring</a></p>
     </nav>
   );
 }

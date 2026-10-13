@@ -12,7 +12,7 @@ export default async function Bemiddeling({ searchParams }: { searchParams: Prom
   return (
     <div className="p-stack">
       <h1 className="p-h2">Bemiddeling</h1>
-      <p className="p-small p-muted">Betaalde dienst: fee per plaatsing, op aanvraag. Nieuw → Gebeld → Kandidaten voorgesteld → Geplaatst (of Gestopt). {freelancers[0]?.n ?? 0} freelancers willen ook bemiddeld worden.</p>
+      <p className="p-small p-muted">Betaalde dienst: tarief vooraf afspreken met de klant (handmatig). Nieuw → Gebeld → Kandidaten voorgesteld → Geplaatst (of Gestopt). {freelancers[0]?.n ?? 0} freelancers willen ook bemiddeld worden.</p>
       <div className="p-row" style={{ gap: 8 }}>{['', ...Object.keys(BEMIDDELING_STATUS)].map(s => <Link key={s} className={`p-chip ${status === s ? 'on' : ''}`} href={`/beheer/bemiddeling?status=${s}`}>{s ? BEMIDDELING_STATUS[s] : 'Alle'}</Link>)}</div>
       {rows.length ? rows.map((m: any) => (
         <article key={m.id} className="p-card p-stack" style={{ gap: 8 }}>

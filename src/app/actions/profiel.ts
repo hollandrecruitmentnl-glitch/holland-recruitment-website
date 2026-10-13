@@ -11,6 +11,7 @@ import { SITE } from '@/lib/mail';
 import { limiet } from '@/lib/ratelimit';
 import { controleerKvk } from '@/lib/kvk';
 import { logboek } from '@/lib/log';
+import { verwijderAccountVolledig } from '@/lib/accountverwijderen';
 import type { FormState } from './auth';
 
 const ZICHT = ['publiek', 'na_contact', 'verborgen'];
@@ -199,16 +200,7 @@ export async function verwijderAccount(_: FormState, fd: FormData): Promise<Form
   const pw = String(fd.get('wachtwoord') || '');
   const acc = await one('select wachtwoord_hash from accounts where id = $1', [a.id]);
   if (!(await checkWachtwoord(pw, acc.wachtwoord_hash))) return { fouten: { wachtwoord: 'Je wachtwoord klopt niet.' } };
-  if (a.rol === 'freelancer') {
-    const f = await one('select cv_pad, foto_pad from freelancers where id = $1', [a.id]);
-    await verwijderen(f?.cv_pad); await verwijderen(f?.foto_pad);
-  }
-  if (a.rol === 'bedrijf' && a.bedrijf_id) {
-    const n = await one<{ n: number }>('select count(*)::int as n from bedrijf_leden where bedrijf_id = $1', [a.bedrijf_id]);
-    if ((n?.n ?? 0) <= 1) { const b = await one('select logo_pad from bedrijven where id = $1', [a.bedrijf_id]); await verwijderen(b?.logo_pad); await q('delete from bedrijven where id = $1', [a.bedrijf_id]); }
-  }
-  await logboek(null, 'account_verwijderd', 'account', a.id, { rol: a.rol });
   await beeindigSessie();
-  await q('delete from accounts where id = $1', [a.id]);
+  await verwijderAccountVolledig(a.id, 'zelf');
   redirect('/?verwijderd=1');
 }

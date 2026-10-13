@@ -260,6 +260,15 @@ try {
   for (let i = 0; i < 9; i++) { await login5.goto(`${B}/inloggen`); await login5.fill('#v-email', 'sanne@test.local'); await login5.fill('#v-wachtwoord', 'fout'); await login5.click('button[type=submit]'); await login5.waitForSelector('.p-err-summary'); }
   check('rate limit op inloggen', (await login5.locator('.p-err-summary').innerText()).includes('Te veel'));
 
+  console.log('8b. Account zelf verwijderen (AVG)');
+  const t = await ctx(); t.on('pageerror', e => errors.push(e.message));
+  await login(t, 'tarik@test.local');
+  await t.goto(`${B}/mijn/instellingen`);
+  await t.click('summary:has-text("Account verwijderen")');
+  await t.fill('input[name=bevestig]', 'VERWIJDER'); await t.fill('#v-wachtwoord', 'Test1234!');
+  await Promise.all([t.waitForURL(/verwijderd=1/), t.click('button:has-text("Definitief verwijderen")')]);
+  check('account zelf verwijderd', (await db.query(`select 1 from accounts where email = 'tarik@test.local'`)).rowCount === 0);
+  check('profiel weg', (await t.request.get(`${B}/freelancer/tarik-kaya-t2`)).status() !== 200 || !(await (await t.request.get(`${B}/freelancer/tarik-kaya-t2`)).text()).includes('Tarik'));
   console.log('9. Mobiel');
   const m = await ctx({ width: 390, height: 844 });
   await m.goto(`${B}/freelance-platform`); await m.screenshot({ path: `${SHOTS}/12-home-mobiel.png`, fullPage: true });

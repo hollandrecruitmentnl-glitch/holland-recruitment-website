@@ -86,7 +86,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
           <Veld naam="website" label="Website (optioneel)" waarde={w.website} fout={fouten.website} placeholder="www.bedrijf.nl" auto="url" />
           <Veld naam="plaats" label="Plaats" waarde={w.plaats} fout={fouten.plaats} verplicht auto="address-level2" />
         </>}
-        <p className="p-xs p-muted">Door een account te maken ga je akkoord met de <a className="p-link" href="/voorwaarden" target="_blank">voorwaarden</a> en de <a className="p-link" href="/privacyverklaring" target="_blank">privacyverklaring</a>.</p>
+        <p className="p-xs p-muted">Door een account te maken ga je akkoord met de <a className="p-link" href="/voorwaarden" target="_blank">gebruiksvoorwaarden</a>. Hoe we met je gegevens omgaan, lees je in de <a className="p-link" href="/privacyverklaring" target="_blank">privacyverklaring</a>.</p>
         <Verzend pending={pending} bezig="Account wordt aangemaakt…">Account aanmaken</Verzend>
       </div>
       {stap === 1 && !uitnodiging && <p className="p-small">Heb je al een account? <Link className="p-link" href={`/inloggen${terug ? `?terug=${encodeURIComponent(terug)}` : ''}`}>Log in</Link></p>}

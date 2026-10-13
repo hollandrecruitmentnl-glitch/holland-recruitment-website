@@ -32,7 +32,7 @@ export default async function PlatformHome({ searchParams }: { searchParams: Pro
     ['Hoe weet ik dat een bedrijf echt bestaat?', kvkActief() ? 'Elk bedrijf meldt zich aan met een KvK-nummer. Dat controleren we direct bij de KvK. Bij misbruik blokkeren we het account.' : 'Elk bedrijf meldt zich aan met een KvK-nummer en een zakelijk e-mailadres. Bij misbruik blokkeren we het account.'],
     ['Wie ziet mijn gegevens?', 'Je kiest per onderdeel wie je tarief, cv en werkervaring ziet. Je telefoonnummer en e-mailadres zijn nooit openbaar; die deel je zelf in een gesprek.'],
     ['Wat is een externe opdracht?', 'Een opdracht van een andere website of vacaturebank. We tonen altijd de bron en de oorspronkelijke aanbieder. Reageren gaat via die aanbieder.'],
-    ['Kan Holland Recruitment ook voor mij zoeken?', 'Ja. Kies bij het plaatsen van een opdracht voor bemiddeling. Wij zoeken actief, selecteren kandidaten en voeren de gesprekken. Dat is een betaalde dienst: je betaalt een fee per plaatsing. Het tarief is op aanvraag en spreken we vooraf met je af. Het platform zelf blijft de eerste 6 maanden gratis.'],
+    ['Kan Holland Recruitment ook voor mij zoeken?', 'Ja. Kies bij het plaatsen van een opdracht voor bemiddeling. Wij zoeken actief, selecteren kandidaten en voeren de gesprekken. Dat is een betaalde dienst: je betaalt alleen als je kiest voor bemiddeling, en het tarief spreken we vooraf met je af. Zelf zoeken via het platform is de eerste 6 maanden helemaal gratis.'],
     ['Regelt Holland Recruitment contracten of facturen?', 'Bij zelf zoeken via het platform niet: jullie maken rechtstreeks afspraken. Bij bemiddeling regelen we de afspraken met je mee.'],
   ];
   return (
@@ -96,7 +96,7 @@ export default async function PlatformHome({ searchParams }: { searchParams: Pro
         <div className="p-card p-between" style={{ padding: '22px 24px' }}>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 760 }}>
             <strong style={{ fontFamily: 'Poppins', fontSize: 17 }}>Geen tijd om zelf te zoeken?</strong>
-            <span className="p-muted" style={{ fontSize: 15 }}>Laat Holland Recruitment bemiddelen. Wij zoeken, selecteren en voeren de gesprekken. Je betaalt alleen bij een plaatsing; tarief op aanvraag.</span>
+            <span className="p-muted" style={{ fontSize: 15 }}>Laat Holland Recruitment bemiddelen. Wij zoeken, selecteren en voeren de gesprekken. Je betaalt alleen als je kiest voor bemiddeling; het tarief spreken we vooraf met je af.</span>
           </span>
           <Link className="btn btn-line btn-sm" href="/bemiddeling">Vraag bemiddeling aan</Link>
         </div>

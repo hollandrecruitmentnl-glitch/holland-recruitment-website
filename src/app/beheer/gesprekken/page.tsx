@@ -12,7 +12,7 @@ export default async function Gesprekken({ searchParams }: { searchParams: Promi
   return (
     <div className="p-stack">
       <h1 className="p-h2">Gesprekken</h1>
-      <p className="p-note p-small">Lezen kan alleen na het kiezen van een reden. Elke inzage komt in het logboek, en gebruikers zien onder hun gesprekkenlijst dat dit kan gebeuren. Laat dit juridisch toetsen (AVG) en vermeld het in de privacyverklaring.</p>
+      <p className="p-note p-small">Lezen kan alleen na het kiezen van een reden. Elke inzage komt in het logboek, en gebruikers zien onder hun gesprekkenlijst dat dit kan gebeuren. Dit staat beschreven in de privacyverklaring (punt 5).</p>
       {fout && <p className="p-err-summary" role="alert">Kies een reden om het gesprek te lezen.</p>}
       <div className="p-table-wrap"><table className="p-table"><caption className="sr-only">Gesprekken</caption>
         <thead><tr><th scope="col">Freelancer</th><th scope="col">Bedrijf</th><th scope="col">Over</th><th scope="col">Berichten</th><th scope="col">Laatste</th><th scope="col">Status</th><th scope="col">Lezen</th></tr></thead>

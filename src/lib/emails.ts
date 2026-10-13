@@ -86,6 +86,17 @@ export const mails = {
     }),
   }),
 
+  inactiefAccount: (aan: string, voornaam: string, url: string) => verstuurVeilig({
+    aan, onderwerp: 'Je account wordt over 30 dagen verwijderd',
+    html: layout({
+      preheader: 'Log in om je account te behouden.', titel: `${v(voornaam)}, gebruik je je account nog?`,
+      intro: 'Je hebt al 24 maanden niet ingelogd op het platform van Holland Recruitment. We bewaren gegevens niet langer dan nodig, daarom verwijderen we je account over 30 dagen, inclusief je profiel, cv en berichten.',
+      stappen: ['Wil je je account houden? Log dan binnen 30 dagen één keer in.', 'Doe je niets, dan verwijderen we je account automatisch.'],
+      knop: { tekst: 'Inloggen en account behouden', url },
+      reden: 'Je ontvangt deze e-mail omdat je een account hebt op het platform van Holland Recruitment.',
+    }),
+  }),
+
   geblokkeerd: (aan: string, reden: string) => verstuurVeilig({
     aan, onderwerp: 'Je account is geblokkeerd',
     html: layout({

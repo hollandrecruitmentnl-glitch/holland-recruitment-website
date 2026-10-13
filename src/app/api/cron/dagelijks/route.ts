@@ -7,6 +7,7 @@ import { mails } from '@/lib/emails';
 import { SITE } from '@/lib/mail';
 import { limiet } from '@/lib/ratelimit';
 import { synchroniseerIndexering } from '@/lib/indexering';
+import { verwijderAccountVolledig } from '@/lib/accountverwijderen';
 
 export const maxDuration = 300;
 
@@ -45,8 +46,21 @@ export async function GET(req: NextRequest) {
   }
   // 4. Zoekmachines: nieuwe, gewijzigde en gesloten eigen opdrachten melden
   const index = await synchroniseerIndexering().catch((e: any) => ({ gemeld: 0, status: `fout: ${e?.message || e}` }));
+  // 5. Bewaartermijnen (privacyverklaring): inactieve accounts en logboek
+  let gewaarschuwd = 0, inactiefVerwijderd = 0;
+  await q(`update accounts set inactief_gewaarschuwd = null where inactief_gewaarschuwd is not null and laatst_actief > inactief_gewaarschuwd`);
+  for (const x of await q(`select id, email, voornaam from accounts where rol <> 'beheer' and status = 'actief' and inactief_gewaarschuwd is null
+      and coalesce(laatst_actief, aangemaakt) < now() - interval '24 months' limit 50`)) {
+    await mails.inactiefAccount(x.email, x.voornaam, `${SITE}/inloggen`);
+    await q(`update accounts set inactief_gewaarschuwd = now() where id = $1`, [x.id]); gewaarschuwd++;
+  }
+  for (const x of await q(`select id from accounts where rol <> 'beheer' and inactief_gewaarschuwd < now() - interval '30 days'
+      and coalesce(laatst_actief, aangemaakt) < inactief_gewaarschuwd limit 50`)) {
+    await verwijderAccountVolledig(x.id, 'inactief'); inactiefVerwijderd++;
+  }
+  await q(`delete from logboek where aangemaakt < now() - interval '24 months'`);
   await q(`delete from sessies where verloopt < now()`);
   await q(`delete from tokens where verloopt < now() - interval '7 days'`);
   await q(`delete from rate_limits where venster_start < now() - interval '2 days'`);
-  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd, indexering: index });
+  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd, indexering: index, gewaarschuwd, inactiefVerwijderd });
 }
