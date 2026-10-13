@@ -251,6 +251,132 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    {
+      "source": "/freelance-platform",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelance-platform"
+    },
+    {
+      "source": "/opdrachten",
+      "destination": "https://hr-platform-mu-one.vercel.app/opdrachten"
+    },
+    {
+      "source": "/opdrachten/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/opdrachten/:path*"
+    },
+    {
+      "source": "/freelance-opdrachten",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelance-opdrachten"
+    },
+    {
+      "source": "/freelance-opdrachten/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelance-opdrachten/:path*"
+    },
+    {
+      "source": "/freelancers-zoeken",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelancers-zoeken"
+    },
+    {
+      "source": "/freelancers-zoeken/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelancers-zoeken/:path*"
+    },
+    {
+      "source": "/freelancer/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/freelancer/:path*"
+    },
+    {
+      "source": "/bedrijven",
+      "destination": "https://hr-platform-mu-one.vercel.app/bedrijven"
+    },
+    {
+      "source": "/bedrijf/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/bedrijf/:path*"
+    },
+    {
+      "source": "/bemiddeling",
+      "destination": "https://hr-platform-mu-one.vercel.app/bemiddeling"
+    },
+    {
+      "source": "/registreren",
+      "destination": "https://hr-platform-mu-one.vercel.app/registreren"
+    },
+    {
+      "source": "/inloggen",
+      "destination": "https://hr-platform-mu-one.vercel.app/inloggen"
+    },
+    {
+      "source": "/wachtwoord-vergeten",
+      "destination": "https://hr-platform-mu-one.vercel.app/wachtwoord-vergeten"
+    },
+    {
+      "source": "/wachtwoord-vergeten/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/wachtwoord-vergeten/:path*"
+    },
+    {
+      "source": "/mijn",
+      "destination": "https://hr-platform-mu-one.vercel.app/mijn"
+    },
+    {
+      "source": "/mijn/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/mijn/:path*"
+    },
+    {
+      "source": "/beheer",
+      "destination": "https://hr-platform-mu-one.vercel.app/beheer"
+    },
+    {
+      "source": "/beheer/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/beheer/:path*"
+    },
+    {
+      "source": "/melden",
+      "destination": "https://hr-platform-mu-one.vercel.app/melden"
+    },
+    {
+      "source": "/melden/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/melden/:path*"
+    },
+    {
+      "source": "/geblokkeerd",
+      "destination": "https://hr-platform-mu-one.vercel.app/geblokkeerd"
+    },
+    {
+      "source": "/geen-toegang",
+      "destination": "https://hr-platform-mu-one.vercel.app/geen-toegang"
+    },
+    {
+      "source": "/bevestigen",
+      "destination": "https://hr-platform-mu-one.vercel.app/bevestigen"
+    },
+    {
+      "source": "/bevestigen/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/bevestigen/:path*"
+    },
+    {
+      "source": "/bestand/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/bestand/:path*"
+    },
+    {
+      "source": "/api/gesprek/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/api/gesprek/:path*"
+    },
+    {
+      "source": "/api/mijn-gegevens",
+      "destination": "https://hr-platform-mu-one.vercel.app/api/mijn-gegevens"
+    },
+    {
+      "source": "/api/upload",
+      "destination": "https://hr-platform-mu-one.vercel.app/api/upload"
+    },
+    {
+      "source": "/_next/:path*",
+      "destination": "https://hr-platform-mu-one.vercel.app/_next/:path*"
+    },
+    {
+      "source": "/sitemap-platform.xml",
+      "destination": "https://hr-platform-mu-one.vercel.app/sitemap-platform.xml"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
