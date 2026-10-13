@@ -3,6 +3,7 @@ import { groepeer, leesSheetRijen, metStand, UITNODIGING_DAGEN } from '@/lib/uit
 import { vakgebiedNaam } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
 import { klaarzettenActie, testmailActie, versturenActie } from '@/app/actions/uitnodigen';
+import BeheerKnop from '@/components/BeheerKnop';
 
 export const metadata = { title: 'Uitnodigen' };
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,7 @@ export default async function Uitnodigen({ searchParams }: { searchParams: Promi
     <div className="p-stack">
       <h1 className="p-h2">Freelancers uitnodigen</h1>
       <p className="p-small p-muted" style={{ maxWidth: 760 }}>Freelancers die zich via de website hebben aangemeld (Google Sheet, tabblad Freelancers) zetten we klaar op het platform. Hun profiel is onzichtbaar tot ze het zelf activeren via de link in de uitnodiging (geldig {UITNODIGING_DAGEN} dagen). Uurtarief, KvK, btw en notities nemen we niet over. Wie niet binnen 30 dagen activeert, wordt automatisch verwijderd.</p>
-      {melding && <p className="p-ok p-small" role="status">{melding}</p>}
+      {melding && <p className="p-ok" role="status"><strong>{melding}</strong></p>}
       {fout && <p className="p-err-summary" role="alert"><strong>De Sheet kon niet worden gelezen.</strong> {fout} {googleManier() ? '' : '(Google-koppeling ontbreekt.)'}</p>}
       <div className="p-row" style={{ gap: 8 }}>
         <span className="p-status">{n('nieuw')} nieuw</span><span className="p-status in_controle">{n('klaargezet')} klaargezet</span>
@@ -30,9 +31,9 @@ export default async function Uitnodigen({ searchParams }: { searchParams: Promi
       <div className="p-card p-stack" style={{ gap: 10 }}>
         <strong>Stappen</strong>
         <div className="p-row" style={{ gap: 10 }}>
-          <form action={klaarzettenActie}><button className="btn btn-line btn-sm" disabled={!n('nieuw')}>1. Klaarzetten ({n('nieuw')})</button></form>
-          <form action={testmailActie}><button className="btn btn-line btn-sm">2. Testmail naar mij</button></form>
-          <form action={versturenActie}><button className="btn btn-blue btn-sm" disabled={!n('klaargezet')}>3. Verstuur uitnodigingen ({n('klaargezet')})</button></form>
+          <form action={klaarzettenActie}><BeheerKnop disabled={!n('nieuw')} bezig="Bezig met klaarzetten en cv's kopiëren…">1. Klaarzetten ({n('nieuw')})</BeheerKnop></form>
+          <form action={testmailActie}><BeheerKnop>2. Testmail naar mij</BeheerKnop></form>
+          <form action={versturenActie}><BeheerKnop className="btn btn-blue btn-sm" disabled={!n('klaargezet')} bezig="Bezig met versturen…">3. Verstuur uitnodigingen ({n('klaargezet')})</BeheerKnop></form>
         </div>
         <span className="p-xs p-muted">Klaarzetten verstuurt nog niets. Pas bij stap 3 gaat er een e-mail uit, één per freelancer.</span>
       </div>

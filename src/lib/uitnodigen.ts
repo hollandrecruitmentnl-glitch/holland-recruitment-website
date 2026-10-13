@@ -190,19 +190,22 @@ export async function uitnodigingsLink(accountId: string): Promise<string> {
   return `${SITE}/uitnodiging/${t}`;
 }
 
-export async function stuurUitnodiging(accountId: string): Promise<boolean> {
+export async function stuurUitnodiging(accountId: string, alGeclaimd = false): Promise<boolean> {
   const a = await one(`select a.id, a.email, a.voornaam, f.functietitel, f.vakgebied, f.regio, f.cv_pad from accounts a join freelancers f on f.id = a.id where a.id = $1 and a.status = 'uitgenodigd'`, [accountId]);
   if (!a) return false;
+  if (!alGeclaimd) await q(`update accounts set uitgenodigd_op = now() where id = $1`, [a.id]);
   await mails.uitnodiging(a.email, a.voornaam, await uitnodigingsLink(a.id), { functie: a.functietitel, vakgebied: vakgebiedNaam(a.vakgebied), regio: a.regio, cv: !!a.cv_pad });
-  await q(`update accounts set uitgenodigd_op = now() where id = $1`, [a.id]);
   return true;
 }
 
-/** Verstuur uitnodigingen aan klaargezette accounts die nog geen uitnodiging kregen (max. per keer). */
+/** Verstuur uitnodigingen aan klaargezette accounts die nog geen uitnodiging kregen (max. per keer).
+ *  Eerst "claimen" (uitgenodigd_op zetten), dan mailen: een dubbele klik stuurt niemand twee keer een mail. */
 export async function verstuurUitnodigingen(door: string, max = 40): Promise<{ verstuurd: number; resterend: number }> {
-  const lijstA = await q<{ id: string }>(`select id from accounts where status = 'uitgenodigd' and rol = 'freelancer' and uitgenodigd_op is null order by aangemaakt limit $1`, [max]);
+  const geclaimd = await q<{ id: string }>(`update accounts set uitgenodigd_op = now() where id in (
+      select id from accounts where status = 'uitgenodigd' and rol = 'freelancer' and uitgenodigd_op is null order by aangemaakt limit $1 for update skip locked)
+    returning id`, [max]);
   let verstuurd = 0;
-  for (const x of lijstA) if (await stuurUitnodiging(x.id)) verstuurd++;
+  for (const x of geclaimd) if (await stuurUitnodiging(x.id, true)) verstuurd++;
   const rest = await one<{ n: number }>(`select count(*)::int as n from accounts where status = 'uitgenodigd' and rol = 'freelancer' and uitgenodigd_op is null`);
   await logboek(door, 'uitnodigingen_verstuurd', 'account', undefined, { verstuurd });
   return { verstuurd, resterend: rest?.n ?? 0 };
