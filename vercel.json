@@ -52,17 +52,17 @@
     },
     {
       "source": "/inschrijven(\\.html)?",
-      "destination": "/freelancers/aanmelden",
+      "destination": "/registreren?rol=freelancer",
       "permanent": true
     },
     {
       "source": "/cv-maken(\\.html)?",
-      "destination": "/freelancers/aanmelden",
+      "destination": "/registreren?rol=freelancer",
       "permanent": true
     },
     {
       "source": "/cv-uploaden(\\.html)?",
-      "destination": "/freelancers/aanmelden",
+      "destination": "/registreren?rol=freelancer",
       "permanent": true
     },
     {
@@ -249,9 +249,18 @@
       "source": "/uitzendbureau-:rest",
       "destination": "/freelancer-inhuren",
       "permanent": true
+    },
+    {
+      "source": "/freelancers/aanmelden(\\.html)?",
+      "destination": "/registreren?rol=freelancer",
+      "permanent": true
     }
   ],
   "rewrites": [
+    {
+      "source": "/",
+      "destination": "https://hr-platform-mu-one.vercel.app/"
+    },
     {
       "source": "/freelance-platform",
       "destination": "https://hr-platform-mu-one.vercel.app/freelance-platform"
