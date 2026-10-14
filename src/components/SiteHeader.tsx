@@ -1,11 +1,12 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { LogoSvg, Chevron } from './Logo';
 import HeaderClient from './HeaderClient';
 import { huidigAccount } from '@/lib/auth';
 import { ongelezenAantal } from '@/lib/data/berichten';
 import { profielVolledigheid } from '@/lib/data/freelancers';
 import { uitloggen } from '@/app/actions/auth';
-import { PUBLIEK_BEDRIJVEN, PUBLIEK_FREELANCERS, EXPERTISES, HOOFD, OMGEVING, HULP, isRol, type Link as L } from '@/lib/navigatie';
+import { PUBLIEK_BEDRIJVEN, PUBLIEK_FREELANCERS, HOOFD, OMGEVING, HULP, BEMIDDELING_URL, isRol, type Link as L } from '@/lib/navigatie';
 
 function Dropdown({ id, label, items }: { id: string; label: string; items: L[] }) {
   return (
@@ -18,6 +19,16 @@ function Dropdown({ id, label, items }: { id: string; label: string; items: L[] 
 
 export default async function SiteHeader() {
   const a = await huidigAccount();
+  const pad = (await headers()).get('x-pad') || '';
+  // Focusmodus: op de registratiepagina alleen logo en inloggen, zodat er geen afleidende uitgangen zijn.
+  if (!a && pad.startsWith('/registreren')) return (
+    <header className="site-header site-header-focus">
+      <div className="wrap nav">
+        <a href="/" className="brand" aria-label="Holland Recruitment — home"><LogoSvg /><b>Holland<span>.</span></b></a>
+        <div className="nav-right"><span className="p-small p-muted focus-al">Al een account?</span><Link className="btn btn-line btn-sm" href="/inloggen">Inloggen</Link></div>
+      </div>
+    </header>
+  );
   const rol = isRol(a?.rol) ? a!.rol as 'bedrijf' | 'freelancer' : null;
   const ongelezen = rol ? await ongelezenAantal(a!) : 0;
   const profielPct = rol === 'freelancer' ? (await profielVolledigheid(a!.id)).pct : 100;
@@ -35,11 +46,10 @@ export default async function SiteHeader() {
           ) : (
             <>
               <Dropdown id="dd-bedrijven" label="Voor bedrijven" items={PUBLIEK_BEDRIJVEN} />
-              <Dropdown id="dd-freelancers" label="Freelancers" items={PUBLIEK_FREELANCERS} />
-              <div className="nav-item"><Link className="nav-link" href="/opdrachten">Opdrachten</Link></div>
-              <Dropdown id="dd-expertises" label="Expertises" items={EXPERTISES} />
+              <Dropdown id="dd-freelancers" label="Voor freelancers" items={PUBLIEK_FREELANCERS} />
+              <div className="nav-item"><Link className="nav-link" href="/opdrachten" data-nav="/opdrachten">Opdrachten</Link></div>
+              <div className="nav-item"><a className="nav-link" href={BEMIDDELING_URL}>Bemiddeling</a></div>
               <div className="nav-item"><a className="nav-link" href="/kennisbank">Kennisbank</a></div>
-              <div className="nav-item"><a className="nav-link" href="/contact">Contact</a></div>
             </>
           )}
         </nav>
@@ -63,7 +73,7 @@ export default async function SiteHeader() {
           )}
           {rol === 'bedrijf' ? <Link className="btn btn-blue btn-sm" href="/mijn/opdrachten/nieuw">Plaats een opdracht</Link>
             : rol === 'freelancer' ? (profielPct < 100 ? <Link className="btn btn-blue btn-sm" href="/mijn/profiel">Profiel aanvullen ({profielPct}%)</Link> : <Link className="btn btn-blue btn-sm" href="/opdrachten">Opdrachten zoeken</Link>)
-            : !a ? <Link className="btn btn-blue btn-sm" href="/professional-aanvragen">Vind een professional</Link> : null}
+            : !a ? <Link className="btn btn-blue btn-sm nav-cta" href="/registreren">Gratis account</Link> : null}
           <button className="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
         </div>
       </div>
@@ -83,12 +93,11 @@ export default async function SiteHeader() {
           ) : (
             <>
               {a ? <div className="m-group"><div className="m-title">Beheer</div><a href="/beheer">Beheer</a><a href="/mijn/instellingen">Instellingen</a></div>
-                : <div className="m-group"><a href="/inloggen">Inloggen</a><a href="/registreren">Gratis account maken</a><a href="/opdrachten">Freelance opdrachten</a></div>}
+                : <div className="m-group m-acties"><a className="btn btn-blue" href="/registreren">Gratis account maken</a><a href="/inloggen">Inloggen</a></div>}
               <div className="m-group"><div className="m-title">Voor bedrijven</div>{PUBLIEK_BEDRIJVEN.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
-              <div className="m-group"><div className="m-title">Freelancers</div>{PUBLIEK_FREELANCERS.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
-              <div className="m-group"><div className="m-title">Expertises</div>{EXPERTISES.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
-              <a href="/kennisbank">Kennisbank</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a>
-              {a ? <form action={uitloggen}><button className="btn btn-line" type="submit">Uitloggen</button></form> : <a className="btn btn-blue" href="/professional-aanvragen">Vind een professional</a>}
+              <div className="m-group"><div className="m-title">Voor freelancers</div>{PUBLIEK_FREELANCERS.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
+              <a href="/opdrachten">Opdrachten</a><a href={BEMIDDELING_URL}>Bemiddeling</a><a href="/kennisbank">Kennisbank</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a>
+              {a ? <form action={uitloggen}><button className="btn btn-line" type="submit">Uitloggen</button></form> : <a className="btn btn-line" href={BEMIDDELING_URL}>Laat ons zoeken (bemiddeling)</a>}
             </>
           )}
         </div>

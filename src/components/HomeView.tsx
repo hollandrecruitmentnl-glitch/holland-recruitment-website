@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { huidigAccount } from '@/lib/auth';
 import { one } from '@/lib/db';
 import { zoekFreelancers } from '@/lib/data/freelancers';
-import { zoekOpdrachten } from '@/lib/data/opdrachten';
-import { FreelancerKaart, OpdrachtKaart } from '@/components/Kaarten';
+import { Avatar } from '@/components/Kaarten';
+import { zoekOpdrachten, tariefTekst } from '@/lib/data/opdrachten';
+import { BEMIDDELING_URL, REG_BEDRIJF, REG_FREELANCER } from '@/lib/navigatie';
+import { werkvormNaam } from '@/lib/constants';
+import { relatief } from '@/lib/util';
 
 
 const CAL_URL = 'https://cal.eu/holland-recruitment/30min';
@@ -20,125 +23,141 @@ const EXPERTISES: [string, string, string, string][] = [
   ['transport-logistiek', 'Transport & Logistiek', 'Chauffeurs, planners en interim logistiek managers.', 'logistiek-supply-chain'],
 ];
 
-/** Inhoud van de home. `basis` is het pad waarop de home staat (voor de tabbladen). */
+/** Engelstalige remote-feeds tonen we niet op de home (wel bij Opdrachten). */
+const ALLEEN_OP_OPDRACHTEN = new Set(['jobicy', 'remotive', 'remoteok']);
+
+/**
+ * Home (V33, na de conversie-audit van 14-10-2026): rustig, zoeken blijft de hoofdactie,
+ * per doelgroep één duidelijke registratieknop en bemiddeling altijd direct bereikbaar.
+ */
 export default async function HomeView({ sp, basis = '/' }: { sp: Record<string, string>; basis?: string }) {
   const a = await huidigAccount();
   const voorOpdrachten = sp.zoek === 'opdrachten' || (sp.zoek !== 'freelancers' && a?.rol === 'freelancer');
   const [fr, op, tel] = await Promise.all([
     zoekFreelancers({ perPagina: 3 }, a),
-    zoekOpdrachten({ perPagina: 5 }),
+    zoekOpdrachten({ perPagina: 24, sorteer: 'relevant' }),
     one<{ opdrachten: number; freelancers: number }>(`select
       (select count(*) from opdrachten o left join bedrijven b on b.id = o.bedrijf_id where o.status = 'live' and (o.bedrijf_id is null or b.status = 'actief') and (o.reageren_tot is null or o.reageren_tot >= current_date))::int as opdrachten,
       (select count(*) from freelancers f join accounts ac on ac.id = f.id where ac.status = 'actief' and f.functietitel <> '')::int as freelancers`),
   ]);
+  const opdrachten = op.items.filter(o => !ALLEEN_OP_OPDRACHTEN.has(o.bron)).slice(0, 3);
   const faq: [string, string][] = [
-    ['Zelf zoeken of laten zoeken: wat is het verschil?', 'Op het platform zoekt u zelf tussen profielen en neemt u direct contact op; dat is gratis. Bij bemiddeling bespreekt u de opdracht met een recruiter, die een beperkte selectie van passende professionals voorstelt en het traject begeleidt.'],
     ['Wat kost het?', 'Het platform is gratis; de eerste 6 maanden is alles gratis. U betaalt alleen als u kiest voor bemiddeling. Dan geldt een vast uurtarief per professional, dat we vooraf met u afspreken. Aan een aanvraag of kennismaking zijn geen kosten verbonden.'],
-    ['Hoe werkt de facturatie bij bemiddeling?', 'U ontvangt één factuur van Holland Recruitment op basis van goedgekeurde uren en het afgesproken uurtarief. De professional factureert aan ons.'],
+    ['Zelf zoeken of laten zoeken: wat is het verschil?', 'Op het platform zoekt u zelf tussen profielen en neemt u direct contact op; dat is gratis. Bij bemiddeling bespreekt u de opdracht met een recruiter, die een beperkte selectie van passende professionals voorstelt en het traject begeleidt.'],
     ['Ik ben freelancer. Wat kost een profiel?', 'Een profiel is gratis. Je bekijkt opdrachten, reageert direct en bedrijven kunnen je vinden. Wil je ook voorgesteld worden door onze recruiters? Zet dat aan in je profiel.'],
     ['Hoe weet ik dat een bedrijf echt bestaat?', 'Elk bedrijf meldt zich aan met een KvK-nummer en een zakelijk e-mailadres. Bij misbruik blokkeren we het account.'],
   ];
   const zoekUrl = voorOpdrachten ? '/opdrachten' : '/freelancers-zoeken';
+  const bedrijfKnop = a?.rol === 'bedrijf' ? '/mijn/opdrachten/nieuw' : REG_BEDRIJF;
+  const freelancerKnop = a?.rol === 'freelancer' ? '/mijn/profiel' : REG_FREELANCER;
   return (
     <>
       <section className="h-hero">
         <div className="p-wrap h-hero-in">
-          <span className="h-chip"><span className="p-dot nu" aria-hidden="true" />Freelance & interim · heel Nederland</span>
-          <h1 className="p-h1 h-titel">De juiste freelance professional. Zonder lange zoektocht.</h1>
-          <p className="h-lead">Zoek zelf op ons gratis platform, of laat onze recruiters de selectie doen. Ben je freelancer? Vind opdrachten in heel Nederland.</p>
+          <span className="p-eyebrow">Freelance &amp; interim · heel Nederland</span>
+          <h1 className="p-h1 h-titel">De juiste freelancer. Of je volgende opdracht.</h1>
+          <p className="h-lead">Gratis platform voor bedrijven en zzp'ers. Liever niet zelf zoeken? Dan selecteren onze recruiters voor u.</p>
           <div className="p-seg" role="tablist" aria-label="Wat zoekt u?">
-            <Link role="tab" aria-selected={!voorOpdrachten} className={!voorOpdrachten ? 'on' : ''} href={`${basis}?zoek=freelancers`} scroll={false}>Ik zoek een freelancer</Link>
-            <Link role="tab" aria-selected={voorOpdrachten} className={voorOpdrachten ? 'on' : ''} href={`${basis}?zoek=opdrachten`} scroll={false}>Ik zoek een opdracht</Link>
+            <Link role="tab" aria-selected={!voorOpdrachten} className={!voorOpdrachten ? 'on' : ''} href={`${basis}?zoek=freelancers`} scroll={false}>Freelancers zoeken</Link>
+            <Link role="tab" aria-selected={voorOpdrachten} className={voorOpdrachten ? 'on' : ''} href={`${basis}?zoek=opdrachten`} scroll={false}>Opdrachten zoeken</Link>
           </div>
           <form action={zoekUrl} method="get" role="search" className="h-zoek">
             <label><span>Functie of vaardigheid</span><input name="q" placeholder={voorOpdrachten ? 'Bijvoorbeeld projectmanager' : 'Bijvoorbeeld maintenance engineer'} enterKeyHint="search" /></label>
             <label><span>Waar</span><input name={voorOpdrachten ? 'locatie' : 'regio'} placeholder="Plaats of regio" enterKeyHint="search" /></label>
-            <button type="submit" className="btn btn-blue">{voorOpdrachten ? 'Bekijk opdrachten' : 'Zoek freelancers'}</button>
+            <button type="submit" className="btn btn-blue">Zoeken</button>
           </form>
-          <p className="h-teller"><strong>{tel?.opdrachten ?? 0}</strong> opdrachten live · <strong>{tel?.freelancers ?? 0}</strong> freelancers · zoeken kan zonder account</p>
+          {!a && <p className="h-nieuw">Zoeken kan zonder account. Nieuw hier? <Link href={REG_BEDRIJF}>Ik zoek een freelancer →</Link><Link href={REG_FREELANCER}>Ik ben freelancer →</Link></p>}
+          <p className="h-trust">
+            <span><b>KvK</b> 96618914</span><span><b>Rotterdam</b>, landelijk actief</span><span><b>Reactie</b> binnen één werkdag</span>
+            {(tel?.opdrachten ?? 0) >= 10 && <span><b>{tel!.opdrachten}</b> opdrachten live</span>}
+            {(tel?.freelancers ?? 0) >= 50 && <span><b>{tel!.freelancers}</b> freelancers</span>}
+          </p>
         </div>
       </section>
 
-      <section className="p-wrap h-sectie" aria-labelledby="routes">
-        <h2 id="routes" className="sr-only">Twee manieren om een professional te vinden</h2>
-        <div className="h-routes">
-          <div className="h-route">
-            <span className="h-badge">Gratis</span>
-            <h3 className="p-h3">Zelf zoeken op het platform</h3>
-            <p>Bekijk profielen, filter op vakgebied, regio en beschikbaarheid en stuur direct een bericht. De eerste 6 maanden is alles gratis.</p>
-            <div className="h-knoppen"><Link className="btn btn-blue" href="/freelancers-zoeken">Freelancers zoeken</Link><Link className="btn btn-line" href={a ? '/mijn/opdrachten/nieuw' : '/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw'}>Opdracht plaatsen</Link></div>
+      <section className="p-wrap h-sectie" aria-labelledby="h-zo">
+        <div className="h-kop"><span className="p-eyebrow">Zo werkt het</span><h2 id="h-zo" className="p-h2">Twee kanten, één platform</h2></div>
+        <div className="h-twee">
+          <div className="h-paneel">
+            <h3 className="p-h3">Voor bedrijven</h3>
+            <ol className="h-stap">
+              <li><span>1</span><div><b>Plaats gratis uw opdracht</b><em>Of zoek zelf in de profielen van freelancers.</em></div></li>
+              <li><span>2</span><div><b>Ontvang reacties</b><em>Freelancers reageren direct bij u.</em></div></li>
+              <li><span>3</span><div><b>Kies en start</b><em>U maakt zelf de afspraken met de freelancer.</em></div></li>
+            </ol>
+            <div className="h-paneel-acties"><Link className="btn btn-blue" href={bedrijfKnop}>Gratis opdracht plaatsen</Link><Link className="p-link" href={BEMIDDELING_URL}>Liever dat wij zoeken? Laat ons bemiddelen →</Link></div>
           </div>
-          <div className="h-route h-route-donker">
-            <span className="h-badge lime">Bemiddeling</span>
-            <h3 className="p-h3">Laat ons zoeken</h3>
-            <p>Een recruiter bespreekt uw opdracht, selecteert passende professionals en begeleidt het traject. Eén aanspreekpunt, één factuur en een vooraf afgesproken tarief. Reactie binnen één werkdag.</p>
-            <div className="h-knoppen"><Link className="btn btn-lime" href="/professional-aanvragen">Vind een professional</Link><Link className="btn h-btn-licht" href="/werkwijze">Zo werkt het</Link></div>
+          <div className="h-paneel">
+            <h3 className="p-h3">Voor freelancers</h3>
+            <ol className="h-stap">
+              <li><span>1</span><div><b>Maak een gratis profiel</b><em>Met je vakgebied, tarief en beschikbaarheid.</em></div></li>
+              <li><span>2</span><div><b>Word gevonden</b><em>Bedrijven zoeken op het platform en sturen je een bericht.</em></div></li>
+              <li><span>3</span><div><b>Reageer op opdrachten</b><em>Elke dag komen er nieuwe opdrachten bij.</em></div></li>
+            </ol>
+            <div className="h-paneel-acties"><Link className="btn btn-ink" href={freelancerKnop}>{a?.rol === 'freelancer' ? 'Naar mijn profiel' : 'Gratis profiel maken'}</Link><Link className="p-link" href="/opdrachten">Eerst de opdrachten bekijken →</Link></div>
           </div>
         </div>
       </section>
 
-      <section className="p-wrap h-sectie">
-        <div className="h-live">
-          <div className="p-stack">
-            <div className="p-between"><h2 className="p-h3">Nieuwste opdrachten</h2><Link className="p-linkbtn" href="/opdrachten">Alle opdrachten →</Link></div>
-            {op.items.map(o => <OpdrachtKaart key={o.id} o={o} />)}
+      <section className="p-wrap h-sectie" aria-labelledby="h-live">
+        <div className="h-kop"><span className="p-eyebrow">Live</span><h2 id="h-live" className="p-h2">Nieuw op het platform</h2></div>
+        <div className="h-live2">
+          <div>
+            <div className="h-livekop"><h3 className="p-h3">Opdrachten</h3><Link className="p-link" href="/opdrachten">Alle opdrachten →</Link></div>
+            <ul className="h-lijst">
+              {opdrachten.map(o => (
+                <li key={o.id}><Link href={`/opdrachten/${o.slug}`}>
+                  <small>{[o.bron === 'direct' ? o.bedrijf_naam : o.aanbieder, o.locatie || (o.werkvorm === 'remote' ? 'Remote' : ''), werkvormNaam(o.werkvorm)].filter(Boolean).join(' · ')}</small>
+                  <strong>{o.titel}</strong>
+                  <span>{[tariefTekst(o as any) !== 'Tarief niet vermeld' ? tariefTekst(o as any) : '', `geplaatst ${relatief(o.geplaatst_op)}`].filter(Boolean).join(' · ')}</span>
+                </Link></li>
+              ))}
+            </ul>
           </div>
           {fr.items.length > 0 && (
-            <div className="p-stack">
-              <div className="p-between"><h2 className="p-h3">Beschikbare freelancers</h2><Link className="p-linkbtn" href="/freelancers-zoeken">Alle →</Link></div>
-              {fr.items.map(f => <FreelancerKaart key={f.id} f={f} compact />)}
+            <div>
+              <div className="h-livekop"><h3 className="p-h3">Freelancers</h3><Link className="p-link" href="/freelancers-zoeken">Alle freelancers →</Link></div>
+              <ul className="h-lijst">
+                {fr.items.map(f => (
+                  <li key={f.id}><Link href={`/freelancer/${f.slug}`} className="h-fl">
+                    <Avatar id={f.id} foto={f.foto_pad} voornaam={f.voornaam} achternaam={f.achternaam} />
+                    <span><strong>{f.voornaam} {f.achternaam}</strong><small>{[f.functietitel, f.regio].filter(Boolean).join(' · ')}</small></span>
+                  </Link></li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
       </section>
 
-      <section className="h-cream">
-        <div className="p-wrap h-sectie">
-          <div className="h-kop"><span className="p-eyebrow">Expertises</span><h2 className="p-h2">Professionals in tien vakgebieden</h2></div>
-          <div className="h-exp">
-            {EXPERTISES.map(([slug, naam, tekst, vak]) => (
-              <div key={slug} className="h-exp-kaart">
-                <Link className="h-exp-naam" href={`/expertises/${slug}`}>{naam}</Link>
-                <p>{tekst}</p>
-                <span className="h-exp-links"><Link href={`/freelance-opdrachten/${vak}`}>Opdrachten</Link><Link href={`/freelancers-zoeken?vakgebied=${vak}`}>Freelancers</Link></span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="p-wrap h-sectie">
-        <div className="h-kop"><span className="p-eyebrow">Bemiddeling</span><h2 className="p-h2">Van aanvraag tot start in vier stappen</h2></div>
-        <ol className="h-stappen">
-          {[['Vertel ons wat u zoekt', 'In een kort gesprek of via het formulier: de opdracht, de planning en de gewenste expertise.'],
-            ['Wij selecteren', 'Een recruiter zoekt en spreekt professionals en stelt een beperkte selectie voor, met een toelichting per profiel.'],
-            ['Kennismaken en kiezen', 'U spreekt de kandidaten en kiest zelf.'],
-            ['Start en begeleiding', 'Wij regelen de afspraken en blijven het aanspreekpunt tijdens de opdracht.']].map(([t, s], i) => (
-            <li key={t}><span className="h-nr">{i + 1}</span><strong>{t}</strong><span>{s}</span></li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="p-wrap h-sectie">
-        <div className="h-freelancer">
+      <section className="p-wrap h-sectie" aria-labelledby="h-bem">
+        <div className="h-band">
           <div>
-            <span className="p-eyebrow" style={{ color: 'var(--lime)' }}>Voor freelancers</span>
-            <h2 className="p-h2" style={{ color: '#fff', marginTop: 6 }}>Freelancer of interim professional?</h2>
-            <p>Maak een gratis profiel, bekijk opdrachten en reageer direct. Wil je ook voorgesteld worden door onze recruiters? Zet dat aan in je profiel.</p>
+            <span className="p-eyebrow" style={{ color: 'var(--lime)' }}>Bemiddeling</span>
+            <h2 id="h-bem" className="p-h2">Geen tijd om zelf te zoeken?</h2>
+            <p>Een recruiter bespreekt uw opdracht, selecteert passende professionals en begeleidt het traject. Eén aanspreekpunt, één factuur en een vooraf afgesproken tarief.</p>
           </div>
-          <div className="h-knoppen"><Link className="btn btn-lime" href={a?.rol === 'freelancer' ? '/mijn/profiel' : '/registreren?rol=freelancer'}>{a?.rol === 'freelancer' ? 'Naar mijn profiel' : 'Maak gratis profiel'}</Link><Link className="btn h-btn-licht" href="/opdrachten">Bekijk opdrachten</Link></div>
+          <div className="h-band-acties"><Link className="btn btn-lime" href={BEMIDDELING_URL}>Vind een professional</Link><a className="h-band-link" href={CAL_URL} target="_blank" rel="noopener">Of plan een kennismaking van 30 min →</a></div>
         </div>
       </section>
 
-      <section className="p-narrow h-sectie">
-        <div className="h-kop"><span className="p-eyebrow">Veelgestelde vragen</span><h2 className="p-h2">Goed om te weten</h2></div>
-        <div className="p-faq">{faq.map(([vr, an], i) => <details key={vr} open={i === 0}><summary>{vr}</summary><p>{an}</p></details>)}</div>
+      <section className="p-wrap h-sectie" aria-labelledby="h-vak">
+        <div className="h-kop"><span className="p-eyebrow">Vakgebieden</span><h2 id="h-vak" className="p-h2">Professionals in tien vakgebieden</h2></div>
+        <div className="h-chips">{EXPERTISES.map(([slug, naam]) => <Link key={slug} href={`/expertises/${slug}`}>{naam}</Link>)}</div>
       </section>
 
-      <section className="p-wrap" style={{ paddingBottom: 48 }}>
-        <div className="h-slot">
-          <div><strong>Op zoek naar specialistische capaciteit?</strong><p>Vertel ons kort wie u zoekt. We nemen binnen één werkdag contact met u op.</p></div>
-          <div className="h-knoppen"><Link className="btn btn-lime" href="/professional-aanvragen">Vind een professional</Link><a className="btn h-btn-licht" href={CAL_URL} target="_blank" rel="noopener">Plan 30 min kennismaking</a></div>
+      <section className="p-wrap h-sectie" aria-labelledby="h-faq">
+        <div className="h-kop"><span className="p-eyebrow">Veelgestelde vragen</span><h2 id="h-faq" className="p-h2">Goed om te weten</h2></div>
+        <div className="p-faq h-faq">{faq.map(([vr, an]) => <details key={vr}><summary>{vr}</summary><p>{an}</p></details>)}</div>
+      </section>
+
+      <section className="h-slot2">
+        <div className="p-wrap">
+          <h2 className="p-h2">Klaar om te beginnen?</h2>
+          {a?.rol ? <div className="h-slot-knoppen"><Link className="btn btn-blue" href="/mijn">Naar mijn overzicht</Link></div> : (
+            <div className="h-slot-knoppen"><Link className="btn btn-blue" href={REG_BEDRIJF}>Ik zoek een freelancer →</Link><Link className="btn btn-line" href={REG_FREELANCER}>Ik ben freelancer →</Link></div>
+          )}
+          <p className="h-slot-bem">Liever dat wij voor u zoeken? <Link className="p-link" href={BEMIDDELING_URL}>Vraag bemiddeling aan</Link></p>
         </div>
       </section>
 

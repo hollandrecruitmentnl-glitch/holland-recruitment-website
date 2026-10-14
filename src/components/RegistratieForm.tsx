@@ -42,14 +42,28 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
   };
 
   if (!rol) return (
-    <div className="p-stack" style={{ gap: 18 }}>
-      <h1 className="p-h2" tabIndex={-1} ref={kop}>Maak een gratis account</h1>
+    <div className="p-stack reg-keuze" style={{ gap: 22 }}>
+      <div>
+        <h1 className="p-h2" tabIndex={-1} ref={kop}>Maak een gratis account</h1>
+        <p className="p-muted" style={{ margin: '8px 0 0' }}>Gratis · klaar in 2 minuten · geen verplichtingen</p>
+      </div>
       {ctx && <p className="p-note">{ctx === 'bericht' ? 'Maak eerst een gratis account aan. Daarna kom je direct terug en kun je je bericht sturen.' : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
-      <div className="p-radio-cards" role="group" aria-label="Kies je rol">
-        <button type="button" className="p-radio-card" onClick={() => setRol('freelancer')} style={{ textAlign: 'left' }}><strong className="p-h3">Ik ben freelancer</strong><span className="p-muted p-small">Maak een profiel, vind opdrachten en reageer direct.</span></button>
-        <button type="button" className="p-radio-card" onClick={() => setRol('bedrijf')} style={{ textAlign: 'left' }}><strong className="p-h3">Ik zoek een freelancer</strong><span className="p-muted p-small">Zoek professionals en plaats opdrachten voor uw bedrijf.</span></button>
+      <div className="reg-kaarten" role="group" aria-label="Kies je rol">
+        <button type="button" className="reg-kaart" onClick={() => setRol('bedrijf')}>
+          <span className="reg-tag">Voor bedrijven</span>
+          <strong className="p-h3">Ik zoek een freelancer</strong>
+          <ul><li>Plaats gratis een opdracht</li><li>Zoek zelf in profielen en stuur direct een bericht</li><li>De eerste 6 maanden is alles gratis</li></ul>
+          <span className="btn btn-blue">Account voor bedrijven →</span>
+        </button>
+        <button type="button" className="reg-kaart" onClick={() => setRol('freelancer')}>
+          <span className="reg-tag">Voor freelancers</span>
+          <strong className="p-h3">Ik ben freelancer</strong>
+          <ul><li>Gratis profiel, gevonden worden door bedrijven</li><li>Reageer direct op opdrachten</li><li>Optioneel: ook voorgesteld via onze bemiddeling</li></ul>
+          <span className="btn btn-ink">Profiel voor freelancers →</span>
+        </button>
       </div>
       <p className="p-small">Heb je al een account? <Link className="p-link" href={`/inloggen${terug ? `?terug=${encodeURIComponent(terug)}` : ''}`}>Log in</Link></p>
+      <p className="p-small p-muted">Liever dat wij voor u zoeken? <a className="p-link" href="/professional-aanvragen">Vraag bemiddeling aan</a>. Daarvoor is geen account nodig.</p>
     </div>
   );
 
@@ -64,6 +78,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
         {!uitnodiging && <button type="button" className="p-linkbtn" onClick={() => (stap === 2 ? setStap(1) : setRol(''))}>← Terug</button>}
       </div>
       <h1 className="p-h2" tabIndex={-1} ref={kop}>{stap === 1 ? (rol === 'freelancer' ? 'Maak je freelancerprofiel' : 'Maak een account voor uw bedrijf') : (rol === 'freelancer' ? 'Wat voor werk doe je?' : 'Over uw bedrijf')}</h1>
+      {stap === 1 && !uitnodiging && <p className="p-small p-muted" style={{ margin: 0 }}>Gratis · klaar in 2 minuten{rol === 'bedrijf' ? <> · liever dat wij zoeken? <a className="p-link" href="/professional-aanvragen">Vraag bemiddeling aan</a></> : ''}</p>}
       {ctx && stap === 1 && <p className="p-note">{ctx === 'bericht' ? (rol === 'bedrijf' ? 'Maak eerst een gratis account aan. Daarna komt u direct terug en kunt u uw bericht sturen.' : 'Maak eerst een gratis account aan. Daarna kom je direct terug en kun je je bericht sturen.') : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
       <FoutSamenvatting fouten={fouten} />
       <div style={{ display: stap === 1 ? 'contents' : 'none' }}>

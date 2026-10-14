@@ -28,9 +28,18 @@ try {
   const p = await ctx();
   p.on('pageerror', e => errors.push(e.message));
   await p.goto(`${B}/`);
-  check('home kop', await p.locator('h1').innerText() === 'De juiste freelance professional. Zonder lange zoektocht.');
-  check('home toont twee routes', await p.getByText('Zelf zoeken op het platform').count() === 1 && await p.getByText('Laat ons zoeken').count() >= 1);
-  check('header-knop Vind een professional', await p.locator('.site-header a.btn-sm:has-text("Vind een professional")').count() === 1);
+  check('home kop', await p.locator('h1').innerText() === 'De juiste freelancer. Of je volgende opdracht.');
+  check('home: zoekbalk is hoofdactie', await p.locator('form[role=search].h-zoek').count() === 1);
+  check('home: twee rollen + bemiddeling', await p.locator('.h-paneel').count() === 2 && await p.locator('a[href="/professional-aanvragen"]').count() >= 3);
+  check('home: geen Engelstalige remote-feeds', await p.locator('.h-lijst').first().getByText('Remote OK').count() === 0);
+  check('header-knop Gratis account', await p.locator('.site-header a.nav-cta:has-text("Gratis account")').getAttribute('href') === '/registreren');
+  check('header: Bemiddeling direct in menu', await p.locator('.nav-main a.nav-link[href="/professional-aanvragen"]').count() === 1);
+  { const r = await ctx(); await r.goto(`${B}/registreren`);
+    check('registreren: focusmodus (geen hoofdmenu)', await r.locator('.nav-main').count() === 0 && await r.locator('.footer-top').count() === 0);
+    check('registreren: twee rolkaarten + bemiddelingslink', await r.locator('.reg-kaart').count() === 2 && await r.locator('a[href="/professional-aanvragen"]').count() === 1);
+    await r.click('.reg-kaart:has-text("Ik zoek een freelancer")');
+    check('registreren: kaart kiest rol bedrijf', await r.getByText('Maak een account voor uw bedrijf').count() === 1);
+    await r.close(); }
   check('/freelance-platform stuurt door naar home', (await (await ctx()).goto(`${B}/freelance-platform`)).url() === `${B}/`);
   await p.screenshot({ path: `${SHOTS}/01-home.png`, fullPage: true });
   await p.fill('input[name=q]', 'Maintenance'); await Promise.all([p.waitForURL(/freelancers-zoeken/), p.click('form[role=search] button[type=submit]')]);

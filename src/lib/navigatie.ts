@@ -5,14 +5,19 @@
  */
 export type Link = [href: string, label: string];
 
+/** Bemiddeling is altijd direct bereikbaar (eigen menu-item); registratie via de knop "Gratis account". */
+export const BEMIDDELING_URL = '/professional-aanvragen';
+export const REG_BEDRIJF = '/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw';
+export const REG_FREELANCER = '/registreren?rol=freelancer';
+
 export const PUBLIEK_BEDRIJVEN: Link[] = [
-  ['/voor-bedrijven', 'Overzicht voor bedrijven'], ['/freelancers-zoeken', 'Freelancers zoeken'],
-  ['/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw', 'Opdracht plaatsen (gratis)'], ['/professional-aanvragen', 'Professional aanvragen'],
-  ['/bemiddeling', 'Laat ons bemiddelen'], ['/freelancer-inhuren', 'Freelancer inhuren'], ['/interim-professional-inhuren', 'Interim professional inhuren'], ['/werkwijze', 'Onze werkwijze'],
+  ['/freelancers-zoeken', 'Freelancers zoeken'], [REG_BEDRIJF, 'Gratis opdracht plaatsen'], [BEMIDDELING_URL, 'Laat ons zoeken (bemiddeling)'],
+  ['/freelancer-inhuren', 'Freelancer inhuren'], ['/interim-professional-inhuren', 'Interim professional inhuren'], ['/expertises', 'Expertises'],
+  ['/werkwijze', 'Onze werkwijze'], ['/voor-bedrijven', 'Alles voor bedrijven'],
 ];
 export const PUBLIEK_FREELANCERS: Link[] = [
-  ['/opdrachten', 'Freelance opdrachten'], ['/registreren?rol=freelancer', 'Maak gratis profiel'], ['/bedrijven', 'Bedrijven'],
-  ['/freelancers/hoe-werkt-het', 'Hoe werkt het?'], ['/freelancers/veelgestelde-vragen', 'Veelgestelde vragen'],
+  ['/opdrachten', 'Opdrachten zoeken'], [REG_FREELANCER, 'Gratis profiel maken'], ['/bedrijven', 'Bedrijven'],
+  ['/freelancers/hoe-werkt-het', 'Hoe werkt het?'], ['/freelancers/veelgestelde-vragen', 'Veelgestelde vragen'], ['/freelancers', 'Alles voor freelancers'],
 ];
 export const EXPERTISES: Link[] = [
   ['/expertises', 'Alle expertises'], ['/expertises/sales-business-development', 'Sales & Business Development'], ['/expertises/marketing-digital', 'Marketing & Digital'],

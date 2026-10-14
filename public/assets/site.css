@@ -436,3 +436,17 @@ a.card:hover .more svg{transform:translateX(3px);}
 @media (max-width:760px){
   .field input,.field select,.field textarea{font-size:16px;}
 }
+
+/* V33: knop "Gratis account" ook op telefoon, routekaarten (zelf zoeken of laat ons zoeken), mobiel menu */
+.m-acties{display:flex;flex-direction:column;gap:10px;margin-bottom:6px;}
+@media (max-width:1080px){.nav-right .btn.nav-cta{display:inline-flex;padding:9px 16px;font-size:14px;min-height:40px;align-items:center;}}
+@media (max-width:360px){.nav-right .btn.nav-cta{padding:8px 12px;font-size:13px;}}
+.route-card{display:flex;flex-direction:column;}
+.route-tag{align-self:flex-start;font-family:"Poppins",sans-serif;font-weight:700;font-size:12px;letter-spacing:.04em;padding:5px 12px;border-radius:100px;background:var(--blue-soft);color:var(--blue);}
+.route-tag.lime{background:var(--lime);color:var(--ink);}
+.route-donker{background:var(--ink);color:#fff;border-color:var(--ink);}
+.route-donker h2{color:#fff;}
+.route-donker p{color:#B9BDDF;}
+.btn-line-licht{background:transparent;color:#fff;border-color:rgba(255,255,255,.45);}
+.btn-line-licht:hover{border-color:#fff;background:transparent;}
+@media (max-width:350px){.site-header .brand b{display:none;}}

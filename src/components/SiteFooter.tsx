@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import { LogoSvg } from './Logo';
 import { huidigAccount } from '@/lib/auth';
 import { OMGEVING, HULP, isRol, EXPERTISES, REGIO_FOOTER } from '@/lib/navigatie';
@@ -5,6 +6,15 @@ import { OMGEVING, HULP, isRol, EXPERTISES, REGIO_FOOTER } from '@/lib/navigatie
 export default async function SiteFooter() {
   const a = await huidigAccount();
   const rol = isRol(a?.rol) ? a!.rol as 'bedrijf' | 'freelancer' : null;
+  const pad = (await headers()).get('x-pad') || '';
+  if (!a && pad.startsWith('/registreren')) return (
+    <footer className="footer footer-focus">
+      <div className="wrap footer-bot">
+        <span>© {new Date().getFullYear()} Holland Recruitment BV · KvK 96618914 · Rotterdam</span>
+        <span><a href="/privacyverklaring">Privacyverklaring</a> · <a href="/voorwaarden">Voorwaarden</a> · <a href="/contact">Contact</a></span>
+      </div>
+    </footer>
+  );
   return (
     <footer className="footer">
       <div className="wrap">
@@ -28,8 +38,8 @@ export default async function SiteFooter() {
             </>
           ) : (
             <>
-              <div className="footer-col"><h2>Voor bedrijven</h2><a href="/freelancers-zoeken">Freelancers zoeken</a><a href="/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw">Opdracht plaatsen</a><a href="/professional-aanvragen">Professional aanvragen</a><a href="/bemiddeling">Laat ons bemiddelen</a><a href="/werkwijze">Onze werkwijze</a></div>
-              <div className="footer-col"><h2>Freelancers</h2><a href="/opdrachten">Freelance opdrachten</a><a href="/registreren?rol=freelancer">Maak gratis profiel</a><a href="/bedrijven">Bedrijven</a><a href="/freelancers/hoe-werkt-het">Hoe werkt het?</a><a href="/freelancers/veelgestelde-vragen">Veelgestelde vragen</a></div>
+              <div className="footer-col"><h2>Voor bedrijven</h2><a href="/freelancers-zoeken">Freelancers zoeken</a><a href="/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw">Gratis opdracht plaatsen</a><a href="/professional-aanvragen">Professional aanvragen (bemiddeling)</a><a href="/bemiddeling">Laat ons bemiddelen</a><a href="/werkwijze">Onze werkwijze</a></div>
+              <div className="footer-col"><h2>Voor freelancers</h2><a href="/opdrachten">Opdrachten zoeken</a><a href="/registreren?rol=freelancer">Gratis profiel maken</a><a href="/bedrijven">Bedrijven</a><a href="/freelancers/hoe-werkt-het">Hoe werkt het?</a><a href="/freelancers/veelgestelde-vragen">Veelgestelde vragen</a></div>
               <div className="footer-col"><h2>Expertises</h2>{EXPERTISES.slice(1).map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
               <div className="footer-col"><h2>Holland Recruitment</h2><a href="/over-ons">Over ons</a><a href="/kennisbank">Kennisbank</a><a href="/contact">Contact</a><a href="/inloggen">Inloggen</a></div>
             </>
