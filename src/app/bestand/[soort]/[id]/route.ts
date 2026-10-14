@@ -3,11 +3,12 @@ import { huidigAccount } from '@/lib/auth';
 import { one } from '@/lib/db';
 import { ophalen } from '@/lib/storage';
 import { freelancerProfiel } from '@/lib/data/freelancers';
+import sharp from 'sharp';
 
 const UUID = /^[0-9a-f-]{36}$/;
 const nee = () => new NextResponse('Niet gevonden', { status: 404 });
 
-export async function GET(_: Request, { params }: { params: Promise<{ soort: string; id: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ soort: string; id: string }> }) {
   const { soort, id } = await params;
   const a = await huidigAccount();
   let pad: string | null = null, naam: string | null = null, openbaar = false;
@@ -41,6 +42,14 @@ export async function GET(_: Request, { params }: { params: Promise<{ soort: str
   if (!pad) return nee();
   const f = await ophalen(pad);
   if (!f) return nee();
+  // Foto's en logo's verkleind als WebP (originelen kunnen MB's zijn); 24 uur in de CDN-cache (URL bevat ?v=<bestand>).
+  if (openbaar && f.type.startsWith('image/')) {
+    const w = [96, 200, 400].includes(Number(new URL(req.url).searchParams.get('w'))) ? Number(new URL(req.url).searchParams.get('w')) : 400;
+    try {
+      const klein = await sharp(f.data).rotate().resize(w, w, soort === 'logo' ? { fit: 'inside', withoutEnlargement: true } : { fit: 'cover' }).webp({ quality: 80 }).toBuffer();
+      return new NextResponse(new Uint8Array(klein), { headers: { 'Content-Type': 'image/webp', 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'public, max-age=86400, s-maxage=86400' } });
+    } catch { /* val terug op het origineel */ }
+  }
   const headers: Record<string, string> = { 'Content-Type': f.type, 'X-Content-Type-Options': 'nosniff', 'Cache-Control': openbaar ? 'public, max-age=3600' : 'private, no-store' };
   if (naam) headers['Content-Disposition'] = `attachment; filename*=UTF-8''${encodeURIComponent(naam)}`;
   if (!f.type.startsWith('image/')) headers['Content-Security-Policy'] = "default-src 'none'";

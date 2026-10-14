@@ -309,6 +309,16 @@ try {
   check('niet-geactiveerd account krijgt uitleg bij inloggen', (await d.locator('.p-err-summary').innerText()).includes('nog niet geactiveerd'));
   check('oude link werkt niet meer', (await (await ctx()).goto(ulink.replace(/^https?:\/\/[^/]+/, B)).then(async r => (await r.text()).includes('werkt niet meer'))));
 
+  console.log('8d. Bewaking opdrachten-update');
+  const cronKop = { authorization: `Bearer ${(fs.readFileSync('.env.local', 'utf8').match(/^CRON_SECRET=(.*)$/m) || [])[1] || ''}`, 'user-agent': 'vercel-cron/1.0' };
+  const cr = await (await fetch(`${B}/api/cron/controle`, { headers: cronKop })).json();
+  check('bewaking mailt als de update niet draaide', cr.gemaild === true && !!laatsteMail('info@holland-recruitment.nl', 'niet goed bijgewerkt'));
+  const cr2 = await (await fetch(`${B}/api/cron/controle`, { headers: cronKop })).json();
+  check('maximaal één melding per dag', cr2.gemaild === false);
+  await bh.goto(`${B}/beheer`);
+  check('dashboard toont waarschuwing', await bh.getByText('Opdrachten-update: controleer dit').count() === 1);
+  check('cron zonder geheim geweigerd', (await fetch(`${B}/api/cron/controle`)).status === 401);
+
   console.log('9. Mobiel');
   const m = await ctx({ width: 390, height: 844 });
   await m.goto(`${B}/freelance-platform`); await m.screenshot({ path: `${SHOTS}/12-home-mobiel.png`, fullPage: true });

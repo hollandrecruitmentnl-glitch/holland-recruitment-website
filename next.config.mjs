@@ -7,7 +7,7 @@ const securityHeaders = [
 ];
 const nextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ['pg', 'bcryptjs', 'nodemailer'],
+  serverExternalPackages: ['pg', 'bcryptjs', 'nodemailer', 'sharp'],
   experimental: {
     serverActions: {
       bodySizeLimit: '11mb',

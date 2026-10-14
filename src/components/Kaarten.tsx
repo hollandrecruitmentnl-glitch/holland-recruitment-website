@@ -6,12 +6,12 @@ import { tariefTekst } from '@/lib/data/opdrachten';
 export function Avatar({ id, foto, voornaam, achternaam, maat = '' }: { id: string; foto?: string | null; voornaam: string; achternaam: string; maat?: '' | 'lg' | 'xl' }) {
   return (
     <span className={`p-avatar ${maat}`} aria-hidden="true">
-      {foto ? <img src={`/bestand/foto/${id}`} alt="" loading="lazy" /> : initialen(voornaam, achternaam)}
+      {foto ? <img src={`/bestand/foto/${id}?w=${maat === 'xl' ? 400 : 200}&v=${encodeURIComponent(String(foto).split('/').pop() || '')}`} alt="" loading="lazy" decoding="async" /> : initialen(voornaam, achternaam)}
     </span>
   );
 }
 export function Logo({ id, logo, naam }: { id: string; logo?: string | null; naam: string }) {
-  return <span className="p-logo" aria-hidden="true">{logo ? <img src={`/bestand/logo/${id}`} alt="" loading="lazy" /> : (naam[0] || '?').toUpperCase()}</span>;
+  return <span className="p-logo" aria-hidden="true">{logo ? <img src={`/bestand/logo/${id}?w=200&v=${encodeURIComponent(String(logo).split('/').pop() || '')}`} alt="" loading="lazy" decoding="async" /> : (naam[0] || '?').toUpperCase()}</span>;
 }
 
 export function beschikbaarTekst(f: { beschikbaarheid: string; beschikbaar_vanaf?: string | null; beschikbaar_tot?: string | null }) {

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { q, one } from '@/lib/db';
 import { BRON_NAAM } from '@/lib/constants';
 import { relatief } from '@/lib/util';
+import { controleerFeeds } from '@/lib/feedbewaking';
 
 export const metadata = { title: 'Dashboard' };
 export default async function Dashboard({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
@@ -17,6 +18,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     (select count(*) from meldingen where status='open')::int as meldingen,
     (select count(*) from bemiddeling where status='nieuw')::int as bemiddeling`);
   const bronnen = await q(`select bron, count(*)::int as n from opdrachten where status='live' group by bron order by n desc`);
+  const feeds = await controleerFeeds();
   const nieuweBedrijven = await q(`select id, naam, plaats, aangemaakt, kvk_controle_resultaat from bedrijven order by aangemaakt desc limit 6`);
   const log = await q(`select l.*, a.voornaam from logboek l left join accounts a on a.id = l.actor_id order by l.aangemaakt desc limit 12`);
   let res: any[] = [];
@@ -31,6 +33,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   return (
     <div className="p-stack" style={{ gap: 22 }}>
       <h1 className="p-h2">Dashboard</h1>
+      {feeds.ok
+        ? <p className="p-ok p-small" role="status">Opdrachten-update OK: laatste run {feeds.laatsteRun ? relatief(feeds.laatsteRun) : '–'}, {feeds.nieuw} nieuwe opdrachten, {feeds.live} externe opdrachten live.</p>
+        : <div className="p-err-summary" role="alert"><strong>Opdrachten-update: controleer dit</strong><ul style={{ margin: '6px 0 0 18px' }}>{feeds.bevindingen.map((b, i) => <li key={i}>{b.tekst}</li>)}</ul><Link className="p-link" href="/beheer/feeds">Naar Externe feeds</Link></div>}
       <form action="/beheer" role="search" className="p-searchbar" style={{ gridTemplateColumns: '1fr auto' }}>
         <label className="sr-only" htmlFor="gz">Zoek op naam, e-mail, KvK of opdracht</label>
         <input id="gz" name="zoek" defaultValue={zoek} placeholder="Zoek op naam, e-mail, KvK of opdracht" /><button className="btn btn-blue">Zoek</button>
