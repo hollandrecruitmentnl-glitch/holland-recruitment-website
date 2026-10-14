@@ -425,3 +425,9 @@ a.card:hover .more svg{transform:translateX(3px);}
 .field input.file-input{padding:11px 12px;cursor:pointer;background:var(--cream);}
 .field input.file-input::file-selector-button{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;border:0;border-radius:var(--r-pill);background:var(--blue);color:#fff;padding:9px 18px;margin-right:14px;cursor:pointer;}
 .field input.file-input:hover::file-selector-button{background:var(--blue-deep);}
+
+/* V30: soepeler scrollen op telefoons — geen blur achter vaste header/balk (duur op mobiele GPU's) */
+@media (max-width:760px){
+  .site-header{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;}
+  .m-sticky{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;}
+}
