@@ -2,6 +2,7 @@
 import { startTransition, useActionState, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
+import { meetMelding } from '@/lib/meten';
 
 /** Balk bovenaan bij geen verbinding. */
 export function OfflineBalk() {
@@ -12,15 +13,15 @@ export function OfflineBalk() {
     return () => { window.removeEventListener('online', upd); window.removeEventListener('offline', upd); };
   }, []);
   if (!offline) return null;
-  return <div className="p-offline" role="status"><strong>Geen internetverbinding.</strong> Je werk blijft bewaard. Berichten gaan pas weg als je weer online bent.</div>;
+  return <div className="p-offline" role="status"><strong>Geen internetverbinding.</strong> Het werk blijft bewaard. Berichten gaan pas weg als er weer verbinding is.</div>;
 }
 
 const TOASTS: Record<string, string> = {
-  opgeslagen: 'Opgeslagen.', verstuurd: 'Verstuurd.', ingediend: 'Je opdracht is ingediend. Na controle wordt deze zichtbaar voor freelancers.',
-  gesloten: 'De opdracht is gesloten.', bevestigd: 'Je e-mailadres is bevestigd.', wachtwoord: 'Je wachtwoord is gewijzigd.', welkom: 'Welkom! Je account is aangemaakt.',
-  verwijderd: 'Verwijderd.', uitgenodigd: 'De uitnodiging is verstuurd.', bemiddeling: 'Je aanvraag is verstuurd. Een recruiter belt je binnen één werkdag.',
-  gemeld: 'Bedankt. We bekijken je melding.', geblokkeerd: 'Je ziet dit gesprek niet meer.', reactie: 'Je reactie is verstuurd.', live: 'Je opdracht staat live.',
-  bewaard: 'Je zoekopdracht is bewaard. Je krijgt een e-mail bij nieuwe resultaten.', bijgewerkt: 'Bijgewerkt.',
+  opgeslagen: 'Opgeslagen.', verstuurd: 'Verstuurd.', ingediend: 'Uw opdracht is ingediend. Na controle wordt deze zichtbaar voor freelancers.',
+  gesloten: 'De opdracht is gesloten.', bevestigd: 'Het e-mailadres is bevestigd.', wachtwoord: 'Het wachtwoord is gewijzigd.', welkom: 'Welkom! Het account is aangemaakt.',
+  verwijderd: 'Verwijderd.', uitgenodigd: 'De uitnodiging is verstuurd.', bemiddeling: 'Uw aanvraag is verstuurd. Een recruiter belt u binnen één werkdag.',
+  gemeld: 'Bedankt. We bekijken de melding.', geblokkeerd: 'Dit gesprek staat niet meer in de lijst.', reactie: 'Je reactie is verstuurd.', live: 'Uw opdracht staat live.',
+  bewaard: 'De zoekopdracht is bewaard. Bij nieuwe resultaten volgt een e-mail.', bijgewerkt: 'Bijgewerkt.',
 };
 
 /** Toast op basis van ?melding=… of ?welkom=1 (4,2 s). */
@@ -33,6 +34,7 @@ export function Toast({ tekst }: { tekst?: string }) {
   useEffect(() => {
     const t = tekst || TOASTS[key];
     if (!t) return;
+    if (!tekst) meetMelding(key, sp.get('welkom'));
     setZicht(t);
     const n = new URLSearchParams(sp.toString()); ['melding', 'welkom', 'wachtwoord', 'bevestigd'].forEach(k => n.delete(k));
     router.replace(path + (n.toString() ? '?' + n : ''), { scroll: false });

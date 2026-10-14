@@ -32,7 +32,7 @@ export default async function OpdrachtReacties({ params, searchParams }: { param
         <h1 className="p-h2">{o.titel}</h1>
         <div className="p-row"><Link className="btn btn-line btn-sm" href={`/opdrachten/${o.slug}`}>Bekijk opdracht</Link>{['live', 'in_controle'].includes(o.status) && <Link className="btn btn-line btn-sm" href={`/mijn/opdrachten/${o.id}/bewerken`}>Bewerken</Link>}</div>
       </div>
-      <p className="p-muted" style={{ marginBottom: 18 }}><span className={`p-status ${o.status}`}>{OPDRACHT_STATUS[o.status]}</span> {o.reageren_tot && <> · Reageren kan tot {datumNL(o.reageren_tot)}</>}{o.status === 'in_controle' && ' · We controleren je opdracht. Daarna is hij zichtbaar voor freelancers.'}</p>
+      <p className="p-muted" style={{ marginBottom: 18 }}><span className={`p-status ${o.status}`}>{OPDRACHT_STATUS[o.status]}</span> {o.reageren_tot && <> · Reageren kan tot {datumNL(o.reageren_tot)}</>}{o.status === 'in_controle' && ' · We controleren uw opdracht. Daarna is hij zichtbaar voor freelancers.'}</p>
       <nav className="p-tabs" aria-label="Filter reacties">
         {[['', `Alle (${reacties.length})`], ['open', `Nog beoordelen (${tel(r => !r.label)})`], ['shortlist', `Shortlist (${tel(r => r.label === 'shortlist')})`], ['geen_match', `Geen match (${tel(r => r.label === 'geen_match')})`]].map(([f, l]) =>
           <Link key={f} href={`/mijn/opdrachten/${id}${f ? `?filter=${f}` : ''}`} aria-current={filter === f ? 'page' : undefined}>{l}</Link>)}
@@ -60,11 +60,11 @@ export default async function OpdrachtReacties({ params, searchParams }: { param
               <summary className="p-link p-small" style={{ cursor: 'pointer' }}>Notities voor collega’s ({r.notities.length})</summary>
               <div className="p-stack" style={{ gap: 8, marginTop: 10 }}>
                 {r.notities.map((n: any, i: number) => <p key={i} className="p-small p-panel" style={{ padding: 12 }}><strong>{n.auteur}</strong> · {relatief(n.op)}<br />{n.tekst}</p>)}
-                <form action={reactieNotitie} className="p-row" style={{ flexWrap: 'nowrap' }}><input type="hidden" name="reactie" value={r.id} /><label className="sr-only" htmlFor={`n-${r.id}`}>Notitie</label><input id={`n-${r.id}`} name="tekst" placeholder="Alleen zichtbaar voor je team" required style={{ flex: 1, font: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid var(--field)', borderRadius: 13 }} /><button className="btn btn-line btn-sm">Toevoegen</button></form>
+                <form action={reactieNotitie} className="p-row" style={{ flexWrap: 'nowrap' }}><input type="hidden" name="reactie" value={r.id} /><label className="sr-only" htmlFor={`n-${r.id}`}>Notitie</label><input id={`n-${r.id}`} name="tekst" placeholder="Alleen zichtbaar voor uw team" required style={{ flex: 1, font: 'inherit', fontSize: 15, padding: '10px 12px', border: '2px solid var(--field)', borderRadius: 13 }} /><button className="btn btn-line btn-sm">Toevoegen</button></form>
               </div>
             </details>
           </article>
-        )) : <Leeg titel={reacties.length ? 'Geen reacties in deze selectie' : 'Nog geen reacties'} tekst={reacties.length ? undefined : o.status === 'live' ? 'Zodra een freelancer reageert, krijg je een e-mail en zie je de reactie hier.' : 'Reacties komen binnen zodra je opdracht live staat.'}>{!reacties.length && <Link className="btn btn-line btn-sm" href="/freelancers-zoeken">Zoek zelf freelancers</Link>}</Leeg>}
+        )) : <Leeg titel={reacties.length ? 'Geen reacties in deze selectie' : 'Nog geen reacties'} tekst={reacties.length ? undefined : o.status === 'live' ? 'Zodra een freelancer reageert, krijgt u een e-mail en ziet u de reactie hier.' : 'Reacties komen binnen zodra uw opdracht live staat.'}>{!reacties.length && <Link className="btn btn-line btn-sm" href="/freelancers-zoeken">Zoek zelf freelancers</Link>}</Leeg>}
       </div>
       {['live', 'in_controle'].includes(o.status) && <SluitOpdracht id={o.id} titel={o.titel} bedrijf={a.bedrijf_naam || ''} reageerders={reacties.filter((r: any) => r.account_status === 'actief').map((r: any) => ({ id: r.freelancer_id, naam: `${r.voornaam} ${r.achternaam}` }))} />}
     </div>

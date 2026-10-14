@@ -48,11 +48,11 @@ export async function blokkeerAccount(fd: FormData) {
     const leden = await q(`select a.id, a.email from bedrijf_leden bl join accounts a on a.id = bl.account_id where bl.bedrijf_id = $1`, [id]);
     for (const l of leden) {
       await q(`update accounts set status = $2, blok_reden = $3 where id = $1 and rol <> 'beheer'`, [l.id, status, actie === 'blokkeren' ? reden : null]);
-      if (actie === 'blokkeren') { await q('delete from sessies where account_id = $1', [l.id]); await mails.geblokkeerd(l.email, reden); }
+      if (actie === 'blokkeren') { await q('delete from sessies where account_id = $1', [l.id]); await mails.geblokkeerd(l.email, reden, true); }
     }
   } else {
-    const acc = await one(`update accounts set status = $2, blok_reden = $3 where id = $1 and rol <> 'beheer' returning email`, [id, status, actie === 'blokkeren' ? reden : null]);
-    if (acc && actie === 'blokkeren') { await q('delete from sessies where account_id = $1', [id]); await mails.geblokkeerd(acc.email, reden); }
+    const acc = await one(`update accounts set status = $2, blok_reden = $3 where id = $1 and rol <> 'beheer' returning email, rol`, [id, status, actie === 'blokkeren' ? reden : null]);
+    if (acc && actie === 'blokkeren') { await q('delete from sessies where account_id = $1', [id]); await mails.geblokkeerd(acc.email, reden, acc.rol === 'bedrijf'); }
   }
   await logboek(a.id, `account_${actie}`, soort, id, { reden });
   revalidatePath('/beheer');
@@ -68,7 +68,7 @@ export async function handelMeldingAf(fd: FormData) {
   await q(`update meldingen set status = 'afgehandeld', besluit = $2, notitie = $3, afgehandeld = now() where id = $1`, [id, besluit, notitie]);
   if (besluit === 'blokkeren') {
     const doel = m.afzender_id || m.freelancer_id;
-    if (doel) { const acc = await one(`update accounts set status = 'geblokkeerd', blok_reden = $2 where id = $1 and rol <> 'beheer' returning email`, [doel, notitie || 'Overtreding van de voorwaarden']); if (acc) { await q('delete from sessies where account_id = $1', [doel]); await mails.geblokkeerd(acc.email, notitie || 'Overtreding van de voorwaarden'); } }
+    if (doel) { const acc = await one(`update accounts set status = 'geblokkeerd', blok_reden = $2 where id = $1 and rol <> 'beheer' returning email, rol`, [doel, notitie || 'Overtreding van de voorwaarden']); if (acc) { await q('delete from sessies where account_id = $1', [doel]); await mails.geblokkeerd(acc.email, notitie || 'Overtreding van de voorwaarden', acc.rol === 'bedrijf'); } }
     if (m.opdracht_id) await q(`update opdrachten set status = 'verwijderd', status_reden = $2 where id = $1`, [m.opdracht_id, notitie || 'Na melding verwijderd']);
   }
   if (m.melder_email) await mails.meldingAfgehandeld(m.melder_email);

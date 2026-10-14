@@ -75,10 +75,10 @@ function valideer(v: Velden): Record<string, string> {
     if (v.tarief_min == null && v.tarief_max == null) f.tarief = 'Vul een tarief in, of kies "In overleg".';
     else if ((v.tarief_min ?? 0) < 0 || (v.tarief_max ?? 0) > 1000 || (v.tarief_min != null && v.tarief_max != null && v.tarief_min > v.tarief_max)) f.tarief = 'Het minimumtarief moet lager zijn dan het maximum.';
   }
-  if (!v.reactietermijn || !(v.reactietermijn in REACTIETERMIJN)) f.reactietermijn = 'Kies binnen hoeveel tijd je reageert.';
+  if (!v.reactietermijn || !(v.reactietermijn in REACTIETERMIJN)) f.reactietermijn = 'Kies binnen hoeveel tijd u reageert.';
   if (!v.reageren_tot) f.reageren_tot = 'Kies tot wanneer freelancers kunnen reageren.';
   else if (v.reageren_tot < new Date().toISOString().slice(0, 10)) f.reageren_tot = 'Deze datum ligt in het verleden.';
-  if (v.bemiddeling && !/^[+0-9 ()-]{10,}$/.test(v.telefoon)) f.telefoon = 'Vul een telefoonnummer in, zodat onze recruiter je kan bellen.';
+  if (v.bemiddeling && !/^[+0-9 ()-]{10,}$/.test(v.telefoon)) f.telefoon = 'Vul een telefoonnummer in, zodat onze recruiter u kan bellen.';
   return f;
 }
 
@@ -129,8 +129,8 @@ export async function opslaanConcept(fd: FormData): Promise<{ id?: string; fout?
 
 export async function indienen(_: FormState, fd: FormData): Promise<FormState> {
   const a = await vereis('bedrijf');
-  if (!a.bedrijf_id) return { fouten: { algemeen: 'Je account hoort niet bij een bedrijf.' } };
-  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst je e-mailadres. Je kunt een nieuwe bevestigingsmail aanvragen in je overzicht.' } };
+  if (!a.bedrijf_id) return { fouten: { algemeen: 'Uw account hoort niet bij een bedrijf.' } };
+  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst uw e-mailadres. U kunt een nieuwe bevestigingsmail aanvragen in uw overzicht.' } };
   const v = lees(fd);
   const f = valideer(v);
   const id = str(fd.get('id')) || null;
@@ -222,13 +222,13 @@ export async function vraagBemiddeling(_: FormState, fd: FormData): Promise<Form
   const w = Object.fromEntries(['naam', 'bedrijfsnaam', 'email', 'telefoon', 'toelichting', 'freelancer'].map(k => [k, str(fd.get(k), k === 'toelichting' ? 3000 : 200)]));
   if (str(fd.get('website_hp'))) return { ok: true };
   const f: Record<string, string> = {};
-  if (w.naam.split(/\s+/).filter(Boolean).length < 2) f.naam = 'Vul je voor- en achternaam in.';
-  if (!w.bedrijfsnaam) f.bedrijfsnaam = 'Vul de naam van je bedrijf in.';
+  if (w.naam.split(/\s+/).filter(Boolean).length < 2) f.naam = 'Vul uw voor- en achternaam in.';
+  if (!w.bedrijfsnaam) f.bedrijfsnaam = 'Vul de naam van uw bedrijf in.';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(w.email)) f.email = 'Vul een geldig e-mailadres in.';
-  if (!/^[+0-9 ()-]{10,}$/.test(w.telefoon)) f.telefoon = 'Vul een telefoonnummer in, zodat onze recruiter je kan bellen.';
-  if (w.toelichting.length < 20) f.toelichting = 'Beschrijf kort wie je zoekt (minimaal 20 tekens).';
+  if (!/^[+0-9 ()-]{10,}$/.test(w.telefoon)) f.telefoon = 'Vul een telefoonnummer in, zodat onze recruiter u kan bellen.';
+  if (w.toelichting.length < 20) f.toelichting = 'Beschrijf kort wie u zoekt (minimaal 20 tekens).';
   if (Object.keys(f).length) return { fouten: f, waarden: w };
-  if (!(await limiet(`bemiddeling:${w.email}`, 5, 86400))) return { fouten: { algemeen: 'We hebben je aanvraag al ontvangen. We bellen je binnen één werkdag.' }, waarden: w };
+  if (!(await limiet(`bemiddeling:${w.email}`, 5, 86400))) return { fouten: { algemeen: 'We hebben uw aanvraag al ontvangen. We bellen u binnen één werkdag.' }, waarden: w };
   const toel = w.freelancer ? `${w.toelichting}\n\nInteresse in profiel: ${SITE}/freelancer/${w.freelancer}` : w.toelichting;
   await q(`insert into bemiddeling (bedrijf_id, account_id, naam, bedrijfsnaam, email, telefoon, toelichting) values ($1,$2,$3,$4,$5,$6,$7)`,
     [a?.bedrijf_id ?? null, a?.id ?? null, w.naam, w.bedrijfsnaam, w.email.toLowerCase(), w.telefoon, toel]);

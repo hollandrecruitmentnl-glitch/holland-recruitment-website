@@ -16,7 +16,7 @@ export default async function Registreren({ searchParams }: { searchParams: Prom
   if (sp.uitnodiging) uit = await one(`select u.email, b.naam from bedrijf_uitnodigingen u join bedrijven b on b.id = u.bedrijf_id where u.token_hash = $1 and u.geaccepteerd is null and u.aangemaakt > now() - interval '7 days'`, [sha256(sp.uitnodiging)]);
   return (
     <div className="p-narrow" style={{ maxWidth: 620, padding: '40px 26px 64px' }}>
-      {sp.uitnodiging && !uit && <p className="p-err-summary" role="alert" style={{ marginBottom: 16 }}>Deze uitnodiging is verlopen of al gebruikt. Vraag je collega om een nieuwe uitnodiging.</p>}
+      {sp.uitnodiging && !uit && <p className="p-err-summary" role="alert" style={{ marginBottom: 16 }}>Deze uitnodiging is verlopen of al gebruikt. Vraag uw collega om een nieuwe uitnodiging.</p>}
       <RegistratieForm rolStart={sp.rol} terug={terug} ctx={sp.ctx} uitnodiging={uit ? sp.uitnodiging : undefined} uitnodigingBedrijf={uit?.naam} uitnodigingEmail={uit?.email} />
     </div>
   );

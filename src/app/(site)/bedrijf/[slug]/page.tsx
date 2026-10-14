@@ -23,7 +23,7 @@ export default async function Bedrijf({ params }: P) {
   return (
     <div className="p-wrap">
       <p style={{ paddingTop: 20 }}><Link className="p-link p-small" href="/bedrijven">← Terug naar bedrijven</Link></p>
-      {eigen && <p className="p-note" style={{ marginTop: 12 }}>Zo zien freelancers je bedrijf. <Link className="p-link" href="/mijn/bedrijf">Bedrijfsprofiel bewerken</Link></p>}
+      {eigen && <p className="p-note" style={{ marginTop: 12 }}>Zo zien freelancers uw bedrijf. <Link className="p-link" href="/mijn/bedrijf">Bedrijfsprofiel bewerken</Link></p>}
       <div className="p-detail">
         <div className="p-stack" style={{ gap: 24 }}>
           <header className="p-row" style={{ flexWrap: 'nowrap', gap: 18 }}>

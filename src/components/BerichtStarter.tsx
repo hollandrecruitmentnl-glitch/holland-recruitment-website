@@ -30,13 +30,15 @@ export default function BerichtStarter({ doel, doelId, opdrachtId, naam, ingelog
     });
   };
   if (ingelogd && !magSturen) return null;
+  // Bericht aan een freelancer komt van een (toekomstig) bedrijf: u-vorm.
+  const u = doel === 'freelancer';
   if (!ingelogd) {
     // Bezoekers: eerst een (gratis) account, daarna direct terug naar dit berichtvak.
     const q = `terug=${encodeURIComponent(terug)}`;
     return (
       <div id="bericht" className="p-card p-stack" style={{ scrollMarginTop: 100 }}>
         <strong className="p-h3">Stuur {naam} een bericht</strong>
-        <p className="p-small p-muted" style={{ margin: 0 }}>Om een bericht te sturen heb je een gratis account nodig. Dat kost twee stappen; daarna kom je direct hier terug.</p>
+        <p className="p-small p-muted" style={{ margin: 0 }}>{u ? 'Om een bericht te sturen heeft u een gratis account nodig. Dat kost twee stappen; daarna komt u direct hier terug.' : 'Om een bericht te sturen heb je een gratis account nodig. Dat kost twee stappen; daarna kom je direct hier terug.'}</p>
         <div className="p-row" style={{ gap: 10 }}>
           <Link className="btn btn-blue" href={`/registreren?rol=${doel === 'freelancer' ? 'bedrijf' : 'freelancer'}&${q}&ctx=bericht`}>Maak gratis account</Link>
           <Link className="btn btn-line" href={`/inloggen?${q}`}>Inloggen</Link>
@@ -47,10 +49,10 @@ export default function BerichtStarter({ doel, doelId, opdrachtId, naam, ingelog
   return (
     <div id="bericht" className="p-card p-stack" style={{ scrollMarginTop: 100 }}>
       <strong className="p-h3">Stuur {naam} een bericht</strong>
-      {hersteld && ingelogd && <p className="p-ok p-small" role="status">Je bericht staat nog klaar. Controleer het en verstuur.</p>}
+      {hersteld && ingelogd && <p className="p-ok p-small" role="status">{u ? 'Uw' : 'Je'} bericht staat nog klaar. Controleer het en verstuur.</p>}
       <div className="field">
-        <label htmlFor="bericht-tekst">Je bericht</label>
-        <textarea id="bericht-tekst" rows={5} value={tekst} onChange={e => setTekst(e.target.value)} maxLength={4000} placeholder={placeholder || 'Stel jezelf kort voor en vertel waarover je contact zoekt.'} aria-invalid={fout ? true : undefined} aria-describedby={fout ? 'bericht-fout' : undefined}
+        <label htmlFor="bericht-tekst">{u ? 'Uw bericht' : 'Je bericht'}</label>
+        <textarea id="bericht-tekst" rows={5} value={tekst} onChange={e => setTekst(e.target.value)} maxLength={4000} placeholder={placeholder || (u ? 'Stel uzelf kort voor en vertel waarover u contact zoekt.' : 'Stel jezelf kort voor en vertel waarover je contact zoekt.')} aria-invalid={fout ? true : undefined} aria-describedby={fout ? 'bericht-fout' : undefined}
           onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) verstuur(); }} />
         {fout && <span className="err" id="bericht-fout"><span aria-hidden="true">⚠</span>{fout}</span>}
       </div>

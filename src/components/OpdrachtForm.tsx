@@ -44,7 +44,7 @@ export default function OpdrachtForm({ o, collegas, bedrijfNaam, telefoon }: { o
       if (!form.current) return;
       setOpslag('Concept opslaan…');
       try { const r = await opslaanConcept(new FormData(form.current)); if (r.id) { setId(r.id); setOpslag('Concept opgeslagen.'); } else setOpslag(''); }
-      catch { setOpslag('Niet opgeslagen. Je invoer blijft staan; controleer je verbinding.'); }
+      catch { setOpslag('Niet opgeslagen. Uw invoer blijft staan; controleer uw verbinding.'); }
     }, 900);
   };
   const snel = (min: number, max: number) => setV(x => ({ ...x, uren_min: min, uren_max: max }));
@@ -57,19 +57,19 @@ export default function OpdrachtForm({ o, collegas, bedrijfNaam, telefoon }: { o
         <input type="hidden" name="id" value={id} />
         <FoutSamenvatting fouten={s?.fouten} />
         <div className="p-card p-stack">
-          <strong className="p-h3">Hoe wil je zoeken?</strong>
+          <strong className="p-h3">Hoe wilt u zoeken?</strong>
           <div className="p-radio-cards">
-            <label className="p-radio-card"><input type="radio" name="modus" value="zelf" checked={v.modus === 'zelf'} onChange={() => setV(x => ({ ...x, modus: 'zelf' }))} /><strong>Zelf zoeken via het platform</strong><span className="p-small p-muted">Freelancers reageren direct bij jou. Gratis de eerste 6 maanden.</span></label>
+            <label className="p-radio-card"><input type="radio" name="modus" value="zelf" checked={v.modus === 'zelf'} onChange={() => setV(x => ({ ...x, modus: 'zelf' }))} /><strong>Zelf zoeken via het platform</strong><span className="p-small p-muted">Freelancers reageren direct bij u. Gratis de eerste 6 maanden.</span></label>
             <label className="p-radio-card"><input type="radio" name="modus" value="bemiddeling" checked={v.modus === 'bemiddeling'} onChange={() => setV(x => ({ ...x, modus: 'bemiddeling' }))} /><strong>Laat Holland Recruitment bemiddelen</strong><span className="p-small p-muted">Wij zoeken, selecteren en voeren de gesprekken. Fee per plaatsing, op aanvraag.</span></label>
           </div>
-          {v.modus === 'bemiddeling' && <div className="field"><label htmlFor="v-telefoon">Telefoonnummer<span className="req" aria-hidden="true"> *</span></label><input id="v-telefoon" name="telefoon" type="tel" defaultValue={telefoon} autoComplete="tel" aria-invalid={f.telefoon ? true : undefined} /><span className="hint">Een recruiter belt je binnen één werkdag.</span><Fout id="v-telefoon-err" tekst={f.telefoon} /></div>}
+          {v.modus === 'bemiddeling' && <div className="field"><label htmlFor="v-telefoon">Telefoonnummer<span className="req" aria-hidden="true"> *</span></label><input id="v-telefoon" name="telefoon" type="tel" defaultValue={telefoon} autoComplete="tel" aria-invalid={f.telefoon ? true : undefined} /><span className="hint">Een recruiter belt u binnen één werkdag.</span><Fout id="v-telefoon-err" tekst={f.telefoon} /></div>}
         </div>
 
         <Sectie nr={1} titel="De opdracht">
           <div className="field"><label htmlFor="v-titel">Titel<span className="req" aria-hidden="true"> *</span></label><input id="v-titel" name="titel" defaultValue={v.titel} maxLength={120} placeholder="Bijvoorbeeld Werkvoorbereider E&I" aria-invalid={f.titel ? true : undefined} /><Fout id="e1" tekst={f.titel} /></div>
           <div className="field"><label htmlFor="v-vakgebied">Vakgebied<span className="req" aria-hidden="true"> *</span></label><select id="v-vakgebied" name="vakgebied" defaultValue={v.vakgebied} aria-invalid={f.vakgebied ? true : undefined}><option value="">Kies een vakgebied</option>{VAKGEBIEDEN.map(x => <option key={x.slug} value={x.slug}>{x.naam}</option>)}</select><Fout id="e2" tekst={f.vakgebied} /></div>
-          <div className="field"><label htmlFor="v-omschrijving">Omschrijving<span className="req" aria-hidden="true"> *</span></label><textarea id="v-omschrijving" name="omschrijving" rows={8} defaultValue={o?.omschrijving || ''} placeholder={VOORBEELD} maxLength={8000} aria-invalid={f.omschrijving ? true : undefined} /><span className="hint">Minimaal 40 tekens. Wat ga je doen, voor wie en waarom.</span><Fout id="e3" tekst={f.omschrijving} /></div>
-          <div className="field"><label htmlFor="v-meebrengen">Wat je meebrengt</label><textarea id="v-meebrengen" name="meebrengen" rows={4} defaultValue={o?.meebrengen || ''} maxLength={4000} placeholder="Ervaring, kennis en eigenschappen die je zoekt." /></div>
+          <div className="field"><label htmlFor="v-omschrijving">Omschrijving<span className="req" aria-hidden="true"> *</span></label><textarea id="v-omschrijving" name="omschrijving" rows={8} defaultValue={o?.omschrijving || ''} placeholder={VOORBEELD} maxLength={8000} aria-invalid={f.omschrijving ? true : undefined} /><span className="hint">Minimaal 40 tekens. Wat gaat de freelancer doen, voor wie en waarom?</span><Fout id="e3" tekst={f.omschrijving} /></div>
+          <div className="field"><label htmlFor="v-meebrengen">Wat de freelancer meebrengt</label><textarea id="v-meebrengen" name="meebrengen" rows={4} defaultValue={o?.meebrengen || ''} maxLength={4000} placeholder="Ervaring, kennis en eigenschappen die u zoekt." /></div>
         </Sectie>
 
         <Sectie nr={2} titel="Locatie en planning">
@@ -98,7 +98,7 @@ export default function OpdrachtForm({ o, collegas, bedrijfNaam, telefoon }: { o
             <Fout id="e10" tekst={f.tarief} /></div>
         </Sectie>
 
-        <Sectie nr={4} titel="Wie zoek je?">
+        <Sectie nr={4} titel="Wie zoekt u?">
           <div className="p-grid2">
             <div className="field"><label htmlFor="v-ervaring">Jaren ervaring (minimaal)</label><input id="v-ervaring" type="number" name="ervaring_jaren" min={0} max={40} defaultValue={o?.ervaring_jaren ?? ''} /></div>
             <div className="field"><label htmlFor="v-aantal">Aantal professionals</label><input id="v-aantal" type="number" name="aantal" min={1} max={50} defaultValue={o?.aantal ?? 1} /></div>
@@ -113,7 +113,7 @@ export default function OpdrachtForm({ o, collegas, bedrijfNaam, telefoon }: { o
         </Sectie>
 
         <Sectie nr={6} titel="Reacties">
-          <div className="field" id="v-reactietermijn"><span className="label">Je reageert op reacties<span className="req" aria-hidden="true"> *</span></span>
+          <div className="field" id="v-reactietermijn"><span className="label">U reageert op reacties<span className="req" aria-hidden="true"> *</span></span>
             <div className="p-row">{Object.entries(REACTIETERMIJN).map(([k, l]) => <label key={k} className="p-check"><input type="radio" name="reactietermijn" value={k} defaultChecked={(o?.reactietermijn || '5_werkdagen') === k} />{l}</label>)}</div><Fout id="e11" tekst={f.reactietermijn} /></div>
           <div className="p-grid2">
             <div className="field"><label htmlFor="v-reageren_tot">Reageren kan tot<span className="req" aria-hidden="true"> *</span></label><input id="v-reageren_tot" type="date" name="reageren_tot" min={vandaag} defaultValue={o?.reageren_tot || ''} aria-invalid={f.reageren_tot ? true : undefined} /><Fout id="e12" tekst={f.reageren_tot} /></div>
@@ -125,11 +125,11 @@ export default function OpdrachtForm({ o, collegas, bedrijfNaam, telefoon }: { o
           <Verzend pending={pending} bezig="Bezig…">{live ? 'Wijzigingen opslaan' : v.modus === 'bemiddeling' ? 'Opdracht en bemiddeling indienen' : 'Opdracht indienen'}</Verzend>
         </div>
       </form>
-      <aside className="p-opdracht-voorbeeld" aria-label="Voorbeeld van je opdracht">
-        <p className="p-small p-muted" style={{ marginBottom: 8 }}>Zo zien freelancers je opdracht</p>
+      <aside className="p-opdracht-voorbeeld" aria-label="Voorbeeld van uw opdracht">
+        <p className="p-small p-muted" style={{ marginBottom: 8 }}>Zo zien freelancers uw opdracht</p>
         <article className="p-result">
           <span className="p-src direct">Direct geplaatst</span>
-          <h3>{v.titel || 'Titel van je opdracht'}</h3>
+          <h3>{v.titel || 'Titel van uw opdracht'}</h3>
           <p className="p-muted p-small">{[bedrijfNaam, v.werkvorm === 'remote' ? 'Remote' : v.locatie, werkvormNaam(v.werkvorm), vakgebiedNaam(v.vakgebied)].filter(Boolean).join(' · ')}</p>
           <div className="p-between p-small"><strong>{tariefTekst}</strong><span className="p-muted">{v.uren_min && v.uren_max ? `${v.uren_min}–${v.uren_max} uur` : ''}</span></div>
         </article>

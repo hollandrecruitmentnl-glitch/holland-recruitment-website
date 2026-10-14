@@ -105,11 +105,11 @@ export default function Chat({ gesprek, ander, mijnId, rol, start, gelezenTot }:
       {menu === 'blok' && (
         <form className="p-panel p-stack" style={{ margin: 12, gap: 10 }} action={async fd => { await blokkeerGesprek(fd); window.location.href = '/mijn/berichten?melding=geblokkeerd'; }}>
           <input type="hidden" name="gesprek" value={gesprek.id} />
-          <strong>{ander.naam} blokkeren?</strong><span className="p-small">Jullie kunnen elkaar in dit gesprek geen berichten meer sturen en het verdwijnt uit je lijst.</span>
+          <strong>{ander.naam} blokkeren?</strong><span className="p-small">In dit gesprek kunnen dan geen berichten meer worden gestuurd en het verdwijnt uit de lijst.</span>
           <div className="p-row"><button className="btn btn-danger btn-sm">Blokkeer</button><button type="button" className="btn btn-line btn-sm" onClick={() => setMenu('')}>Annuleren</button></div>
         </form>
       )}
-      {gemeld && <p className="p-ok p-small" role="status" style={{ margin: 12 }}>Bedankt. We bekijken je melding.</p>}
+      {gemeld && <p className="p-ok p-small" role="status" style={{ margin: 12 }}>Bedankt. We bekijken de melding.</p>}
       <div className="p-chat-msgs" ref={lijst} role="log" aria-live="polite" aria-label="Berichten">
         {msgs.map(m => {
           const d = dag(m.aangemaakt); const nieuweDag = d !== vorigeDag; vorigeDag = d;
@@ -133,7 +133,7 @@ export default function Chat({ gesprek, ander, mijnId, rol, start, gelezenTot }:
           );
         })}
       </div>
-      {geblokt ? <p className="p-note p-small" style={{ margin: 12 }}>Dit gesprek is gesloten. Je kunt geen berichten meer sturen.</p> : (
+      {geblokt ? <p className="p-note p-small" style={{ margin: 12 }}>Dit gesprek is gesloten. Er kunnen geen berichten meer worden gestuurd.</p> : (
         <div className="p-chat-input">
           <input ref={fileIn} type="file" className="sr-only" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp" onChange={e => { setFile(e.target.files?.[0] || null); e.target.value = ''; }} aria-label="Bijlage toevoegen" />
           <button type="button" className="p-chip" onClick={() => fileIn.current?.click()} aria-label="Bijlage toevoegen" title="Bijlage (pdf, Word, Excel of afbeelding, max. 10 MB)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7" /></svg></button>

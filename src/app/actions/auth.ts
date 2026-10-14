@@ -15,6 +15,8 @@ export type FormState = { fouten?: Record<string, string>; melding?: string; ok?
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const veiligTerug = (t: string) => (t.startsWith('/') && !t.startsWith('//') ? t : '');
+/** Voegt een queryparameter toe vóór een eventuele #hash. */
+const metParam = (url: string, k: string, v: string) => { const [pad, hash] = url.split('#'); return `${pad}${pad.includes('?') ? '&' : '?'}${k}=${encodeURIComponent(v)}${hash ? '#' + hash : ''}`; };
 
 function waarden(fd: FormData, velden: string[]) {
   return Object.fromEntries(velden.map(v => [v, str(fd.get(v), 2000)]));
@@ -48,12 +50,12 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
     if (!w.regio) f.regio = 'Vul je regio in, bijvoorbeeld Rotterdam.';
   } else {
     const parts = w.contactnaam.split(/\s+/).filter(Boolean);
-    if (parts.length < 2) f.contactnaam = 'Vul je voor- en achternaam in.';
+    if (parts.length < 2) f.contactnaam = 'Vul uw voor- en achternaam in.';
     voornaam = parts[0] || ''; achternaam = parts.slice(1).join(' ');
     const domein = email.split('@')[1] || '';
-    if (!f.email && GRATIS_MAILDIENSTEN.includes(domein)) f.email = 'Gebruik je zakelijke e-mailadres. Adressen van gratis maildiensten zoals Gmail of Hotmail kunnen niet.';
+    if (!f.email && GRATIS_MAILDIENSTEN.includes(domein)) f.email = 'Gebruik uw zakelijke e-mailadres. Adressen van gratis maildiensten zoals Gmail of Hotmail kunnen niet.';
     if (!w.uitnodiging) {
-      if (!w.bedrijfsnaam) f.bedrijfsnaam = 'Vul de naam van je bedrijf in.';
+      if (!w.bedrijfsnaam) f.bedrijfsnaam = 'Vul de naam van uw bedrijf in.';
       if (!/^\d{8}$/.test(w.kvk)) f.kvk = 'Een KvK-nummer heeft 8 cijfers.';
       if (!w.plaats) f.plaats = 'Vul de vestigingsplaats in.';
       if (w.website && !/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/.*)?$/i.test(w.website)) f.website = 'Vul een geldig webadres in, bijvoorbeeld www.bedrijf.nl.';
@@ -68,10 +70,10 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
   let uitnodiging: any = null;
   if (rol === 'bedrijf' && w.uitnodiging) {
     uitnodiging = await one(`select * from bedrijf_uitnodigingen where token_hash = $1 and geaccepteerd is null and aangemaakt > now() - interval '7 days'`, [sha256(w.uitnodiging)]);
-    if (!uitnodiging) f.algemeen = 'Deze uitnodiging is verlopen of al gebruikt. Vraag je collega om een nieuwe uitnodiging.';
+    if (!uitnodiging) f.algemeen = 'Deze uitnodiging is verlopen of al gebruikt. Vraag uw collega om een nieuwe uitnodiging.';
   }
   if (rol === 'bedrijf' && !uitnodiging && !f.kvk) {
-    if (await one('select 1 from bedrijven where kvk = $1', [w.kvk])) f.kvk = 'Dit bedrijf heeft al een account. Vraag een collega om je uit te nodigen via Bedrijfsprofiel › Team.';
+    if (await one('select 1 from bedrijven where kvk = $1', [w.kvk])) f.kvk = 'Dit bedrijf heeft al een account. Vraag een collega om u uit te nodigen via Bedrijfsprofiel › Team.';
   }
   let kvkRes: Awaited<ReturnType<typeof controleerKvk>> | null = null;
   if (rol === 'bedrijf' && !uitnodiging && !f.kvk) {
@@ -102,7 +104,7 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
   await logboek(id, 'account_aangemaakt', 'account', id, { rol });
   await mails.bevestigEmail(email, voornaam, rol, await maakBevestigToken(id));
   await maakSessie(id);
-  redirect(veiligTerug(w.terug) || '/mijn?welkom=1');
+  redirect(metParam(veiligTerug(w.terug) || '/mijn', 'welkom', rol));
 }
 
 export async function inloggen(_: FormState, fd: FormData): Promise<FormState> {

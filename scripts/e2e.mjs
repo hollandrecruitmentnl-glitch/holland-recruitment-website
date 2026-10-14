@@ -58,6 +58,18 @@ try {
     check('mobiel: filters openen met knop', await m.locator('form.p-filters').isVisible());
     for (const u of ['/', '/opdrachten', '/freelancers-zoeken', '/registreren?rol=freelancer']) { await m.goto(B + u); const sw = await m.evaluate(() => document.documentElement.scrollWidth); check(`mobiel 360: geen horizontaal scrollen op ${u}`, sw <= 360, String(sw)); }
     await m.close(); }
+  // GA4-conversies: alleen na toestemming voor analytics
+  { const c = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await c.addInitScript(() => { window.__ev = []; window.gtag = (...a) => window.__ev.push(a); });
+    const g = await c.newPage();
+    const events = () => g.evaluate(() => [...(window.__ev || []), ...((window.dataLayer || []).map(x => Array.from(x)))].filter(a => a[0] === 'event').map(a => `${a[1]}:${a[2]?.rol || ''}`));
+    await g.goto(`${B}/?welkom=bedrijf`); await g.waitForTimeout(800);
+    check('GA: geen event zonder toestemming', (await events()).length === 0);
+    await g.evaluate(() => localStorage.setItem('hr-cookie-consent', JSON.stringify({ version: 1, essential: true, analytics: true, marketing: false })));
+    await g.goto(`${B}/?welkom=bedrijf`); await g.waitForTimeout(1500);
+    const ev = await events();
+    check('GA: sign_up met rol na toestemming', ev.includes('sign_up:bedrijf'), JSON.stringify(ev));
+    await c.close(); }
   console.log('2. Registratie freelancer + bevestigen + profiel');
   const f = await ctx();
   f.on('pageerror', e => errors.push(e.message));
@@ -314,7 +326,7 @@ try {
   await u.waitForSelector('.p-err-summary');
   check('activeren zonder akkoord geweigerd', (await u.locator('.p-err-summary').innerText()).includes('gebruiksvoorwaarden'));
   await u.fill('#v-wachtwoord', 'NieuwWacht1!'); await u.check('input[name=voorwaarden]');
-  await Promise.all([u.waitForURL(/mijn\/profiel\?welkom=1/), u.click('button:has-text("Profiel activeren")')]);
+  await Promise.all([u.waitForURL(/mijn\/profiel\?welkom=freelancer/), u.click('button:has-text("Profiel activeren")')]);
   check('geactiveerd en ingelogd', await u.getByText('Je profiel is actief').count() === 1);
   check('profiel nu zichtbaar', (await (await ctx()).goto(`${B}/freelancer/${iris.slug}`)).status() === 200);
   const d = await ctx(); await d.goto(`${B}/inloggen`); await d.fill('#v-email', 'dennis@test.local'); await d.fill('#v-wachtwoord', 'Wat dan ook1'); await d.click('button[type=submit]');

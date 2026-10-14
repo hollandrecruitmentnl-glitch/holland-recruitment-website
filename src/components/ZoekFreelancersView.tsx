@@ -90,7 +90,7 @@ export default async function ZoekFreelancersView({ z, titel, intro, basis = '/f
             <Leeg titel="Geen freelancers gevonden" tekst={chips.length ? 'Probeer een bredere zoekterm, haal een filter weg of zoek in een grotere regio.' : 'Er staan nog geen freelancers op het platform in deze selectie.'}>
               <div className="p-row" style={{ justifyContent: 'center' }}>
                 {chips.length > 0 && <Link className="btn btn-line btn-sm" href={basis}>Filters wissen</Link>}
-                <Link className="btn btn-blue btn-sm" href="/bemiddeling">Laat ons voor je zoeken</Link>
+                <Link className="btn btn-blue btn-sm" href="/bemiddeling">Laat ons voor u zoeken</Link>
               </div>
             </Leeg>
           )}

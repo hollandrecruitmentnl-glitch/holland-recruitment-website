@@ -61,7 +61,7 @@ function Gesprekken({ items, rol }: { items: any[]; rol: 'bedrijf' | 'freelancer
       )) : (
         <div className="p-stack" style={{ gap: 8 }}>
           <p className="p-small p-muted" style={{ margin: 0 }}>{rol === 'bedrijf'
-            ? 'Nog geen gesprekken. Een gesprek begint als een freelancer op je opdracht reageert, of als jij iemand een bericht stuurt vanaf zijn of haar profiel.'
+            ? 'Nog geen gesprekken. Een gesprek begint als een freelancer op uw opdracht reageert, of als u iemand een bericht stuurt vanaf zijn of haar profiel.'
             : 'Nog geen gesprekken. Een gesprek begint als je op een opdracht reageert, of als een bedrijf jou een bericht stuurt.'}</p>
           <Link className="p-link p-small" href={rol === 'bedrijf' ? '/freelancers-zoeken' : '/opdrachten'}>{rol === 'bedrijf' ? 'Zoek freelancers' : 'Bekijk opdrachten'}</Link>
         </div>
@@ -149,25 +149,25 @@ export default async function Overzicht() {
   const profielKlaar = !!b?.logo_pad && (b?.omschrijving || '').length >= 80;
 
   const stappen = [
-    { klaar: profielKlaar, label: 'Vul je bedrijfsprofiel aan (logo en omschrijving)', href: '/mijn/bedrijf' },
-    { klaar: (geplaatst?.n ?? 0) > 0, label: 'Plaats je eerste opdracht', href: '/mijn/opdrachten/nieuw' },
+    { klaar: profielKlaar, label: 'Vul uw bedrijfsprofiel aan (logo en omschrijving)', href: '/mijn/bedrijf' },
+    { klaar: (geplaatst?.n ?? 0) > 0, label: 'Plaats uw eerste opdracht', href: '/mijn/opdrachten/nieuw' },
     { klaar: recent.length > 0, label: 'Bekijk profielen van freelancers', href: '/freelancers-zoeken' },
-    { klaar: gesprekken.length > 0, label: 'Start je eerste gesprek', href: '/freelancers-zoeken' },
+    { klaar: gesprekken.length > 0, label: 'Start uw eerste gesprek', href: '/freelancers-zoeken' },
   ];
   const alles = stappen.every(s => s.klaar);
 
   const actie: Actie = nieuweReacties > 0
-    ? { kop: `${nieuweReacties} nieuwe ${nieuweReacties === 1 ? 'reactie' : 'reacties'} op ‘${metNieuw.titel}’`, tekst: 'Bekijk de profielen en laat freelancers weten of je verder wilt. Snel reageren vergroot de kans dat goede kandidaten beschikbaar blijven.', href: `/mijn/opdrachten/${metNieuw.id}`, knop: 'Bekijk reacties' }
+    ? { kop: `${nieuweReacties} nieuwe ${nieuweReacties === 1 ? 'reactie' : 'reacties'} op ‘${metNieuw.titel}’`, tekst: 'Bekijk de profielen en laat freelancers weten of u verder wilt. Snel reageren vergroot de kans dat goede kandidaten beschikbaar blijven.', href: `/mijn/opdrachten/${metNieuw.id}`, knop: 'Bekijk reacties' }
     : ongelezen.length
-      ? { kop: ongelezen.length === 1 ? `Nieuw bericht van ${ongelezen[0].f_voornaam} ${ongelezen[0].f_achternaam}` : `${ongelezen.length} gesprekken met nieuwe berichten`, tekst: 'Een freelancer wacht op je antwoord.', href: ongelezen.length === 1 ? `/mijn/berichten/${ongelezen[0].id}` : '/mijn/berichten', knop: 'Lees en beantwoord' }
+      ? { kop: ongelezen.length === 1 ? `Nieuw bericht van ${ongelezen[0].f_voornaam} ${ongelezen[0].f_achternaam}` : `${ongelezen.length} gesprekken met nieuwe berichten`, tekst: 'Een freelancer wacht op uw antwoord.', href: ongelezen.length === 1 ? `/mijn/berichten/${ongelezen[0].id}` : '/mijn/berichten', knop: 'Lees en beantwoord' }
       : afgewezen
         ? { kop: `Pas ‘${afgewezen.titel}’ aan`, tekst: 'Deze opdracht is niet goedgekeurd. Bekijk de toelichting, pas de opdracht aan en dien hem opnieuw in.', href: `/mijn/opdrachten/${afgewezen.id}/bewerken`, knop: 'Bekijk en pas aan' }
         : concept
-          ? { kop: `Maak ‘${concept.titel}’ af`, tekst: 'Je opdracht staat nog als concept. Vul de laatste gegevens aan en plaats hem, dan kunnen freelancers reageren.', href: `/mijn/opdrachten/${concept.id}/bewerken`, knop: 'Verder met concept' }
+          ? { kop: `Maak ‘${concept.titel}’ af`, tekst: 'Uw opdracht staat nog als concept. Vul de laatste gegevens aan en plaats hem, dan kunnen freelancers reageren.', href: `/mijn/opdrachten/${concept.id}/bewerken`, knop: 'Verder met concept' }
           : (geplaatst?.n ?? 0) === 0
-            ? { kop: 'Plaats je eerste opdracht', tekst: 'Beschrijf de opdracht, de periode, de uren en het tarief. Freelancers reageren direct. Liever geen eigen zoektocht? Laat ons bemiddelen.', href: '/mijn/opdrachten/nieuw', knop: 'Plaats een opdracht', tweede: { href: '/freelancers-zoeken', knop: 'Zelf zoeken' } }
+            ? { kop: 'Plaats uw eerste opdracht', tekst: 'Beschrijf de opdracht, de periode, de uren en het tarief. Freelancers reageren direct. Liever geen eigen zoektocht? Laat ons bemiddelen.', href: '/mijn/opdrachten/nieuw', knop: 'Plaats een opdracht', tweede: { href: '/freelancers-zoeken', knop: 'Zelf zoeken' } }
             : !profielKlaar
-              ? { kop: 'Maak je bedrijfsprofiel compleet', tekst: 'Freelancers zien je bedrijfsprofiel bij elke opdracht. Een logo en een korte omschrijving helpen hen inschatten of de opdracht past.', href: '/mijn/bedrijf', knop: 'Bedrijfsprofiel aanvullen' }
+              ? { kop: 'Maak uw bedrijfsprofiel compleet', tekst: 'Freelancers zien uw bedrijfsprofiel bij elke opdracht. Een logo en een korte omschrijving helpen hen inschatten of de opdracht past.', href: '/mijn/bedrijf', knop: 'Bedrijfsprofiel aanvullen' }
               : { kop: 'Zoek freelancers die nu beschikbaar zijn', tekst: 'Filter op vakgebied, vaardigheden, tarief en beschikbaarheid, en stuur direct een bericht.', href: '/freelancers-zoeken?beschikbaar=nu', knop: 'Freelancers zoeken', tweede: { href: '/mijn/opdrachten/nieuw', knop: 'Nieuwe opdracht' } };
 
   return (
@@ -196,7 +196,7 @@ export default async function Overzicht() {
               </div>
             )) : (
               <div className="p-stack" style={{ gap: 8 }}>
-                <p className="p-small p-muted" style={{ margin: 0 }}>Je hebt nog geen opdrachten. Een opdracht plaatsen kost een paar minuten; freelancers kunnen daarna direct reageren en jij volgt alle reacties hier.</p>
+                <p className="p-small p-muted" style={{ margin: 0 }}>U heeft nog geen opdrachten. Een opdracht plaatsen kost een paar minuten; freelancers kunnen daarna direct reageren en u volgt alle reacties hier.</p>
                 <Link className="btn btn-blue btn-sm" style={{ alignSelf: 'flex-start' }} href="/mijn/opdrachten/nieuw">Plaats een opdracht</Link>
               </div>
             )}
@@ -204,7 +204,7 @@ export default async function Overzicht() {
           <section className="p-card p-stack">
             <div className="p-between"><h2 className="p-h3">Recent bekeken</h2>{recent.length > 0 && <Link className="p-linkbtn" href="/freelancers-zoeken">Verder zoeken →</Link>}</div>
             {recent.length ? recent.map((f: any) => <Link key={f.id} href={`/freelancer/${f.slug}`} className="p-row" style={{ flexWrap: 'nowrap' }}><Avatar id={f.id} foto={f.foto_pad} voornaam={f.voornaam} achternaam={f.achternaam} /><span><strong>{f.voornaam} {f.achternaam}</strong><br /><span className="p-small p-muted">{f.functietitel}</span></span></Link>)
-              : <div className="p-stack" style={{ gap: 8 }}><p className="p-small p-muted" style={{ margin: 0 }}>Profielen die je bekijkt, zie je hier terug. Zo vind je kandidaten snel terug.</p><Link className="p-link p-small" href="/freelancers-zoeken">Zoek freelancers</Link></div>}
+              : <div className="p-stack" style={{ gap: 8 }}><p className="p-small p-muted" style={{ margin: 0 }}>Profielen die u bekijkt, ziet u hier terug. Zo vindt u kandidaten snel terug.</p><Link className="p-link p-small" href="/freelancers-zoeken">Zoek freelancers</Link></div>}
           </section>
         </div>
         <div className="p-stack" style={{ gap: 18 }}>

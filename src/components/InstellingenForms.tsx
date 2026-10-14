@@ -21,10 +21,10 @@ export function VerwijderForm({ rol }: { rol: string }) {
     <details>
       <summary className="btn btn-danger btn-sm" style={{ listStyle: 'none', display: 'inline-flex' }}>Account verwijderen</summary>
       <form onSubmit={onSubmit} className="p-form" noValidate style={{ marginTop: 14 }}>
-        <p className="p-small">Dit kan niet ongedaan worden gemaakt. {rol === 'freelancer' ? 'Je profiel, cv, reacties en gesprekken worden verwijderd.' : 'Je account wordt verwijderd. Ben je de laatste in je team, dan worden ook het bedrijf, de opdrachten en gesprekken verwijderd.'}</p>
+        <p className="p-small">Dit kan niet ongedaan worden gemaakt. {rol === 'freelancer' ? 'Je profiel, cv, reacties en gesprekken worden verwijderd.' : 'Uw account wordt verwijderd. Bent u de laatste in uw team, dan worden ook het bedrijf, de opdrachten en gesprekken verwijderd.'}</p>
         <FoutSamenvatting fouten={s?.fouten} />
         <Veld naam="bevestig" label="Typ VERWIJDER om te bevestigen" fout={s?.fouten?.bevestig} />
-        <WachtwoordVeld id="v-wachtwoord" name="wachtwoord" label="Je wachtwoord" autoComplete="current-password" invalid={!!s?.fouten?.wachtwoord} />
+        <WachtwoordVeld id="v-wachtwoord" name="wachtwoord" label={rol === 'freelancer' ? 'Je wachtwoord' : 'Uw wachtwoord'} autoComplete="current-password" invalid={!!s?.fouten?.wachtwoord} />
         <Verzend pending={pending} className="btn btn-danger">Definitief verwijderen</Verzend>
       </form>
     </details>

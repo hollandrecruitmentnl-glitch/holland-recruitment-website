@@ -18,14 +18,14 @@ export default async function BedrijfProfiel() {
       <div className="p-stack" style={{ gap: 18 }}>
         <section className="p-card p-stack"><h2 className="p-h3">Logo</h2><BestandUpload soort="logo" huidig={b.logo_pad ? 'Logo' : null} label="Bedrijfslogo" /></section>
         <section className="p-card p-stack"><h2 className="p-h3">Gegevens</h2>
-          {b.kvk_controle_resultaat !== 'actief' && <p className="p-note p-small">Je KvK-nummer is nog niet automatisch gecontroleerd. Holland Recruitment kijkt het na.</p>}
+          {b.kvk_controle_resultaat !== 'actief' && <p className="p-note p-small">Uw KvK-nummer is nog niet automatisch gecontroleerd. Holland Recruitment kijkt het na.</p>}
           <BedrijfForm b={b} telefoon={a.telefoon} /></section>
         <section className="p-card p-stack" id="team">
           <h2 className="p-h3">Team</h2>
-          <p className="p-small p-muted">Iedereen in je team heeft dezelfde rechten: opdrachten plaatsen, reacties beoordelen en berichten sturen.</p>
+          <p className="p-small p-muted">Iedereen in uw team heeft dezelfde rechten: opdrachten plaatsen, reacties beoordelen en berichten sturen.</p>
           <ul className="p-stack" style={{ gap: 8 }}>{leden.map((l: any) => (
             <li key={l.id} className="p-between p-panel" style={{ padding: '12px 16px' }}>
-              <span><strong>{l.voornaam} {l.achternaam}</strong>{l.id === a.id && ' (jij)'}<br /><span className="p-small p-muted">{l.email}</span></span>
+              <span><strong>{l.voornaam} {l.achternaam}</strong>{l.id === a.id && ' (u)'}<br /><span className="p-small p-muted">{l.email}</span></span>
               {l.id !== a.id && <form action={verwijderLid}><input type="hidden" name="id" value={l.id} /><button className="p-linkbtn" style={{ color: '#B4331A' }}>Verwijderen</button></form>}
             </li>))}</ul>
           {uitn.length > 0 && <div className="p-stack" style={{ gap: 6 }}><strong className="p-small">Openstaande uitnodigingen</strong>{uitn.map((u: any) => <div key={u.id} className="p-between p-small"><span>{u.email} · {datumNL(u.aangemaakt)}</span><form action={trekUitnodigingIn}><input type="hidden" name="id" value={u.id} /><button className="p-linkbtn">Intrekken</button></form></div>)}</div>}

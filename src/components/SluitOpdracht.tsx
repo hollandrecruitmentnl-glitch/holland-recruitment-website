@@ -14,7 +14,7 @@ export default function SluitOpdracht({ id, titel, bedrijf, reageerders }: { id:
   const overig = reageerders.filter(r => !(met === 'reageerder' && r.id === wie)).length;
   return (
     <>
-      <div className="p-card p-between" style={{ marginTop: 24 }}><span><strong>Gevonden wie je zocht?</strong><br /><span className="p-small p-muted">Sluit de opdracht. Andere reageerders krijgen automatisch bericht.</span></span><button type="button" className="btn btn-line btn-sm" onClick={() => setOpen(true)}>Opdracht sluiten</button></div>
+      <div className="p-card p-between" style={{ marginTop: 24 }}><span><strong>Gevonden wie u zocht?</strong><br /><span className="p-small p-muted">Sluit de opdracht. Andere reageerders krijgen automatisch bericht.</span></span><button type="button" className="btn btn-line btn-sm" onClick={() => setOpen(true)}>Opdracht sluiten</button></div>
       <dialog ref={dlg} onClose={() => setOpen(false)} aria-labelledby="sluit-titel" style={{ border: 0, borderRadius: 24, padding: 0, maxWidth: 560, width: 'calc(100% - 32px)', boxShadow: 'var(--shadow)' }}>
         <form onSubmit={onSubmit} className="p-stack" style={{ padding: 24 }}>
           <input type="hidden" name="id" value={id} />

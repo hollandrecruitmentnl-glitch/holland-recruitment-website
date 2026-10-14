@@ -22,9 +22,9 @@ export function BedrijfForm({ b, telefoon }: { b: any; telefoon: string | null }
         <Veld naam="straat" label="Straat en huisnummer" waarde={v.straat} auto="street-address" />
         <Veld naam="postcode" label="Postcode" waarde={v.postcode} fout={s?.fouten?.postcode} auto="postal-code" placeholder="3081 LR" />
         <Veld naam="plaats" label="Plaats" waarde={v.plaats} fout={s?.fouten?.plaats} verplicht />
-        <Veld naam="telefoon" label="Jouw telefoonnummer" type="tel" waarde={telefoon} hint="Alleen zichtbaar voor Holland Recruitment." />
+        <Veld naam="telefoon" label="Uw telefoonnummer" type="tel" waarde={telefoon} hint="Alleen zichtbaar voor Holland Recruitment." />
       </div>
-      <Tekstvak naam="omschrijving" label="Over je bedrijf" waarde={v.omschrijving} rows={5} maxLength={4000} hint="Wat doet je bedrijf en waarom werken freelancers graag met jullie?" />
+      <Tekstvak naam="omschrijving" label="Over uw bedrijf" waarde={v.omschrijving} rows={5} maxLength={4000} hint="Wat doet uw bedrijf en waarom werken freelancers graag met u?" />
       <Verzend pending={pending}>Opslaan</Verzend>
     </form>
   );
@@ -36,7 +36,7 @@ export function UitnodigForm() {
     <form onSubmit={onSubmit} className="p-stack" style={{ gap: 10 }} noValidate>
       {s?.ok && <p className="p-ok p-small" role="status">{s.melding}</p>}
       <div className="p-row" style={{ alignItems: 'flex-end', flexWrap: 'nowrap' }}>
-        <div style={{ flex: 1 }}><Veld naam="email" label="E-mailadres van je collega" type="email" fout={s?.fouten?.email} /></div>
+        <div style={{ flex: 1 }}><Veld naam="email" label="E-mailadres van uw collega" type="email" fout={s?.fouten?.email} /></div>
         <Verzend pending={pending} className="btn btn-line">Uitnodigen</Verzend>
       </div>
     </form>

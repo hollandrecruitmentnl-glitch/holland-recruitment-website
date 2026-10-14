@@ -58,7 +58,7 @@ export default async function Opdracht({ params }: P) {
       <p style={{ paddingTop: 20 }} className="p-small"><Link className="p-link" href="/opdrachten">← Terug naar opdrachten</Link>{o.vakgebied && vakgebiedNaam(o.vakgebied) && <> · <Link className="p-link" href={`/freelance-opdrachten/${o.vakgebied}`}>Meer opdrachten in {vakKlein(vakgebiedNaam(o.vakgebied))}</Link></>}</p>
       {gesloten && <p className="p-note" style={{ marginTop: 12 }} role="status"><strong>Deze opdracht is gesloten.</strong> Reageren kan niet meer. <Link className="p-link" href={`/opdrachten?vakgebied=${o.vakgebied || ''}`}>Bekijk vergelijkbare opdrachten</Link></p>}
       {verlopen && !gesloten && <p className="p-note" style={{ marginTop: 12 }} role="status"><strong>Deze opdracht is verlopen.</strong> {extern ? 'De aanbieder biedt hem niet meer aan.' : 'De reactietermijn is voorbij.'} <Link className="p-link" href={`/opdrachten?vakgebied=${o.vakgebied || ''}`}>Bekijk vergelijkbare opdrachten</Link></p>}
-      {eigen && o.status !== 'live' && <p className="p-note" style={{ marginTop: 12 }}>Status: <strong>{o.status === 'in_controle' ? 'In controle' : o.status}</strong>. Alleen jouw team ziet deze pagina.</p>}
+      {eigen && o.status !== 'live' && <p className="p-note" style={{ marginTop: 12 }}>Status: <strong>{o.status === 'in_controle' ? 'In controle' : o.status}</strong>. Alleen uw team ziet deze pagina.</p>}
       <div className="p-detail">
         <article className="p-stack" style={{ gap: 22 }}>
           <Bronlabel o={o} />

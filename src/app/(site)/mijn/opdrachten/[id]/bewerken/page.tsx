@@ -22,7 +22,7 @@ export default async function Bewerken({ params }: { params: Promise<{ id: strin
         {o.status === 'concept' && <form action={verwijderConcept}><input type="hidden" name="id" value={o.id} /><button className="btn btn-danger btn-sm">Concept verwijderen</button></form>}
       </div>
       {o.status === 'afgewezen' && <p className="p-err-summary" style={{ marginBottom: 16 }}><strong>Niet geplaatst.</strong> Reden: {o.status_reden}. Pas de opdracht aan en dien hem opnieuw in.</p>}
-      {o.status === 'live' && <p className="p-note" style={{ marginBottom: 16 }}>Deze opdracht staat live. Reacties blijven gekoppeld; freelancers die reageerden krijgen een melding van je wijziging.</p>}
+      {o.status === 'live' && <p className="p-note" style={{ marginBottom: 16 }}>Deze opdracht staat live. Reacties blijven gekoppeld; freelancers die reageerden krijgen een melding van uw wijziging.</p>}
       <OpdrachtForm o={o} collegas={collegas as any} bedrijfNaam={a.bedrijf_naam || ''} telefoon={a.telefoon || ''} />
     </div>
   );

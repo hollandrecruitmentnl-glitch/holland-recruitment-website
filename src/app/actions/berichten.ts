@@ -11,9 +11,9 @@ import { markeerGelezen } from '@/lib/data/berichten';
 
 function magBerichten(a: Account | null): string | null {
   if (!a) return 'Log in om een bericht te sturen.';
-  if (a.status !== 'actief') return 'Je account is geblokkeerd.';
+  if (a.status !== 'actief') return 'Dit account is geblokkeerd.';
   if (a.rol === 'beheer') return 'Beheer kan geen berichten sturen.';
-  if (!a.email_bevestigd) return 'Bevestig eerst je e-mailadres. We hebben je een e-mail gestuurd; kijk ook in je spam. Je kunt een nieuwe mail aanvragen in je overzicht.';
+  if (!a.email_bevestigd) return a.rol === 'bedrijf' ? 'Bevestig eerst uw e-mailadres. We hebben u een e-mail gestuurd; kijk ook in uw spam. U kunt een nieuwe mail aanvragen in uw overzicht.' : 'Bevestig eerst je e-mailadres. We hebben je een e-mail gestuurd; kijk ook in je spam. Je kunt een nieuwe mail aanvragen in je overzicht.';
   return null;
 }
 
@@ -31,7 +31,7 @@ async function notificeer(gesprekId: string, afzender: Account, tekst: string) {
     const kijktMee = await one(`select 1 from gelezen where gesprek_id = $1 and account_id = $2 and tot > now() - interval '20 seconds'`, [gesprekId, o.id]);
     if (kijktMee) continue;
     if (!(await limiet(`mail:gesprek:${gesprekId}:${o.id}`, 1, 3600))) continue; // max. 1 e-mail per gesprek per uur
-    await mails.nieuwBericht(o.email, van, g.opdracht_titel || '', tekst, `${SITE}/mijn/berichten/${gesprekId}`);
+    await mails.nieuwBericht(o.email, van, g.opdracht_titel || '', tekst, `${SITE}/mijn/berichten/${gesprekId}`, afzender.rol !== 'bedrijf');
   }
 }
 
@@ -40,11 +40,11 @@ export async function startGesprek(doel: 'freelancer' | 'bedrijf', doelId: strin
   const fout = magBerichten(a); if (fout) return { fout };
   tekst = String(tekst || '').trim().slice(0, 4000);
   if (tekst.length < 2) return { fout: 'Schrijf eerst een bericht.' };
-  if (!(await limiet(`start:${a!.id}`, 30, 86400))) return { fout: 'Je hebt vandaag veel nieuwe gesprekken gestart. Probeer het morgen opnieuw.' };
+  if (!(await limiet(`start:${a!.id}`, 30, 86400))) return { fout: 'Vandaag zijn er al veel nieuwe gesprekken gestart. Probeer het morgen opnieuw.' };
   let freelancerId: string, bedrijfId: string;
   if (a!.rol === 'bedrijf' && doel === 'freelancer' && a!.bedrijf_id) { freelancerId = doelId; bedrijfId = a!.bedrijf_id; }
   else if (a!.rol === 'freelancer' && doel === 'bedrijf') { freelancerId = a!.id; bedrijfId = doelId; }
-  else return { fout: a!.rol === 'freelancer' ? 'Als freelancer kun je bedrijven een bericht sturen, geen andere freelancers.' : 'Dit kan niet met jouw account.' };
+  else return { fout: a!.rol === 'freelancer' ? 'Als freelancer kun je bedrijven een bericht sturen, geen andere freelancers.' : 'Dit kan niet met dit account.' };
   const ok = await one(`select (select status from accounts where id = $1) as f, (select status from bedrijven where id = $2) as b`, [freelancerId, bedrijfId]);
   if (ok?.f !== 'actief' || ok?.b !== 'actief') return { fout: 'Dit profiel is niet beschikbaar.' };
   if (opdrachtId && !(await one(`select 1 from opdrachten where id = $1 and (bedrijf_id = $2)`, [opdrachtId, bedrijfId]))) opdrachtId = undefined;
@@ -57,7 +57,7 @@ export async function startGesprek(doel: 'freelancer' | 'bedrijf', doelId: strin
     await c.query(`update gesprekken set laatste_bericht = now() where id = $1`, [g.id]);
     return g.id as string;
   });
-  if (!id) return { fout: 'Je kunt dit gesprek niet voortzetten.' };
+  if (!id) return { fout: 'Dit gesprek kan niet worden voortgezet.' };
   await markeerGelezen(id, a!.id);
   await notificeer(id, a!, tekst);
   revalidatePath('/mijn/berichten');
@@ -78,9 +78,9 @@ export async function stuurBericht(fd: FormData): Promise<VerstuurResultaat> {
   const file = fd.get('bijlage') as File | null;
   const g = await eigenGesprek(a!, gesprekId);
   if (!g) return { fout: 'Gesprek niet gevonden.' };
-  if (g.geblokkeerd) return { fout: 'Dit gesprek is gesloten. Je kunt geen berichten meer sturen.' };
+  if (g.geblokkeerd) return { fout: 'Dit gesprek is gesloten. Er kunnen geen berichten meer worden gestuurd.' };
   if (!tekst && !(file && file.size)) return { fout: 'Schrijf eerst een bericht.' };
-  if (!(await limiet(`msg:${a!.id}`, 120, 3600))) return { fout: 'Je stuurt veel berichten achter elkaar. Wacht even en probeer het opnieuw.' };
+  if (!(await limiet(`msg:${a!.id}`, 120, 3600))) return { fout: 'Er zijn veel berichten kort na elkaar verstuurd. Wacht even en probeer het opnieuw.' };
   let bijlage: { pad: string; naam: string; grootte: number } | null = null;
   if (file && file.size) {
     const c = await controleer(file, 'bijlage');
@@ -118,7 +118,7 @@ export async function meldGesprek(fd: FormData) {
   const gesprekId = String(fd.get('gesprek')), reden = String(fd.get('reden') || '').slice(0, 80), toelichting = String(fd.get('toelichting') || '').slice(0, 1000);
   if (!reden) return { fout: 'Kies een reden.' };
   const g = await eigenGesprek(a, gesprekId); if (!g) return { fout: 'Gesprek niet gevonden.' };
-  if (!(await limiet(`meld:${a.id}`, 10, 86400))) return { fout: 'Je hebt vandaag al veel meldingen gedaan.' };
+  if (!(await limiet(`meld:${a.id}`, 10, 86400))) return { fout: 'Er zijn vandaag al veel meldingen gedaan.' };
   const laatste = await one(`select id from berichten where gesprek_id = $1 and afzender_id is distinct from $2 and systeem = false order by aangemaakt desc limit 1`, [gesprekId, a.id]);
   await q(`insert into meldingen (soort, reden, toelichting, door_id, gesprek_id, bericht_id) values ('gesprek',$1,$2,$3,$4,$5)`, [reden, toelichting, a.id, gesprekId, laatste?.id ?? null]);
   await mails.intern('info', 'Nieuwe melding van een gesprek', [['Reden', reden], ['Toelichting', toelichting]], `${SITE}/beheer/moderatie`);

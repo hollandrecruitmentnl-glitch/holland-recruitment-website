@@ -45,8 +45,8 @@ export default async function Instellingen() {
         </section>}
         <section className="p-card p-stack"><h2 className="p-h3">Wachtwoord</h2><WachtwoordForm /></section>
         <section className="p-card p-stack">
-          <h2 className="p-h3">Je gegevens</h2>
-          <p className="p-small">Download alle gegevens die we van je bewaren (AVG).</p>
+          <h2 className="p-h3">{a.rol === 'bedrijf' ? 'Uw gegevens' : 'Je gegevens'}</h2>
+          <p className="p-small">{a.rol === 'bedrijf' ? 'Download alle gegevens die we van u bewaren (AVG).' : 'Download alle gegevens die we van je bewaren (AVG).'}</p>
           <a className="btn btn-line btn-sm" style={{ alignSelf: 'flex-start' }} href="/api/mijn-gegevens" download>Gegevens downloaden</a>
           <VerwijderForm rol={a.rol} />
         </section>

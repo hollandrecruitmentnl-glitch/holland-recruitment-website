@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { reageer } from '@/app/actions/opdrachten';
 import { Verzend, useActie } from './Client';
+import { meet } from '@/lib/meten';
 
 export default function Reageren({ opdrachtId, titel, termijn, profiel }: { opdrachtId: string; titel: string; termijn: string; profiel: { functie?: string; tarief?: number | null; heeftCv: boolean } }) {
   const [state, onSubmit, pending] = useActie(reageer, undefined as FormState);
@@ -11,7 +12,7 @@ export default function Reageren({ opdrachtId, titel, termijn, profiel }: { opdr
   const [tekst, setTekst] = useState('');
   useEffect(() => { try { setTekst(sessionStorage.getItem(sleutel) || ''); } catch {} }, [sleutel]);
   useEffect(() => { try { if (tekst) sessionStorage.setItem(sleutel, tekst); } catch {} }, [tekst, sleutel]);
-  useEffect(() => { if (state?.ok) try { sessionStorage.removeItem(sleutel); } catch {} }, [state, sleutel]);
+  useEffect(() => { if (state?.ok) { meet('reactie_verstuurd'); try { sessionStorage.removeItem(sleutel); } catch {} } }, [state, sleutel]);
   if (state?.ok) return (
     <div id="reageren" className="p-ok p-stack" role="status" style={{ gap: 6 }}>
       <strong>Je reactie op {titel} is verstuurd.</strong>

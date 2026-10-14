@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       const ids = new Set(nieuw.map((x: any) => x.id));
       items = r.items.filter(x => ids.has(x.id)).map(x => `${x.voornaam} ${x.achternaam} · ${x.functietitel}`); url = `${SITE}/freelancers-zoeken`;
     }
-    if (items.length) { await mails.bewaardeZoekopdracht(z.email, z.naam, items.length, url, items); verstuurd++; }
+    if (items.length) { await mails.bewaardeZoekopdracht(z.email, z.naam, items.length, url, items, z.soort !== 'opdrachten'); verstuurd++; }
     await q(`update bewaarde_zoekopdrachten set laatst_verzonden = now() where id = $1`, [z.id]);
   }
   // 4. Zoekmachines: nieuwe, gewijzigde en gesloten eigen opdrachten melden
@@ -51,9 +51,9 @@ export async function GET(req: NextRequest) {
   // 5. Bewaartermijnen (privacyverklaring): inactieve accounts en logboek
   let gewaarschuwd = 0, inactiefVerwijderd = 0;
   await q(`update accounts set inactief_gewaarschuwd = null where inactief_gewaarschuwd is not null and laatst_actief > inactief_gewaarschuwd`);
-  for (const x of await q(`select id, email, voornaam from accounts where rol <> 'beheer' and status = 'actief' and inactief_gewaarschuwd is null
+  for (const x of await q(`select id, email, voornaam, rol from accounts where rol <> 'beheer' and status = 'actief' and inactief_gewaarschuwd is null
       and coalesce(laatst_actief, aangemaakt) < now() - interval '24 months' limit 50`)) {
-    await mails.inactiefAccount(x.email, x.voornaam, `${SITE}/inloggen`);
+    await mails.inactiefAccount(x.email, x.voornaam, `${SITE}/inloggen`, x.rol === 'bedrijf');
     await q(`update accounts set inactief_gewaarschuwd = now() where id = $1`, [x.id]); gewaarschuwd++;
   }
   for (const x of await q(`select id from accounts where rol <> 'beheer' and inactief_gewaarschuwd < now() - interval '30 days'

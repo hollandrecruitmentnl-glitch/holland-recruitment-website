@@ -64,5 +64,5 @@ export async function activeren(_: FormState, fd: FormData): Promise<FormState> 
   await logboek(t.account_id, 'uitnodiging_geactiveerd', 'account', t.account_id, { zichtbaar_cv: cv, vindbaar_google: google });
   await beeindigSessie();
   await maakSessie(t.account_id);
-  redirect('/mijn/profiel?welkom=1');
+  redirect('/mijn/profiel?welkom=freelancer');
 }

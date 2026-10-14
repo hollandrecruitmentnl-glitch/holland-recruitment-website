@@ -51,7 +51,7 @@ export default async function Profiel({ params }: P) {
           {f.vaardigheden?.length > 0 && <section><h2 className="p-h3" style={{ marginBottom: 10 }}>Vaardigheden</h2><div className="p-row" style={{ gap: 6 }}>{f.vaardigheden.map((v: string) => <span key={v} className="p-tag">{v}</span>)}</div></section>}
           <section>
             <h2 className="p-h3" style={{ marginBottom: 10 }}>Werkervaring</h2>
-            {!f.toon_werkervaring ? <p className="p-muted">{f.zichtbaar_werkervaring === 'na_contact' ? 'Zichtbaar nadat je contact hebt gehad.' : 'Niet openbaar.'}</p>
+            {!f.toon_werkervaring ? <p className="p-muted">{f.zichtbaar_werkervaring === 'na_contact' ? 'Zichtbaar na contact.' : 'Niet openbaar.'}</p>
               : f.werkervaring.length === 0 ? <p className="p-muted">Nog geen werkervaring toegevoegd.</p>
               : <ol className="p-stack" style={{ listStyle: 'none' }}>{f.werkervaring.map((w: any) => (
                 <li key={w.id} className="p-card" style={{ padding: 18 }}>
@@ -84,7 +84,7 @@ export default async function Profiel({ params }: P) {
           {(!a || a.rol === 'bedrijf') && (
             <div className="p-card p-small p-stack" style={{ gap: 6 }}>
               <strong>Liever dat wij het regelen?</strong>
-              <span className="p-muted">Holland Recruitment kan de gesprekken, afspraken en selectie voor je doen.</span>
+              <span className="p-muted">Holland Recruitment kan de gesprekken, afspraken en selectie voor u doen.</span>
               <Link className="p-link" href={`/bemiddeling?freelancer=${f.slug}`}>Vraag bemiddeling aan</Link>
             </div>
           )}

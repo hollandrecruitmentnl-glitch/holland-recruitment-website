@@ -22,7 +22,7 @@ export default function BestandUpload({ soort, huidig, label }: { soort: 'cv' | 
 
   const upload = (file: File) => {
     setFout('');
-    if (!navigator.onLine) { setFout('Geen verbinding. Probeer het opnieuw als je weer online bent.'); return; }
+    if (!navigator.onLine) { setFout('Geen verbinding. Probeer het opnieuw zodra er weer verbinding is.'); return; }
     const ext = (file.name.split('.').pop() || '').toLowerCase();
     if (!i.accept.includes(ext)) { setFout(`Dit bestandstype kan niet. Kies een bestand van het type ${i.tekst.split(',')[0].replace(' of', ',')}.`); return; }
     if (file.size > i.max * 1024 * 1024) { setFout(`Dit bestand is te groot. Het maximum is ${i.max} MB.`); return; }
@@ -36,7 +36,7 @@ export default function BestandUpload({ soort, huidig, label }: { soort: 'cv' | 
       if (xhr.status >= 400 || r.fout) { setFout(r.fout || 'Uploaden is niet gelukt. Probeer het opnieuw.'); return; }
       setNaam(r.naam || file.name); router.refresh();
     };
-    xhr.onerror = () => { setPct(null); setFout('Geen verbinding. Probeer het opnieuw als je weer online bent.'); };
+    xhr.onerror = () => { setPct(null); setFout('Geen verbinding. Probeer het opnieuw zodra er weer verbinding is.'); };
     setPct(0); xhr.send(fd);
   };
   const verwijder = () => {
@@ -62,7 +62,7 @@ export default function BestandUpload({ soort, huidig, label }: { soort: 'cv' | 
         <div onDragOver={e => { e.preventDefault(); setSleep(true); }} onDragLeave={() => setSleep(false)}
           onDrop={e => { e.preventDefault(); setSleep(false); const f = e.dataTransfer.files[0]; if (f) upload(f); }}
           style={{ border: `2px dashed ${sleep ? 'var(--blue)' : 'var(--field)'}`, borderRadius: 18, padding: 22, textAlign: 'center', background: sleep ? 'var(--blue-soft)' : 'var(--cream)' }}>
-          <p className="p-small">Sleep je bestand hierheen of <button type="button" className="p-linkbtn" onClick={() => input.current?.click()}>kies een bestand</button></p>
+          <p className="p-small">Sleep een bestand hierheen of <button type="button" className="p-linkbtn" onClick={() => input.current?.click()}>kies een bestand</button></p>
           <p className="p-xs p-muted">{i.tekst}</p>
         </div>
       )}

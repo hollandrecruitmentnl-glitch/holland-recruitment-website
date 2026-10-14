@@ -10,7 +10,7 @@ const C = { blue: '#3551E6', lime: '#D6F24E', ink: '#15183A', cream: '#FAF6EE', 
 type Team = 'info' | 'sales';
 export type Mail = { aan: string; onderwerp: string; html: string; team?: Team; antwoordAan?: string };
 
-export function layout(o: { preheader: string; titel: string; intro: string; blok?: { kop: string; rijen: [string, string][] }; stappen?: string[]; knop?: { tekst: string; url: string }; citaat?: string; klein?: string; afsluiting?: string; team?: Team; reden?: string }) {
+export function layout(o: { preheader: string; titel: string; intro: string; blok?: { kop: string; rijen: [string, string][] }; stappen?: string[]; knop?: { tekst: string; url: string }; citaat?: string; klein?: string; afsluiting?: string; team?: Team; reden?: string; u?: boolean }) {
   const from = o.team === 'sales' ? 'sales@holland-recruitment.nl' : 'info@holland-recruitment.nl';
   const rijen = o.blok ? o.blok.rijen.filter(([, v]) => v).map(([k, v]) =>
     `<tr><td style="padding:6px 0;color:${C.muted};font-size:14px;width:150px;vertical-align:top">${esc(k)}</td><td style="padding:6px 0;color:${C.ink};font-size:14px;font-weight:600">${esc(v)}</td></tr>`).join('') : '';
@@ -35,7 +35,7 @@ ${o.klein ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.55;color:${C
 <tr><td style="padding:22px 12px 0;font-size:12.5px;line-height:1.6;color:${C.muted}" align="center">
 <a href="mailto:${from}" style="color:${C.blue};text-decoration:none">${from}</a> · WhatsApp 085 124 9654 · <a href="https://www.holland-recruitment.nl" style="color:${C.blue};text-decoration:none">holland-recruitment.nl</a><br>
 Holland Recruitment BV · Brielselaan 278, 3081 LR Rotterdam · KvK 96618914<br>
-${o.reden || 'Je ontvangt deze e-mail omdat je een account hebt op het platform van Holland Recruitment.'} <a href="${SITE}/mijn/instellingen" style="color:${C.muted}">Meldingen instellen</a>
+${o.reden || (o.u ? 'U ontvangt deze e-mail omdat u een account heeft op het platform van Holland Recruitment.' : 'Je ontvangt deze e-mail omdat je een account hebt op het platform van Holland Recruitment.')} <a href="${SITE}/mijn/instellingen" style="color:${C.muted}">Meldingen instellen</a>
 </td></tr></table></td></tr></table></body></html>`;
 }
 
