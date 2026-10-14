@@ -53,8 +53,9 @@ export default async function ZoekFreelancersView({ z, titel, intro, basis = '/f
         </div>
       </div>
       <div className="p-wrap p-results">
-        <details className="p-filters-mobile" open>
-          <summary className="btn btn-line btn-sm" style={{ marginBottom: 12 }}>Filters{chips.length ? ` (${chips.length})` : ''}</summary>
+        <div className="p-filters-mobile">
+          <input type="checkbox" id="ff-toggle" className="p-filters-toggle" />
+          <label htmlFor="ff-toggle" className="btn btn-line btn-sm" style={{ marginBottom: 12 }}>Filters{chips.length ? ` (${chips.length})` : ''}</label>
           <form className="p-filters" action={basis} method="get" aria-label="Filters">
             <input type="hidden" name="q" value={z.q} />{!vast?.regio && <input type="hidden" name="regio" value={z.regio} />}
             <div className="p-between"><strong style={{ fontFamily: 'Poppins', fontSize: 18 }}>Filters</strong>{chips.length > 0 && <Link className="p-link p-small" href={basis}>Filters wissen</Link>}</div>
@@ -81,7 +82,7 @@ export default async function ZoekFreelancersView({ z, titel, intro, basis = '/f
             </fieldset>
             <button className="btn btn-blue btn-sm" type="submit">Toon resultaten</button>
           </form>
-        </details>
+        </div>
         <div className="p-stack" aria-live="polite">
           {chips.length > 0 && <div className="p-row" style={{ gap: 8 }}>{chips.map(([l, h]) => <span key={l} className="p-filterchip">{l}<Link href={h} aria-label={`Filter ${l} verwijderen`}>×</Link></span>)}<Link className="p-link p-small" href={basis}>Filters wissen</Link></div>}
           <div className="p-between"><strong>{res.totaal === 1 ? '1 freelancer' : `${res.totaal} freelancers`}</strong>{a?.rol === 'bedrijf' && chips.length > 0 && <BewaarZoekopdracht soort="freelancers" filters={zoek} naam={chips.map(c => c[0]).join(', ')} />}</div>

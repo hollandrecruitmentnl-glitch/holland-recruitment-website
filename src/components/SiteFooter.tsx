@@ -1,6 +1,6 @@
 import { LogoSvg } from './Logo';
 import { huidigAccount } from '@/lib/auth';
-import { OMGEVING, HULP, isRol } from '@/lib/navigatie';
+import { OMGEVING, HULP, isRol, EXPERTISES, REGIO_FOOTER } from '@/lib/navigatie';
 
 export default async function SiteFooter() {
   const a = await huidigAccount();
@@ -23,18 +23,19 @@ export default async function SiteFooter() {
             <>
               <div className="footer-col"><h2>{rol === 'bedrijf' ? 'Mijn bedrijf' : 'Mijn omgeving'}</h2>{OMGEVING[rol].slice(0, 5).map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
               <div className="footer-col"><h2>Hulp en uitleg</h2>{HULP[rol].filter(([h]) => h !== '/contact').map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
-              <div className="footer-col"><h2>Account</h2><a href="/mijn/instellingen">Instellingen</a><a href="/mijn/berichten">Berichten</a><a href="/freelance-platform">Over het platform</a></div>
+              <div className="footer-col"><h2>Account</h2><a href="/mijn/instellingen">Instellingen</a><a href="/mijn/berichten">Berichten</a><a href="/">Home</a></div>
               <div className="footer-col"><h2>Holland Recruitment</h2><a href="/over-ons">Over ons</a><a href="/contact">Contact</a></div>
             </>
           ) : (
             <>
-            <div className="footer-col"><h2>Voor bedrijven</h2><a href="/freelancers-zoeken">Freelancers zoeken</a><a href="/mijn/opdrachten/nieuw">Opdracht plaatsen</a><a href="/bemiddeling">Laat ons bemiddelen</a><a href="/werkwijze">Onze werkwijze</a></div>
-            <div className="footer-col"><h2>Freelancers</h2><a href="/opdrachten">Freelance opdrachten</a><a href="/bedrijven">Bedrijven</a><a href="/registreren?rol=freelancer">Profiel aanmaken</a><a href="/freelancers/hoe-werkt-het">Hoe werkt het?</a></div>
-            <div className="footer-col"><h2>Platform</h2><a href="/freelance-platform">Over het platform</a><a href="/inloggen">Inloggen</a><a href="/registreren">Gratis account</a></div>
-            <div className="footer-col"><h2>Holland Recruitment</h2><a href="/over-ons">Over ons</a><a href="/kennisbank">Kennisbank</a><a href="/contact">Contact</a></div>
+              <div className="footer-col"><h2>Voor bedrijven</h2><a href="/freelancers-zoeken">Freelancers zoeken</a><a href="/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw">Opdracht plaatsen</a><a href="/professional-aanvragen">Professional aanvragen</a><a href="/bemiddeling">Laat ons bemiddelen</a><a href="/werkwijze">Onze werkwijze</a></div>
+              <div className="footer-col"><h2>Freelancers</h2><a href="/opdrachten">Freelance opdrachten</a><a href="/registreren?rol=freelancer">Maak gratis profiel</a><a href="/bedrijven">Bedrijven</a><a href="/freelancers/hoe-werkt-het">Hoe werkt het?</a><a href="/freelancers/veelgestelde-vragen">Veelgestelde vragen</a></div>
+              <div className="footer-col"><h2>Expertises</h2>{EXPERTISES.slice(1).map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
+              <div className="footer-col"><h2>Holland Recruitment</h2><a href="/over-ons">Over ons</a><a href="/kennisbank">Kennisbank</a><a href="/contact">Contact</a><a href="/inloggen">Inloggen</a></div>
             </>
           )}
         </div>
+        {!rol && <div className="footer-regio"><span>Freelancer inhuren in:</span> {REGIO_FOOTER.flatMap(([h, l], i) => [i > 0 ? ' · ' : null, <a key={h} href={h}>{l}</a>])}</div>}
         <div className="footer-bot">
           <span>© {new Date().getFullYear()} Holland Recruitment BV · KvK 96618914 · Brielselaan 278, 3081 LR Rotterdam</span>
           <span><a href="/privacyverklaring">Privacyverklaring</a> · <a href="/voorwaarden">Voorwaarden</a></span>

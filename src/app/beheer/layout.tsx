@@ -16,7 +16,7 @@ export default async function BeheerLayout({ children }: { children: React.React
         <BeheerNav tellers={t} />
         <div style={{ marginTop: 'auto', paddingTop: 18, fontSize: 13, color: 'var(--muted-on-dark)' }}>
           <div style={{ padding: '0 12px 8px' }}>{a.voornaam} {a.achternaam}</div>
-          <a href="/freelance-platform">Naar de website</a>
+          <a href="/">Naar de website</a>
           <form action={uitloggen}><button type="submit" style={{ background: 'none', border: 0, color: 'var(--muted-on-dark)', padding: '10px 12px', cursor: 'pointer', fontWeight: 600, fontSize: 14.5 }}>Uitloggen</button></form>
         </div>
       </aside>

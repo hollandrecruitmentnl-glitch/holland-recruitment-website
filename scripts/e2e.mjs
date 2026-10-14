@@ -27,8 +27,11 @@ try {
   console.log('1. Publieke pagina’s');
   const p = await ctx();
   p.on('pageerror', e => errors.push(e.message));
-  await p.goto(`${B}/freelance-platform`);
-  check('home kop', await p.locator('h1').innerText() === 'De juiste freelancer vinden. Of jouw volgende opdracht.');
+  await p.goto(`${B}/`);
+  check('home kop', await p.locator('h1').innerText() === 'De juiste freelance professional. Zonder lange zoektocht.');
+  check('home toont twee routes', await p.getByText('Zelf zoeken op het platform').count() === 1 && await p.getByText('Laat ons zoeken').count() >= 1);
+  check('header-knop Vind een professional', await p.locator('.site-header a.btn-sm:has-text("Vind een professional")').count() === 1);
+  check('/freelance-platform stuurt door naar home', (await (await ctx()).goto(`${B}/freelance-platform`)).url() === `${B}/`);
   await p.screenshot({ path: `${SHOTS}/01-home.png`, fullPage: true });
   await p.fill('input[name=q]', 'Maintenance'); await Promise.all([p.waitForURL(/freelancers-zoeken/), p.click('form[role=search] button[type=submit]')]);
   await p.waitForSelector('.p-result'); check('zoeken vindt Sanne', await p.getByRole('link', { name: 'Sanne de Vries' }).count() > 0, p.url());
@@ -47,6 +50,14 @@ try {
   const cvAnon = await p.request.get(`${B}/bestand/cv/00000000-0000-0000-0000-0000000000f1`);
   check('cv (na contact) niet te downloaden door bezoeker', cvAnon.status() === 404);
 
+  // Mobiel: filters standaard dicht, openen met de knop; geen horizontaal scrollen
+  { const m = await ctx({ width: 360, height: 740 });
+    await m.goto(`${B}/opdrachten`);
+    check('mobiel: filters standaard dicht', !(await m.locator('form.p-filters').isVisible()));
+    await m.click('label[for=fo-toggle]');
+    check('mobiel: filters openen met knop', await m.locator('form.p-filters').isVisible());
+    for (const u of ['/', '/opdrachten', '/freelancers-zoeken', '/registreren?rol=freelancer']) { await m.goto(B + u); const sw = await m.evaluate(() => document.documentElement.scrollWidth); check(`mobiel 360: geen horizontaal scrollen op ${u}`, sw <= 360, String(sw)); }
+    await m.close(); }
   console.log('2. Registratie freelancer + bevestigen + profiel');
   const f = await ctx();
   f.on('pageerror', e => errors.push(e.message));
@@ -80,9 +91,11 @@ try {
   const g = await ctx();
   g.on('pageerror', e => errors.push(e.message));
   await g.goto(`${B}/freelancer/sanne-de-vries-t1`);
-  await g.fill('#bericht-tekst', 'Hallo Sanne, we zoeken iemand voor een stop in november.');
-  await Promise.all([g.waitForURL(/registreren/), g.click('#bericht button:has-text("Stuur bericht")')]);
-  check('doorgestuurd naar registratie met context', (await g.content()).includes('je tekst blijft bewaard'));
+  check('bezoeker ziet geen berichtvak maar account-knop', await g.locator('#bericht-tekst').count() === 0 && await g.locator('#bericht a:has-text("Maak gratis account")').count() === 1);
+  const kaart = await (await ctx()).goto(`${B}/freelancer/sanne-de-vries-t1/bericht`);
+  check('"Stuur bericht" op kaart gaat direct naar account maken', kaart.url().includes('/registreren?rol=bedrijf'));
+  await Promise.all([g.waitForURL(/registreren/), g.click('a.btn:has-text("Stuur bericht")')]);
+  check('doorgestuurd naar registratie met context', (await g.content()).includes('direct terug'));
   await g.fill('#v-contactnaam', 'Peter Pan'); await g.fill('#v-email', 'peter@gmail.com'); await g.fill('#v-wachtwoord', 'Geheim1234');
   await g.click('button:has-text("Volgende")');
   check('gratis maildienst geweigerd', (await g.locator('.p-err-summary').innerText()).includes('zakelijke'));
@@ -95,8 +108,8 @@ try {
   await g.fill('#v-kvk', '11223344');
   await Promise.all([g.waitForURL(/freelancer\/sanne/), g.click('button:has-text("Account aanmaken")')]);
   check('terug op profiel na registratie', g.url().includes('/freelancer/sanne-de-vries-t1'));
-  await g.waitForFunction(() => (document.querySelector('#bericht-tekst')?.value || '').includes('stop in november'), null, { timeout: 4000 }).catch(() => {});
-  check('bericht staat nog klaar', (await g.inputValue('#bericht-tekst')).includes('stop in november'));
+  check('na registratie direct het berichtvak', await g.locator('#bericht-tekst').count() === 1);
+  await g.fill('#bericht-tekst', 'Hallo Sanne, we zoeken iemand voor een stop in november.');
   await g.click('#bericht button:has-text("Stuur bericht")');
   check('onbevestigd account kan nog geen bericht sturen', await g.waitForSelector('#bericht-fout', { timeout: 5000 }).then(() => true).catch(() => false));
   const pm = laatsteMail('peter@pan-techniek-test.nl', 'Bevestig');
@@ -321,7 +334,7 @@ try {
 
   console.log('9. Mobiel');
   const m = await ctx({ width: 390, height: 844 });
-  await m.goto(`${B}/freelance-platform`); await m.screenshot({ path: `${SHOTS}/12-home-mobiel.png`, fullPage: true });
+  await m.goto(`${B}/`); await m.screenshot({ path: `${SHOTS}/12-home-mobiel.png`, fullPage: true });
   const breed = await m.evaluate(() => document.documentElement.scrollWidth);
   check('geen horizontale scroll op 390 px', breed <= 391, `scrollWidth=${breed}`);
   await m.goto(`${B}/opdrachten`); await m.screenshot({ path: `${SHOTS}/13-opdrachten-mobiel.png`, fullPage: true });

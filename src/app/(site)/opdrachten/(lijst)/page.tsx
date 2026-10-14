@@ -55,8 +55,9 @@ export default async function Opdrachten({ searchParams }: { searchParams: Promi
         </div>
       </div>
       <div className="p-wrap p-results">
-        <details className="p-filters-mobile" open>
-          <summary className="btn btn-line btn-sm" style={{ marginBottom: 12 }}>Filters{chips.length ? ` (${chips.length})` : ''}</summary>
+        <div className="p-filters-mobile">
+          <input type="checkbox" id="fo-toggle" className="p-filters-toggle" />
+          <label htmlFor="fo-toggle" className="btn btn-line btn-sm" style={{ marginBottom: 12 }}>Filters{chips.length ? ` (${chips.length})` : ''}</label>
           <form className="p-filters" action="/opdrachten" method="get" aria-label="Filters">
             <input type="hidden" name="q" value={z.q} /><input type="hidden" name="locatie" value={z.locatie} /><input type="hidden" name="sorteer" value={z.sorteer} />
             <div className="p-between"><strong style={{ fontFamily: 'Poppins', fontSize: 18 }}>Filters</strong>{chips.length > 0 && <Link className="p-link p-small" href="/opdrachten">Filters wissen</Link>}</div>
@@ -69,12 +70,12 @@ export default async function Opdrachten({ searchParams }: { searchParams: Promi
             <fieldset><legend>Bron</legend>{[['', 'Alle opdrachten'], ['direct', 'Direct geplaatst'], ['extern', 'Externe opdrachten']].map(([v, l]) => <label key={v} className="p-check"><input type="radio" name="bron" value={v} defaultChecked={z.bron === v} />{l}</label>)}</fieldset>
             <button className="btn btn-blue btn-sm" type="submit">Toon resultaten</button>
           </form>
-        </details>
+        </div>
         <div className="p-stack" aria-live="polite">
           {chips.length > 0 && <div className="p-row" style={{ gap: 8 }}>{chips.map(([l, h]) => <span key={l} className="p-filterchip">{l}<Link href={h} aria-label={`Filter ${l} verwijderen`}>×</Link></span>)}<Link className="p-link p-small" href="/opdrachten">Filters wissen</Link></div>}
           <div className="p-between">
             <strong>{res.totaal === 1 ? '1 opdracht' : `${res.totaal} opdrachten`}</strong>
-            <div className="p-row p-small" style={{ gap: 10 }}>
+            <div className="p-row p-small p-sorteer" style={{ gap: 10 }}>
               {a?.rol === 'freelancer' && chips.length > 0 && <BewaarZoekopdracht soort="opdrachten" filters={z} naam={chips.map(c => c[0]).join(', ')} />}
               <span className="p-muted">Sorteer op:</span>
               <Link href={url(z, { sorteer: 'nieuwste', pagina: '1' })} aria-current={z.sorteer === 'nieuwste' ? 'true' : undefined} style={{ fontWeight: z.sorteer === 'nieuwste' ? 700 : 400 }}>Nieuwste</Link>

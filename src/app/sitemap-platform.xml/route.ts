@@ -5,7 +5,7 @@ import { landingTellingen, MIN_LANDING } from '@/lib/data/opdrachten';
 
 export const dynamic = 'force-dynamic';
 export async function GET() {
-  const urls: [string, string?][] = [['/freelance-platform'], ['/opdrachten'], ['/freelancers-zoeken'], ['/bedrijven'], ['/bemiddeling']];
+  const urls: [string, string?][] = [['/'], ['/opdrachten'], ['/freelancers-zoeken'], ['/bedrijven'], ['/bemiddeling']];
   const ops = await q(`select slug, bijgewerkt from opdrachten where bron = 'direct' and status = 'live' and (reageren_tot is null or reageren_tot >= current_date)`);
   ops.forEach((o: any) => urls.push([`/opdrachten/${o.slug}`, new Date(o.bijgewerkt).toISOString()]));
   const fr = await q(`select f.slug, f.bijgewerkt from freelancers f join accounts a on a.id = f.id where a.status = 'actief' and f.vindbaar_google and f.functietitel <> ''`);

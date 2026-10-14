@@ -85,8 +85,8 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
     const acc = (await c.query(`insert into accounts (rol, email, wachtwoord_hash, voornaam, achternaam) values ($1,$2,$3,$4,$5) returning id`,
       [rol, email, hash, voornaam, achternaam])).rows[0].id as string;
     if (rol === 'freelancer') {
-      await c.query(`insert into freelancers (id, slug, functietitel, vakgebied, regio) values ($1,$2,$3,$4,$5)`,
-        [acc, `${slugify(voornaam + ' ' + achternaam)}-${kort()}`, w.functietitel.slice(0, 80), w.vakgebied, w.regio.slice(0, 60)]);
+      await c.query(`insert into freelancers (id, slug, functietitel, vakgebied, regio, ook_bemiddeld) values ($1,$2,$3,$4,$5,$6)`,
+        [acc, `${slugify(voornaam + ' ' + achternaam)}-${kort()}`, w.functietitel.slice(0, 80), w.vakgebied, w.regio.slice(0, 60), fd.get('ook_bemiddeld') === 'on']);
     } else if (uitnodiging) {
       await c.query(`insert into bedrijf_leden (bedrijf_id, account_id, rol) values ($1,$2,'lid')`, [uitnodiging.bedrijf_id, acc]);
       await c.query(`update bedrijf_uitnodigingen set geaccepteerd = now() where id = $1`, [uitnodiging.id]);

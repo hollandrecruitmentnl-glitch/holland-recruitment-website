@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ZoekFreelancersView, { parseFZoek } from '@/components/ZoekFreelancersView';
 import { REGIOS, VAKGEBIEDEN, regioNaam, vakgebiedNaam, vakKlein } from '@/lib/constants';
-import { one } from '@/lib/db';
+import { one, q } from '@/lib/db';
 
 type P = { params: Promise<{ vakgebied: string; regio: string }>; searchParams: Promise<Record<string, string | string[]>> };
 
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   if (!v || !r) return {};
   const n = await aantal(vakgebied, r);
   return {
-    title: `Freelancers ${vakKlein(v)} in ${r}`,
+    title: (() => { const t = `Freelancers ${vakKlein(v)} in ${r}`; return t.length > 44 ? { absolute: t } : t; })(),
     description: `Vind zelfstandige professionals in ${vakKlein(v)} in en rond ${r}. Bekijk profielen, tarieven en beschikbaarheid en neem direct contact op.`,
     alternates: { canonical: `/freelancers-zoeken/${vakgebied}/${regio}` },
     robots: n === 0 ? { index: false, follow: true } : undefined,
@@ -30,8 +30,11 @@ export default async function Landing({ params, searchParams }: P) {
   const v = vakgebiedNaam(vakgebied), r = regioNaam(regio);
   if (!v || !r) notFound();
   const z = parseFZoek(await searchParams);
-  const andereRegios = REGIOS.filter(x => x.slug !== regio).slice(0, 10);
-  const verwant = VAKGEBIEDEN.filter(x => x.slug !== vakgebied).slice(0, 8);
+  // Alleen links naar combinaties waar echt freelancers staan (geen lege pagina's, scheelt crawlbudget)
+  const rij = await q<{ vakgebied: string; regio: string }>(`select f.vakgebied, lower(f.regio) as regio from freelancers f join accounts a on a.id = f.id where a.status = 'actief' and f.vakgebied is not null and f.functietitel <> ''`);
+  const heeft = (v: string, rNaam: string) => rij.some(x => x.vakgebied === v && x.regio.includes(rNaam.toLowerCase()));
+  const andereRegios = REGIOS.filter(x => x.slug !== regio && heeft(vakgebied, x.naam)).slice(0, 10);
+  const verwant = VAKGEBIEDEN.filter(x => x.slug !== vakgebied && heeft(x.slug, r)).slice(0, 8);
   return (
     <>
       <ZoekFreelancersView z={z} basis={`/freelancers-zoeken/${vakgebied}/${regio}`} vast={{ vakgebied, regio: r }}
@@ -39,8 +42,8 @@ export default async function Landing({ params, searchParams }: P) {
         intro={`Zelfstandige professionals in ${vakKlein(v)} in en rond ${r}. Bekijk profielen en beschikbaarheid, en stuur direct een bericht. Liever dat wij zoeken? Vraag bemiddeling aan.`} />
       <section className="p-wrap" style={{ paddingBottom: 40 }}>
         <div className="p-grid2">
-          <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>{v} in andere regio’s</h2><div className="p-row" style={{ gap: 8 }}>{andereRegios.map(x => <Link key={x.slug} className="p-chip" href={`/freelancers-zoeken/${vakgebied}/${x.slug}`}>{x.naam}</Link>)}</div></div>
-          <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>Andere vakgebieden in {r}</h2><div className="p-row" style={{ gap: 8 }}>{verwant.map(x => <Link key={x.slug} className="p-chip" href={`/freelancers-zoeken/${x.slug}/${regio}`}>{x.naam}</Link>)}</div></div>
+          {andereRegios.length > 0 && <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>{v} in andere regio’s</h2><div className="p-row" style={{ gap: 8 }}>{andereRegios.map(x => <Link key={x.slug} className="p-chip" href={`/freelancers-zoeken/${vakgebied}/${x.slug}`}>{x.naam}</Link>)}</div></div>}
+          {verwant.length > 0 && <div><h2 style={{ fontSize: 18, marginBottom: 10 }}>Andere vakgebieden in {r}</h2><div className="p-row" style={{ gap: 8 }}>{verwant.map(x => <Link key={x.slug} className="p-chip" href={`/freelancers-zoeken/${x.slug}/${regio}`}>{x.naam}</Link>)}</div></div>}
         </div>
       </section>
     </>

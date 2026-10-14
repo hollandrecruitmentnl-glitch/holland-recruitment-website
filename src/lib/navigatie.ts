@@ -6,11 +6,12 @@
 export type Link = [href: string, label: string];
 
 export const PUBLIEK_BEDRIJVEN: Link[] = [
-  ['/freelancers-zoeken', 'Freelancers zoeken'], ['/voor-bedrijven', 'Overzicht voor bedrijven'], ['/freelancer-inhuren', 'Freelancer inhuren'],
-  ['/interim-professional-inhuren', 'Interim professional inhuren'], ['/bemiddeling', 'Laat ons bemiddelen'], ['/werkwijze', 'Onze werkwijze'],
+  ['/voor-bedrijven', 'Overzicht voor bedrijven'], ['/freelancers-zoeken', 'Freelancers zoeken'],
+  ['/registreren?rol=bedrijf&terug=%2Fmijn%2Fopdrachten%2Fnieuw', 'Opdracht plaatsen (gratis)'], ['/professional-aanvragen', 'Professional aanvragen'],
+  ['/bemiddeling', 'Laat ons bemiddelen'], ['/freelancer-inhuren', 'Freelancer inhuren'], ['/interim-professional-inhuren', 'Interim professional inhuren'], ['/werkwijze', 'Onze werkwijze'],
 ];
 export const PUBLIEK_FREELANCERS: Link[] = [
-  ['/opdrachten', 'Freelance opdrachten'], ['/bedrijven', 'Bedrijven'], ['/registreren?rol=freelancer', 'Profiel aanmaken'],
+  ['/opdrachten', 'Freelance opdrachten'], ['/registreren?rol=freelancer', 'Maak gratis profiel'], ['/bedrijven', 'Bedrijven'],
   ['/freelancers/hoe-werkt-het', 'Hoe werkt het?'], ['/freelancers/veelgestelde-vragen', 'Veelgestelde vragen'],
 ];
 export const EXPERTISES: Link[] = [
@@ -45,3 +46,8 @@ export const HULP: Record<'bedrijf' | 'freelancer', Link[]> = {
 };
 
 export const isRol = (r?: string | null): r is 'bedrijf' | 'freelancer' => r === 'bedrijf' || r === 'freelancer';
+
+/** Regio's in de footer (zoals op de website). */
+export const REGIO_FOOTER: Link[] = [['/freelancer-inhuren/rotterdam', 'Rotterdam'], ['/freelancer-inhuren/amsterdam', 'Amsterdam'], ['/freelancer-inhuren/utrecht', 'Utrecht'],
+  ['/freelancer-inhuren/den-haag', 'Den Haag'], ['/freelancer-inhuren/eindhoven', 'Eindhoven'], ['/freelancer-inhuren/breda', 'Breda'], ['/freelancer-inhuren/tilburg', 'Tilburg'],
+  ['/freelancer-inhuren/arnhem', 'Arnhem'], ['/freelancer-inhuren/groningen', 'Groningen']];

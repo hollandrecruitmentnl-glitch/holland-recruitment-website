@@ -44,7 +44,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
   if (!rol) return (
     <div className="p-stack" style={{ gap: 18 }}>
       <h1 className="p-h2" tabIndex={-1} ref={kop}>Maak een gratis account</h1>
-      {ctx && <p className="p-note">{ctx === 'bericht' ? 'Maak eerst een account aan. Daarna verstuur je je bericht; je tekst blijft bewaard.' : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
+      {ctx && <p className="p-note">{ctx === 'bericht' ? 'Maak eerst een gratis account aan. Daarna kom je direct terug en kun je je bericht sturen.' : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
       <div className="p-radio-cards" role="group" aria-label="Kies je rol">
         <button type="button" className="p-radio-card" onClick={() => setRol('freelancer')} style={{ textAlign: 'left' }}><strong className="p-h3">Ik ben freelancer</strong><span className="p-muted p-small">Maak een profiel, vind opdrachten en reageer direct.</span></button>
         <button type="button" className="p-radio-card" onClick={() => setRol('bedrijf')} style={{ textAlign: 'left' }}><strong className="p-h3">Ik zoek een freelancer</strong><span className="p-muted p-small">Zoek professionals en plaats opdrachten voor je bedrijf.</span></button>
@@ -64,7 +64,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
         {!uitnodiging && <button type="button" className="p-linkbtn" onClick={() => (stap === 2 ? setStap(1) : setRol(''))}>← Terug</button>}
       </div>
       <h1 className="p-h2" tabIndex={-1} ref={kop}>{stap === 1 ? (rol === 'freelancer' ? 'Maak je freelancerprofiel' : 'Maak een account voor je bedrijf') : (rol === 'freelancer' ? 'Wat voor werk doe je?' : 'Over je bedrijf')}</h1>
-      {ctx && stap === 1 && <p className="p-note">{ctx === 'bericht' ? 'Maak eerst een account aan. Daarna verstuur je je bericht; je tekst blijft bewaard.' : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
+      {ctx && stap === 1 && <p className="p-note">{ctx === 'bericht' ? 'Maak eerst een gratis account aan. Daarna kom je direct terug en kun je je bericht sturen.' : 'Maak eerst een account aan. Daarna kun je direct reageren.'}</p>}
       <FoutSamenvatting fouten={fouten} />
       <div style={{ display: stap === 1 ? 'contents' : 'none' }}>
         {rol === 'freelancer' ? (
@@ -80,6 +80,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
           <Veld naam="functietitel" label="Functietitel" waarde={w.functietitel} fout={fouten.functietitel} verplicht placeholder="Bijvoorbeeld Maintenance Engineer" />
           <Keuze naam="vakgebied" label="Vakgebied" opties={VAKGEBIEDEN.map(v => ({ v: v.slug, l: v.naam }))} waarde={w.vakgebied} fout={fouten.vakgebied} verplicht leeg="Kies je vakgebied" />
           <Veld naam="regio" label="Regio" waarde={w.regio} fout={fouten.regio} verplicht placeholder="Bijvoorbeeld Rotterdam" auto="address-level2" />
+          <label className="p-check"><input type="checkbox" name="ook_bemiddeld" defaultChecked /><span>Holland Recruitment mag mij ook voorstellen voor opdrachten via bemiddeling</span></label>
         </> : <>
           <Veld naam="bedrijfsnaam" label="Bedrijfsnaam" waarde={w.bedrijfsnaam} fout={fouten.bedrijfsnaam} verplicht auto="organization" />
           <Veld naam="kvk" label="KvK-nummer" waarde={w.kvk} fout={fouten.kvk} verplicht inputMode="numeric" maxLength={8} pattern="\d{8}" hint="8 cijfers. We controleren het nummer bij de KvK." />

@@ -41,7 +41,7 @@ export function FreelancerKaart({ f, compact }: { f: any; compact?: boolean }) {
       </div>
       <div className="p-row">
         <Link className="p-link" href={`/freelancer/${f.slug}`}>Bekijk profiel</Link>
-        <Link className="btn btn-line btn-sm" href={`/freelancer/${f.slug}#bericht`}>Stuur bericht</Link>
+        <Link className="btn btn-line btn-sm" href={`/freelancer/${f.slug}/bericht`} prefetch={false}>Stuur bericht</Link>
       </div>
     </article>
   );

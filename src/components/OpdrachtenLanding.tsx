@@ -45,7 +45,7 @@ export async function landingMetadata(l: Landing, pagina: number): Promise<Metad
   const res = await zoek(l, 1);
   const basis = landingPad(l);
   return {
-    title: pagina > 1 ? `${titel} (pagina ${pagina})` : titel,
+    title: (() => { const t = pagina > 1 ? `${titel} (pagina ${pagina})` : titel; return t.length > 44 ? { absolute: t } : t; })(),
     description: `Bekijk actuele freelance en interim opdrachten ${kort}. Dagelijks bijgewerkt, met tarief, uren en startdatum waar bekend. Gratis reageren of een profiel aanmaken.`,
     alternates: { canonical: pagina > 1 ? `${basis}?pagina=${pagina}` : basis },
     robots: res.totaal < MIN_LANDING ? { index: false, follow: true } : undefined,

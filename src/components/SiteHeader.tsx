@@ -36,8 +36,8 @@ export default async function SiteHeader() {
             <>
               <Dropdown id="dd-bedrijven" label="Voor bedrijven" items={PUBLIEK_BEDRIJVEN} />
               <Dropdown id="dd-freelancers" label="Freelancers" items={PUBLIEK_FREELANCERS} />
+              <div className="nav-item"><Link className="nav-link" href="/opdrachten">Opdrachten</Link></div>
               <Dropdown id="dd-expertises" label="Expertises" items={EXPERTISES} />
-              <div className="nav-item"><Link className="nav-link" href="/freelance-platform">Platform</Link></div>
               <div className="nav-item"><a className="nav-link" href="/kennisbank">Kennisbank</a></div>
               <div className="nav-item"><a className="nav-link" href="/contact">Contact</a></div>
             </>
@@ -63,7 +63,7 @@ export default async function SiteHeader() {
           )}
           {rol === 'bedrijf' ? <Link className="btn btn-blue btn-sm" href="/mijn/opdrachten/nieuw">Plaats een opdracht</Link>
             : rol === 'freelancer' ? (profielPct < 100 ? <Link className="btn btn-blue btn-sm" href="/mijn/profiel">Profiel aanvullen ({profielPct}%)</Link> : <Link className="btn btn-blue btn-sm" href="/opdrachten">Opdrachten zoeken</Link>)
-            : !a ? <Link className="btn btn-blue btn-sm" href="/registreren">Gratis account</Link> : null}
+            : !a ? <Link className="btn btn-blue btn-sm" href="/professional-aanvragen">Vind een professional</Link> : null}
           <button className="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
         </div>
       </div>
@@ -83,12 +83,12 @@ export default async function SiteHeader() {
           ) : (
             <>
               {a ? <div className="m-group"><div className="m-title">Beheer</div><a href="/beheer">Beheer</a><a href="/mijn/instellingen">Instellingen</a></div>
-                : <div className="m-group"><a href="/inloggen">Inloggen</a><a href="/registreren">Gratis account maken</a></div>}
+                : <div className="m-group"><a href="/inloggen">Inloggen</a><a href="/registreren">Gratis account maken</a><a href="/opdrachten">Freelance opdrachten</a></div>}
               <div className="m-group"><div className="m-title">Voor bedrijven</div>{PUBLIEK_BEDRIJVEN.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
               <div className="m-group"><div className="m-title">Freelancers</div>{PUBLIEK_FREELANCERS.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
               <div className="m-group"><div className="m-title">Expertises</div>{EXPERTISES.map(([h, l]) => <a key={h} href={h}>{l}</a>)}</div>
-              <a href="/freelance-platform">Platform</a><a href="/kennisbank">Kennisbank</a><a href="/contact">Contact</a>
-              {a && <form action={uitloggen}><button className="btn btn-line" type="submit">Uitloggen</button></form>}
+              <a href="/kennisbank">Kennisbank</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a>
+              {a ? <form action={uitloggen}><button className="btn btn-line" type="submit">Uitloggen</button></form> : <a className="btn btn-blue" href="/professional-aanvragen">Vind een professional</a>}
             </>
           )}
         </div>

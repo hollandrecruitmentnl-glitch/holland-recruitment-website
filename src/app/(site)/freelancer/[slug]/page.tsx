@@ -35,7 +35,7 @@ export default async function Profiel({ params }: P) {
       {eigen && <p className="p-note" style={{ marginTop: 12 }}>Zo zien anderen je profiel. <Link className="p-link" href="/mijn/profiel">Profiel bewerken</Link></p>}
       <div className="p-detail">
         <div className="p-stack" style={{ gap: 28 }}>
-          <header className="p-row" style={{ gap: 20, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+          <header className="p-row p-profielkop" style={{ gap: 20, alignItems: 'flex-start', flexWrap: 'nowrap' }}>
             <Avatar id={f.id} foto={f.foto_pad} voornaam={f.voornaam} achternaam={f.achternaam} maat="xl" />
             <div className="p-stack" style={{ gap: 8, minWidth: 0 }}>
               <h1 className="p-h2">{naam}</h1>
@@ -44,7 +44,7 @@ export default async function Profiel({ params }: P) {
                 {f.uurtarief != null ? <strong>€ {f.uurtarief} per uur</strong> : <span className="p-muted">Tarief {f.zichtbaar_tarief === 'na_contact' ? 'zichtbaar na contact' : 'op aanvraag'}</span>}
                 <Beschikbaar f={f} />
               </div>
-              {!eigen && a?.rol !== 'freelancer' && a?.rol !== 'beheer' && <div><a className="btn btn-blue" href="#bericht">Stuur bericht</a></div>}
+              {!eigen && a?.rol !== 'freelancer' && a?.rol !== 'beheer' && <div><a className="btn btn-blue" href={a ? '#bericht' : `/freelancer/${f.slug}/bericht`}>Stuur bericht</a></div>}
             </div>
           </header>
           {f.introductie && <section><h2 className="p-h3" style={{ marginBottom: 8 }}>Introductie</h2><p className="p-prose">{f.introductie}</p></section>}

@@ -6,6 +6,11 @@ type Extern = { bron: 'adzuna' | 'jooble' | 'feed' | 'remotive' | 'remoteok' | '
 
 const FREELANCE = /\b(freelance|freelancer|zzp|zzp'er|interim|zelfstandige?|opdracht|contract|inhuur|detachering)\b/i;
 const VAST = /\b(vast contract|vaste baan|in loondienst|cao)\b/i;
+/** Teksten die op een baan in loondienst wijzen (niet passend bij freelance/interim). */
+const WERKNEMER = /\b(jouw nieuwe werkgever|je nieuwe werkgever|dienstverband|vast contract|vaste baan|in loondienst|cao|salaris|uitzendbureau|uitzendkracht)\b/i;
+/** Remote-opdrachten die aan een ander land dan Nederland gebonden zijn. */
+const ANDER_LAND = /\b(uk|united kingdom|england|ireland|italy|italia|spain|españa|germany|deutschland|france|poland|portugal|romania|greece|sweden|norway|denmark|finland|czech|austria|switzerland|usa|united states|us only|canada|brazil|mexico|latam|india|australia|apac|south africa)\b/i;
+const alleenAnderLand = (...t: (string | undefined)[]) => { const s = t.filter(Boolean).join(' '); return ANDER_LAND.test(s) && !/netherlands|nederland/i.test(s); };
 const herstel = (s: string) => (/Ã.|Â./.test(s) ? (() => { try { return Buffer.from(s, 'latin1').toString('utf8'); } catch { return s; } })() : s);
 const strip = (s: string) => herstel(String(s || '')).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 
@@ -77,7 +82,7 @@ async function jooble(): Promise<Extern[]> {
         ontvangen++; if (voorbeeld.length < 4) voorbeeld.push(loc);
         if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
         nl++;
-        if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel)) continue;
+        if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
         out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
           vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
       }
@@ -107,7 +112,7 @@ async function partners(): Promise<Extern[]> {
 
 // ---------- Remote-bronnen zonder sleutel (bronvermelding + link naar origineel verplicht) ----------
 const UA = { 'User-Agent': 'Mozilla/5.0 (compatible; HollandRecruitmentPlatform/1.0; +https://www.holland-recruitment.nl)', Accept: 'application/json' };
-const EU = /worldwide|anywhere|europe|emea|netherlands|nederland|cet|gmt|global|remote/i;
+const EU = /worldwide|anywhere|europe|emea|netherlands|nederland|\bcet\b|global/i;
 const FREELANCE_EN = /\b(freelance|freelancer|contract|contractor|interim|part[- ]time contract)\b/i;
 
 /** Remotive: max. 4 calls per dag; alleen contract/freelance; geen doorplaatsing naar Google Jobs e.d. */
@@ -115,7 +120,7 @@ async function remotive(): Promise<Extern[]> {
   const r = await fetch('https://remotive.com/api/remote-jobs?limit=500', { headers: UA, signal: AbortSignal.timeout(20000) });
   if (!r.ok) throw new Error(`Remotive ${r.status}`);
   const j: any = await r.json();
-  return (j.jobs || []).filter((x: any) => ['contract', 'freelance'].includes(x.job_type) && EU.test(x.candidate_required_location || ''))
+  return (j.jobs || []).filter((x: any) => ['contract', 'freelance'].includes(x.job_type) && EU.test(x.candidate_required_location || '') && !alleenAnderLand(x.candidate_required_location, x.title))
     .map((x: any): Extern => ({ bron: 'remotive', bron_id: String(x.id), titel: strip(x.title), omschrijving: strip(x.description).slice(0, 1200), url: x.url, aanbieder: x.company_name || null,
       locatie: `Remote (${strip(x.candidate_required_location || 'wereldwijd')})`.slice(0, 80), vakgebied: raadVakgebied(`${x.title} ${x.category}`), tarief_min: null, tarief_max: null, geplaatst: new Date(x.publication_date), werkvorm: 'remote' }));
 }
@@ -125,7 +130,7 @@ async function remoteok(): Promise<Extern[]> {
   const r = await fetch('https://remoteok.com/api', { headers: UA, signal: AbortSignal.timeout(20000) });
   if (!r.ok) throw new Error(`Remote OK ${r.status}`);
   const j: any[] = await r.json();
-  return j.filter(x => x && x.id && x.position).filter(x => FREELANCE_EN.test(`${x.position} ${(x.tags || []).join(' ')}`) && (!x.location || EU.test(x.location)))
+  return j.filter(x => x && x.id && x.position).filter(x => FREELANCE_EN.test(`${x.position} ${(x.tags || []).join(' ')}`) && (!x.location || EU.test(x.location)) && !alleenAnderLand(x.location, x.position))
     .map((x): Extern => ({ bron: 'remoteok', bron_id: String(x.id), titel: strip(x.position), omschrijving: strip(x.description).slice(0, 1200), url: x.url || `https://remoteok.com/remote-jobs/${x.slug}`, aanbieder: x.company || null,
       locatie: `Remote${x.location ? ` (${strip(x.location)})` : ''}`.slice(0, 80), vakgebied: raadVakgebied(`${x.position} ${(x.tags || []).join(' ')}`), tarief_min: null, tarief_max: null, geplaatst: new Date(x.date), werkvorm: 'remote' }));
 }
@@ -140,6 +145,7 @@ async function jobicy(): Promise<Extern[]> {
     for (const x of j.jobs || []) {
       const types: string[] = x.jobType || [];
       if (!types.some(t => /contract|freelance/i.test(t)) && !FREELANCE_EN.test(x.jobTitle)) continue;
+      if (alleenAnderLand(x.jobGeo, x.jobTitle)) continue; // bv. 'Remote (UK)' of '(Remote in Italy)'
       out.push({ bron: 'jobicy', bron_id: String(x.id), titel: strip(x.jobTitle), omschrijving: strip(x.jobExcerpt || x.jobDescription).slice(0, 1200), url: x.url, aanbieder: x.companyName || null,
         locatie: `Remote (${strip(x.jobGeo || 'Europa')})`.slice(0, 80), vakgebied: raadVakgebied(`${x.jobTitle} ${(x.jobIndustry || []).join(' ')}`),
         tarief_min: x.salaryPeriod === 'hourly' && x.salaryCurrency === 'EUR' ? Math.round(x.salaryMin) || null : null, tarief_max: x.salaryPeriod === 'hourly' && x.salaryCurrency === 'EUR' ? Math.round(x.salaryMax) || null : null,

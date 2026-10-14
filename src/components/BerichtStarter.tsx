@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { startGesprek } from '@/app/actions/berichten';
 
 /** Bericht starten vanaf profiel, bedrijfspagina of opdracht. Bezoekers: tekst blijft bewaard tijdens registratie (contextbehoud). */
@@ -21,7 +22,6 @@ export default function BerichtStarter({ doel, doelId, opdrachtId, naam, ingelog
   const verstuur = () => {
     setFout('');
     if (tekst.trim().length < 2) { setFout('Schrijf eerst een bericht.'); return; }
-    if (!ingelogd) { router.push(`/registreren?rol=${doel === 'freelancer' ? 'bedrijf' : 'freelancer'}&terug=${encodeURIComponent(terug)}&ctx=bericht`); return; }
     start(async () => {
       const r = await startGesprek(doel, doelId, tekst, opdrachtId);
       if (r?.fout) { setFout(r.fout); return; }
@@ -30,6 +30,20 @@ export default function BerichtStarter({ doel, doelId, opdrachtId, naam, ingelog
     });
   };
   if (ingelogd && !magSturen) return null;
+  if (!ingelogd) {
+    // Bezoekers: eerst een (gratis) account, daarna direct terug naar dit berichtvak.
+    const q = `terug=${encodeURIComponent(terug)}`;
+    return (
+      <div id="bericht" className="p-card p-stack" style={{ scrollMarginTop: 100 }}>
+        <strong className="p-h3">Stuur {naam} een bericht</strong>
+        <p className="p-small p-muted" style={{ margin: 0 }}>Om een bericht te sturen heb je een gratis account nodig. Dat kost twee stappen; daarna kom je direct hier terug.</p>
+        <div className="p-row" style={{ gap: 10 }}>
+          <Link className="btn btn-blue" href={`/registreren?rol=${doel === 'freelancer' ? 'bedrijf' : 'freelancer'}&${q}&ctx=bericht`}>Maak gratis account</Link>
+          <Link className="btn btn-line" href={`/inloggen?${q}`}>Inloggen</Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div id="bericht" className="p-card p-stack" style={{ scrollMarginTop: 100 }}>
       <strong className="p-h3">Stuur {naam} een bericht</strong>
@@ -41,7 +55,6 @@ export default function BerichtStarter({ doel, doelId, opdrachtId, naam, ingelog
         {fout && <span className="err" id="bericht-fout"><span aria-hidden="true">⚠</span>{fout}</span>}
       </div>
       <button type="button" className="btn btn-blue" onClick={verstuur} disabled={bezig} aria-disabled={bezig}>{bezig ? 'Wordt verzonden…' : 'Stuur bericht'}</button>
-      {!ingelogd && <p className="p-xs p-muted">Je maakt eerst gratis een account aan in twee stappen. Je bericht blijft bewaard.</p>}
     </div>
   );
 }
