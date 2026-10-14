@@ -431,3 +431,21 @@ a.card:hover .more svg{transform:translateX(3px);}
   .site-header{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;}
   .m-sticky{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff;}
 }
+
+/* V31: verwijzing naar het platform op expertise- en regiopagina's */
+.platform-band{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;border:1.5px solid var(--line);border-radius:22px;padding:20px 22px;background:#fff;}
+.platform-band b{display:block;font-family:'Poppins',sans-serif;font-size:1.1rem;margin-bottom:4px;}
+.platform-band span{color:var(--muted);font-size:15px;}
+.platform-band-knoppen{display:flex;flex-wrap:wrap;gap:10px;}
+@media (max-width:640px){.platform-band-knoppen{width:100%;}.platform-band-knoppen .btn{flex:1 1 100%;justify-content:center;}}
+
+/* V31 mobiel: footer in twee kolommen, geen inzoomen bij invoervelden (iOS), grotere tikvlakken */
+@media (max-width:620px){
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px 16px;}
+  .footer-top > :first-child{grid-column:1 / -1;}
+  .footer-col a{padding:7px 0;}
+  .footer-bot a{display:inline-block;padding:8px 0;}
+}
+@media (max-width:760px){
+  .field input,.field select,.field textarea{font-size:16px;}
+}
