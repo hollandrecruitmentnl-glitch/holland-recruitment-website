@@ -378,6 +378,10 @@
       "destination": "https://hr-platform-mu-one.vercel.app/api/upload"
     },
     {
+      "source": "/api/samenwerkingen",
+      "destination": "https://hr-platform-mu-one.vercel.app/api/samenwerkingen"
+    },
+    {
       "source": "/uitnodiging/:path*",
       "destination": "https://hr-platform-mu-one.vercel.app/uitnodiging/:path*"
     },

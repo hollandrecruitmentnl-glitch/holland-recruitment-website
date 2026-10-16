@@ -358,4 +358,18 @@
       });
     });
   });
+
+  // V38: 'Eerder samengewerkt met' staat niet in de HTML; pas tonen als het platform minimaal 10 bedrijven met logo heeft.
+  var refPlek = document.querySelector('[data-samenwerkingen]');
+  if (refPlek && window.fetch) {
+    fetch('/api/samenwerkingen', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.toon || !d.namen || !d.namen.length) return;
+        var esc = function (t) { var e = document.createElement('span'); e.textContent = t; return e.innerHTML; };
+        refPlek.outerHTML = '<section class="sec" style="padding:26px 0"><div class="wrap"><div class="ref-band"><span class="ref-kop">Eerder samengewerkt met</span><ul class="ref-namen">' +
+          d.namen.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div></div></section>';
+      })
+      .catch(function () {});
+  }
 })();
