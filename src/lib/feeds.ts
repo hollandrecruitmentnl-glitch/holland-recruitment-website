@@ -26,7 +26,7 @@ export const echtFreelance = (titel: string, tekst: string) => TITEL_SIGNAAL.tes
  * V41 (Can, 16-10: "Nederlandse projecten is voor elke source een plicht"): de opdracht moet in Nederland zijn.
  * Remote mag alleen als de bron het expliciet aan Nederland koppelt (bv. "Remote (Netherlands)"); "Remote (Europa/wereldwijd)" niet.
  */
-const NIET_NL = /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado|Michigan|Belgi[eë]|Belgium|Vlaanderen|Deutschland|Germany|Duitsland)\b/i;
+const NIET_NL = /\b(USA|United States|TX|Texas|Colorado|Michigan|Belgi[eë]|Belgium|Vlaanderen|Deutschland|Germany|Duitsland)\b/i; // (geen ', XX'-regel: die raakt ook ', NL')
 const inNederland = (loc: string) => (NL_PLAATS.test(loc) || /\bnetherlands\b|\bnederland\b/i.test(loc)) && !NIET_NL.test(loc);
 /** Teksten die op een baan in loondienst wijzen (niet passend bij freelance/interim). */
 const WERKNEMER = /\b(jouw nieuwe werkgever|je nieuwe werkgever|dienstverband|vast contract|vaste baan|in loondienst|cao|salaris|uitzendbureau|uitzendkracht)\b/i;
