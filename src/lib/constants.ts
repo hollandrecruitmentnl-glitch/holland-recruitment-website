@@ -62,5 +62,6 @@ export const BRON_SITE: Record<string, string> = { adzuna: 'https://www.adzuna.n
 
 /** V37: de logostrook 'Bedrijven op ons platform' verschijnt pas vanaf dit aantal bedrijven (minder oogt leeg). */
 export const LOGO_STROOK_MIN = 10;
-/** V37: organisaties waarmee Holland Recruitment eerder heeft samengewerkt (opgave Can, 16-10-2026). Namen als tekst tot er toestemming is voor hun logo. */
+/** V37: organisaties waarmee Holland Recruitment eerder heeft samengewerkt (opgave Can, 16-10-2026). Namen als tekst tot er toestemming is voor hun logo.
+ * V38: alleen zichtbaar (home, over-ons, voor-bedrijven) zodra er LOGO_STROOK_MIN bedrijven met logo zijn. De onderwijspagina noemt ze altijd. */
 export const EERDERE_SAMENWERKINGEN = ['Albeda', 'Zadkine'];

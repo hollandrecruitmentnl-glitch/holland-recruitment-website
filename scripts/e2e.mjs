@@ -42,7 +42,8 @@ try {
     await r.close(); }
   { const html = await p.content();
     check('thuisadres staat niet op de home (ook niet in JSON-LD)', !/Brielse|3081/i.test(html));
-    check('home: eerdere samenwerkingen Albeda en Zadkine (los van de bedrijvenstrook)', /Eerder samengewerkt met\s*Albeda\s*·\s*Zadkine/.test(await p.locator('.h-ref').innerText()));
+    check('home: "Eerder samengewerkt met" verborgen onder 10 bedrijven', await p.locator('.h-ref').count() === 0);
+    { const r = await (await p.request.get(`${B}/api/samenwerkingen`)).json(); check('api samenwerkingen: niet tonen en geen namen onder 10 bedrijven', r.toon === false && r.namen.length === 0, JSON.stringify(r)); }
     check('footer: KvK + Rotterdam zonder straat', (await p.locator('.footer-bot span').first().innerText()).includes('KvK 96618914 · Rotterdam')); }
   check('/freelance-platform stuurt door naar home', (await (await ctx()).goto(`${B}/freelance-platform`)).url() === `${B}/`);
   await p.screenshot({ path: `${SHOTS}/01-home.png`, fullPage: true });
@@ -164,6 +165,8 @@ try {
     await db.query(`insert into bedrijf_leden (bedrijf_id, account_id, rol) values ($1, $2, 'eigenaar')`, [bid, acc]);
   }
   check('logo op home bij "Bedrijven op ons platform" vanaf 10 bedrijven', await logoOpHome());
+  { const v = await ctx(); await v.goto(`${B}/`); check('vanaf 10 bedrijven ook "Eerder samengewerkt met Albeda · Zadkine"', /Eerder samengewerkt met\s*Albeda\s*·\s*Zadkine/.test(await v.locator('.h-ref').innerText()));
+    const r = await (await v.request.get(`${B}/api/samenwerkingen`)).json(); check('api samenwerkingen: tonen met namen vanaf 10', r.toon === true && r.namen.join(',') === 'Albeda,Zadkine', JSON.stringify(r)); await v.close(); }
   { const v = await ctx(); await v.goto(`${B}/`); check('logo linkt naar bedrijfsprofiel', (await v.locator('.h-logos a:has(img[alt="Pan Techniek (test)"])').getAttribute('href') || '').startsWith('/bedrijf/pan-techniek'));
     const img = await v.request.get(B + await v.locator('.h-logos img').first().getAttribute('src')); check('logo-afbeelding laadt', img.status() === 200 && (img.headers()['content-type'] || '').includes('image')); await v.close(); }
   await g.goto(`${B}/mijn/bedrijf`);

@@ -74,7 +74,7 @@ export default async function HomeView({ sp, basis = '/' }: { sp: Record<string,
             {(tel?.opdrachten ?? 0) >= 10 && <span><b>{tel!.opdrachten}</b> opdrachten live</span>}
             {(tel?.freelancers ?? 0) >= 50 && <span><b>{tel!.freelancers}</b> freelancers</span>}
           </p>
-          {EERDERE_SAMENWERKINGEN.length > 0 && <p className="h-ref"><span>Eerder samengewerkt met</span> {EERDERE_SAMENWERKINGEN.map((n, i) => <b key={n}>{i > 0 && <i aria-hidden="true"> · </i>}{n}</b>)}</p>}
+          {logos.length >= LOGO_STROOK_MIN && EERDERE_SAMENWERKINGEN.length > 0 && <p className="h-ref"><span>Eerder samengewerkt met</span> {EERDERE_SAMENWERKINGEN.map((n, i) => <b key={n}>{i > 0 && <i aria-hidden="true"> · </i>}{n}</b>)}</p>}
         </div>
       </section>
 
