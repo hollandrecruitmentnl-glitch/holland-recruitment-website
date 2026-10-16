@@ -463,3 +463,9 @@ a.card:hover .more svg{transform:translateX(3px);}
 .btn-line-licht{background:transparent;color:#fff;border-color:rgba(255,255,255,.45);}
 .btn-line-licht:hover{border-color:#fff;background:transparent;}
 @media (max-width:350px){.site-header .brand b{display:none;}}
+
+/* V37: eerdere samenwerkingen (namen als tekst tot er toestemming is voor logo's) */
+.ref-band{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 30px;border-top:1.5px solid var(--line);border-bottom:1.5px solid var(--line);padding:18px 8px;text-align:center;}
+.ref-kop{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.ref-namen{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 28px;}
+.ref-namen li{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);}
