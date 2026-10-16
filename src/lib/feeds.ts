@@ -81,20 +81,21 @@ async function adzuna(): Promise<Extern[]> {
   if (!id || !key) throw new Error('ADZUNA_APP_ID/ADZUNA_APP_KEY ontbreken');
   const out: Extern[] = [];
   let verzoeken = 0, ontvangen = 0, nl = 0;
-  // Eén gerichte zoekopdracht: één van de freelance-woorden, alleen de nieuwste (max. 2 dagen oud), stages eruit.
-  // Pagina 2 alleen als pagina 1 vol was én er nog budget is.
-  for (let p = 1; p <= 2; p++) {
+  // V41b: alleen op de TITEL zoeken (title_only), één woord per verzoek, wisselend per dag. Met what_or zocht Adzuna in de
+  // hele advertentietekst: op 16-10 gaf dat 100 resultaten waarvan 0 met freelance/zzp/interim in titel of fragment.
+  const ROTATIE = [['interim', 'freelance'], ['zzp', 'interim'], ['freelance', 'zzp']];
+  const dagNr = Math.floor(Date.parse(vandaagNL()) / 86400000);
+  for (const woord of ROTATIE[dagNr % ROTATIE.length]) {
     const g = await adzunaGebruik();
     if (g.over <= 0) break;
-    const u = new URL(`https://api.adzuna.com/v1/api/jobs/nl/search/${p}`);
-    u.search = new URLSearchParams({ app_id: id, app_key: key, results_per_page: '50', what_or: 'freelance freelancer zzp interim zelfstandige inhuur',
-      what_exclude: 'stage stagiair stagiaire werkstudent trainee', max_days_old: '2', sort_by: 'date', 'content-type': 'application/json' }).toString();
+    const u = new URL('https://api.adzuna.com/v1/api/jobs/nl/search/1');
+    u.search = new URLSearchParams({ app_id: id, app_key: key, results_per_page: '50', title_only: woord,
+      what_exclude: 'stage stagiair stagiaire werkstudent trainee', max_days_old: '7', sort_by: 'date', 'content-type': 'application/json' }).toString();
     await telAdzunaVerzoek(); verzoeken++;
     const r = await fetch(u, { signal: AbortSignal.timeout(15000) });
     if (!r.ok) throw new Error(`Adzuna ${r.status}`);
     const j: any = await r.json();
-    const res = j.results || [];
-    for (const x of res) {
+    for (const x of j.results || []) {
       ontvangen++;
       const titel = strip(x.title), oms = strip(x.description);
       const loc = [x.location?.display_name, ...(x.location?.area || [])].filter(Boolean).join(' ');
@@ -105,11 +106,10 @@ async function adzuna(): Promise<Extern[]> {
       out.push({ bron: 'adzuna', nl: /nederland|netherlands/i.test(String(x.location?.area?.[0] || '')), bron_id: String(x.id), titel, omschrijving: oms, url: x.redirect_url, aanbieder: x.company?.display_name || null, locatie: x.location?.display_name || '',
         vakgebied: TAGS[x.category?.tag] || raadVakgebied(titel), tarief_min: uurloon(x.salary_min), tarief_max: uurloon(x.salary_max), geplaatst: new Date(x.created), werkvorm: werkvorm(`${titel} ${oms}`) });
     }
-    if (res.length < 50) break;
   }
   const g = await adzunaGebruik();
   const uniek = out.filter(x => echtFreelance(x.titel, x.omschrijving)).length;
-  diag = `info: ${verzoeken} verzoek(en), ontvangen ${ontvangen}, in NL ${nl}, freelance ${uniek}; proefbudget ${g.totaal} van ${g.max} gebruikt (vandaag ${g.dag} van ${g.perDag})`;
+  diag = `info: titel bevat ${ROTATIE[dagNr % ROTATIE.length].join(' / ')}; ${verzoeken} verzoek(en), ontvangen ${ontvangen}, in NL ${nl}, freelance ${uniek}; proefbudget ${g.totaal} van ${g.max} gebruikt (vandaag ${g.dag} van ${g.perDag})`;
   return out;
 }
 
