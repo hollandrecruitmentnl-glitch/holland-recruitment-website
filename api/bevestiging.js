@@ -57,7 +57,7 @@ function layout({ preheader, title, intro, rows, steps, ctaText, ctaUrl, signoff
   </td></tr>
   <tr><td style="padding:22px 12px 0;font-size:12.5px;line-height:1.6;color:${C.muted}" align="center">
     <a href="mailto:${from}" style="color:${C.blue};text-decoration:none">${from}</a> · WhatsApp 085 124 9654 · <a href="${SITE}" style="color:${C.blue};text-decoration:none">holland-recruitment.nl</a><br>
-    Holland Recruitment BV · Brielselaan 278, 3081 LR Rotterdam · KvK 96618914<br>
+    Holland Recruitment BV · KvK 96618914<br>
     Deze e-mail is verstuurd omdat met dit e-mailadres een formulier op holland-recruitment.nl is ingevuld.
   </td></tr>
 </table></td></tr></table></body></html>`;
