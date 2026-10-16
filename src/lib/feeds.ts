@@ -49,29 +49,61 @@ const WOORDEN: [RegExp, string][] = [
 const raadVakgebied = (t: string) => WOORDEN.find(([r]) => r.test(t))?.[1] ?? null;
 const werkvorm = (t: string) => (/\bremote\b|thuiswerk/i.test(t) ? 'remote' : /hybride|hybrid/i.test(t) ? 'hybride' : null);
 
+/**
+ * V40 — Adzuna-proefaccount (Can, 16-10-2026): 25 verzoeken in totaal, max 2 per dag, alleen Nederland, alleen de beste opdrachten.
+ * Teller staat in `instellingen` (adzuna_calls_totaal en adzuna_calls_<datum>), niet in rate_limits (die wordt na 2 dagen opgeschoond).
+ * Na een betaald account: ADZUNA_PER_DAG en ADZUNA_TOTAAL in Vercel ophogen.
+ */
+const ADZ_PER_DAG = () => Number(process.env.ADZUNA_PER_DAG || 2);
+const ADZ_TOTAAL = () => Number(process.env.ADZUNA_TOTAAL || 25);
+const vandaagNL = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Amsterdam' });
+export async function adzunaGebruik() {
+  const r = await one<{ dag: number; totaal: number }>(`select
+      coalesce((select (waarde)::text::int from instellingen where sleutel = $1), 0) as dag,
+      coalesce((select (waarde)::text::int from instellingen where sleutel = 'adzuna_calls_totaal'), 0) as totaal`, [`adzuna_calls_${vandaagNL()}`]);
+  const dag = r?.dag ?? 0, totaal = r?.totaal ?? 0, perDag = ADZ_PER_DAG(), max = ADZ_TOTAAL();
+  return { dag, totaal, perDag, max, over: Math.max(0, Math.min(perDag - dag, max - totaal)) };
+}
+/** Telt een verzoek vóórdat het verstuurd wordt, zodat we nooit boven het budget uitkomen. */
+async function telAdzunaVerzoek() {
+  await q(`insert into instellingen (sleutel, waarde) values ($1, '1'::jsonb), ('adzuna_calls_totaal', '1'::jsonb)
+    on conflict (sleutel) do update set waarde = to_jsonb((instellingen.waarde)::text::int + 1)`, [`adzuna_calls_${vandaagNL()}`]);
+}
+
 async function adzuna(): Promise<Extern[]> {
   const id = process.env.ADZUNA_APP_ID, key = process.env.ADZUNA_APP_KEY;
   if (!id || !key) throw new Error('ADZUNA_APP_ID/ADZUNA_APP_KEY ontbreken');
   const out: Extern[] = [];
-  const zoek = ['freelance', 'zzp', 'interim'];
-  for (const what of zoek) {
-    for (let p = 1; p <= 4; p++) {
-      const u = new URL(`https://api.adzuna.com/v1/api/jobs/nl/search/${p}`);
-      u.search = new URLSearchParams({ app_id: id, app_key: key, results_per_page: '50', what, max_days_old: '21', sort_by: 'date', 'content-type': 'application/json' }).toString();
-      const r = await fetch(u, { signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error(`Adzuna ${r.status}`);
-      const j: any = await r.json();
-      for (const x of j.results || []) {
-        const titel = strip(x.title), oms = strip(x.description);
-        if (!FREELANCE.test(`${titel} ${oms}`) && x.contract_type !== 'contract') continue;
-        if (VAST.test(titel)) continue;
-        const uurloon = (n: number | undefined) => (n && !x.salary_is_predicted && n < 400 ? Math.round(n) : null); // alleen echte uurtarieven tonen
-        out.push({ bron: 'adzuna', bron_id: String(x.id), titel, omschrijving: oms, url: x.redirect_url, aanbieder: x.company?.display_name || null, locatie: x.location?.display_name || '',
-          vakgebied: TAGS[x.category?.tag] || raadVakgebied(titel), tarief_min: uurloon(x.salary_min), tarief_max: uurloon(x.salary_max), geplaatst: new Date(x.created), werkvorm: werkvorm(`${titel} ${oms}`) });
-      }
-      if ((j.results || []).length < 50) break;
+  let verzoeken = 0, ontvangen = 0, nl = 0;
+  // Eén gerichte zoekopdracht: één van de freelance-woorden, alleen de nieuwste (max. 2 dagen oud), stages eruit.
+  // Pagina 2 alleen als pagina 1 vol was én er nog budget is.
+  for (let p = 1; p <= 2; p++) {
+    const g = await adzunaGebruik();
+    if (g.over <= 0) break;
+    const u = new URL(`https://api.adzuna.com/v1/api/jobs/nl/search/${p}`);
+    u.search = new URLSearchParams({ app_id: id, app_key: key, results_per_page: '50', what_or: 'freelance freelancer zzp interim zelfstandige inhuur',
+      what_exclude: 'stage stagiair stagiaire werkstudent trainee', max_days_old: '2', sort_by: 'date', 'content-type': 'application/json' }).toString();
+    await telAdzunaVerzoek(); verzoeken++;
+    const r = await fetch(u, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error(`Adzuna ${r.status}`);
+    const j: any = await r.json();
+    const res = j.results || [];
+    for (const x of res) {
+      ontvangen++;
+      const titel = strip(x.title), oms = strip(x.description);
+      const loc = [x.location?.display_name, ...(x.location?.area || [])].filter(Boolean).join(' ');
+      if (!NL_PLAATS.test(loc) && !/\bnl\b/i.test(loc)) continue; // alleen Nederland
+      nl++;
+      if (VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
+      const uurloon = (n: number | undefined) => (n && !x.salary_is_predicted && n < 400 ? Math.round(n) : null); // alleen echte uurtarieven tonen
+      out.push({ bron: 'adzuna', bron_id: String(x.id), titel, omschrijving: oms, url: x.redirect_url, aanbieder: x.company?.display_name || null, locatie: x.location?.display_name || '',
+        vakgebied: TAGS[x.category?.tag] || raadVakgebied(titel), tarief_min: uurloon(x.salary_min), tarief_max: uurloon(x.salary_max), geplaatst: new Date(x.created), werkvorm: werkvorm(`${titel} ${oms}`) });
     }
+    if (res.length < 50) break;
   }
+  const g = await adzunaGebruik();
+  const uniek = out.filter(x => echtFreelance(x.titel, x.omschrijving)).length;
+  diag = `info: ${verzoeken} verzoek(en), ontvangen ${ontvangen}, in NL ${nl}, freelance ${uniek}; proefbudget ${g.totaal} van ${g.max} gebruikt (vandaag ${g.dag} van ${g.perDag})`;
   return out;
 }
 
@@ -196,6 +228,7 @@ async function jobicy(): Promise<Extern[]> {
 }
 
 async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
+  diag = '';
   const run = await one<{ id: number; gestart: string }>(`insert into feed_runs (bron) values ($1) returning id, gestart`, [bron]);
   try {
     const items = await ophalen();
@@ -216,16 +249,17 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
       if (r?.ins) nieuw++; else bij++;
     }
     // Wat de bron niet meer levert (2 dagen niet gezien) → verlopen
-    const dagen = bron === 'jobicy' ? 10 : bron === 'remotive' ? 4 : 2;
+    const dagen = bron === 'jobicy' || bron === 'adzuna' ? 10 : bron === 'remotive' ? 4 : 2; // adzuna: we halen alleen de nieuwste op
     const verlopen = await q(`update opdrachten set status = 'verlopen' where bron = $1 and status = 'live' and laatst_gecontroleerd < now() - make_interval(days => $2) returning id`, [bron, dagen]);
-    await q(`update feed_runs set klaar = now(), nieuw = $2, bijgewerkt = $3, verlopen = $4, fout = $5 where id = $1`, [run!.id, nieuw, bij, verlopen.length, bron === 'jooble' && diag ? diag : null]);
+    await q(`update feed_runs set klaar = now(), nieuw = $2, bijgewerkt = $3, verlopen = $4, fout = $5 where id = $1`, [run!.id, nieuw, bij, verlopen.length, diag || null]);
   } catch (e) {
     await q(`update feed_runs set klaar = now(), fout = $2 where id = $1`, [run!.id, (e as Error).message.slice(0, 300)]);
   }
 }
 
 export async function draaiFeeds() {
-  if (process.env.ADZUNA_APP_ID) await importeer('adzuna', adzuna);
+  // Adzuna alleen als er nog proefbudget is (anders geen run, dus ook geen valse melding "niet gedraaid")
+  if (process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY && (await adzunaGebruik()).over > 0) await importeer('adzuna', adzuna);
   if (process.env.JOOBLE_KEY) await importeer('jooble', jooble);
   if (process.env.PARTNER_FEEDS) await importeer('feed', partners);
   await importeer('remotive', remotive);

@@ -2,17 +2,19 @@ import { q } from '@/lib/db';
 import { indexeringActief, googleManier } from '@/lib/indexering';
 import { BRON_NAAM } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
+import { adzunaGebruik } from '@/lib/feeds';
 import { draaiFeedsNu, testGoogle } from '@/app/actions/beheer';
 
 export const metadata = { title: 'Externe feeds' };
 export default async function Feeds({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams;
   const runs = await q(`select * from feed_runs order by gestart desc limit 30`);
+  const adz = await adzunaGebruik().catch(() => ({ dag: 0, totaal: 0, perDag: 2, max: 25, over: 0 }));
   const live = await q(`select bron, count(*) filter (where status='live')::int as live, count(*) filter (where status='verlopen')::int as verlopen from opdrachten where bron <> 'direct' group by bron`);
   const meldingen = await q(`select pad, type, gemeld_op, google, indexnow from indexering order by gemeld_op desc limit 10`).catch(() => [] as any[]);
   const idxAan = indexeringActief(), google = googleManier();
   const bronnen = [
-    { k: 'adzuna', actief: !!process.env.ADZUNA_APP_ID, uitleg: 'Officiële API. Elke advertentie krijgt het label “Adzuna” met link (voorwaarde van Adzuna). Standaardlimiet 250 calls per dag; we gebruiken er ±12.' },
+    { k: 'adzuna', actief: !!(process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY), uitleg: `Officiële API. Elke advertentie krijgt het label “Adzuna” met link (voorwaarde van Adzuna). Proefaccount: alleen Nederland, max. ${adz.perDag} verzoeken per dag. Gebruikt: ${adz.totaal} van ${adz.max} (vandaag ${adz.dag}).` },
     { k: 'jooble', actief: !!process.env.JOOBLE_KEY, uitleg: 'Partner-API. Omschrijving is een fragment; reageren gaat via Jooble.' },
     { k: 'remotive', actief: true, uitleg: 'Gratis, geen sleutel. Alleen contract/freelance, remote voor Europa. Bronvermelding + link verplicht; max. 4× per dag ophalen.' },
     { k: 'remoteok', actief: true, uitleg: 'Gratis, geen sleutel. Filter op freelance/contract. Link terug zonder nofollow is verplicht.' },
