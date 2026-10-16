@@ -12,7 +12,7 @@ const STERK_FREELANCE = /\b(freelance|freelancer|freelancers|zzp|zzper|zzp'er|in
 /** Stages, werkstudenten en vacatures in fte zijn geen opdrachten. */
 const GEEN_OPDRACHT = /\b(intern|internship|stage|stagiair|stagiaire|trainee|werkstudent|afstudeer\w*)\b|\d[.,]?\d*\s?fte\b|naar (?:een )?vaste? (?:kracht|baan|dienst)|\bvan (?:zzp|freelance\w*) naar\b|^inschrijven\b/i;
 /** Wereldwijde klik- en vertaalklussen (AI-training, 'review lead') horen niet bij ons aanbod. */
-const GIG_TITEL = /(english to |review lead|ai trainer|annotat|\brater\b)/i;
+const GIG_TITEL = /(english to |review lead|ai trainer|annotat|\brater\b|grabaci[oó]n|tareas cotidianas|recording (?:daily|everyday) tasks|data collection)/i;
 const GIG_AANBIEDER = /(jobgether|invisible technologies|outlier|mindrift|dataannotation)/i;
 /**
  * V39d (wens Can, 16-10: "STRENG ALLEEN freelance, interim, zzp, zelfstandige of inhuur"), geldt voor ALLE externe bronnen:
@@ -204,6 +204,7 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
     for (const x of items) {
       if (gezien.has(x.bron_id) || !/^https?:\/\//.test(x.url)) continue; gezien.add(x.bron_id);
       if (!echtFreelance(x.titel, x.omschrijving)) continue; // V39d: streng, voor alle bronnen
+      if (GIG_TITEL.test(x.titel) || GIG_AANBIEDER.test(x.aanbieder || '') || GEEN_OPDRACHT.test(x.titel)) continue; // ook voor de remote-bronnen
       const r = await one<{ ins: boolean }>(`
         insert into opdrachten (slug, bron, bron_id, aanbieder, externe_url, laatst_gecontroleerd, titel, vakgebied, omschrijving, locatie, werkvorm, tarief_min, tarief_max, status, geplaatst_op)
         values ($1,$2,$3,$4,$5,now(),$6,$7,$8,$9,$10,$11,$12,'live',$13)
