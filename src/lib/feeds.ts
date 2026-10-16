@@ -2,7 +2,7 @@ import 'server-only';
 import { q, one } from './db';
 import { slugify, kort } from './util';
 
-type Extern = { bron: 'adzuna' | 'jooble' | 'feed' | 'remotive' | 'remoteok' | 'jobicy'; bron_id: string; titel: string; omschrijving: string; url: string; aanbieder: string | null; locatie: string; vakgebied: string | null; tarief_min: number | null; tarief_max: number | null; geplaatst: Date; werkvorm: string | null };
+type Extern = { bron: 'adzuna' | 'jooble' | 'feed' | 'remotive' | 'remoteok' | 'jobicy'; bron_id: string; titel: string; omschrijving: string; url: string; aanbieder: string | null; locatie: string; vakgebied: string | null; tarief_min: number | null; tarief_max: number | null; geplaatst: Date; werkvorm: string | null; nl?: boolean };
 
 const FREELANCE = /\b(freelance|freelancer|zzp|zzp'er|interim|zelfstandige?|opdracht|contract|inhuur|detachering)\b/i;
 const VAST = /\b(vast contract|vaste baan|in loondienst|cao)\b/i;
@@ -22,6 +22,12 @@ const GIG_AANBIEDER = /(jobgether|invisible technologies|outlier|mindrift|dataan
 const TITEL_SIGNAAL = /\b(freelance\w*|zzp\w*|interim|zelfstandige|inhuur|self[- ]employed|contractor)\b/i;
 const TEKST_SIGNAAL = /\b((freelance|zzp|interim)[- ]?(opdracht|basis|functie|rol|positie|project|professional|assignment|contract)|als (zzp'?er|zzper|freelancer|zelfstandige|interim\w*)|op (zzp|freelance|interim)[- ]?basis|inhuuropdracht|freelance (role|position|project|assignment)|independent contractor|self[- ]employed)\b/i;
 export const echtFreelance = (titel: string, tekst: string) => TITEL_SIGNAAL.test(titel) || TEKST_SIGNAAL.test(tekst);
+/**
+ * V41 (Can, 16-10: "Nederlandse projecten is voor elke source een plicht"): de opdracht moet in Nederland zijn.
+ * Remote mag alleen als de bron het expliciet aan Nederland koppelt (bv. "Remote (Netherlands)"); "Remote (Europa/wereldwijd)" niet.
+ */
+const NIET_NL = /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado|Michigan|Belgi[eë]|Belgium|Vlaanderen|Deutschland|Germany|Duitsland)\b/i;
+const inNederland = (loc: string) => (NL_PLAATS.test(loc) || /\bnetherlands\b|\bnederland\b/i.test(loc)) && !NIET_NL.test(loc);
 /** Teksten die op een baan in loondienst wijzen (niet passend bij freelance/interim). */
 const WERKNEMER = /\b(jouw nieuwe werkgever|je nieuwe werkgever|dienstverband|vast contract|vaste baan|in loondienst|cao|salaris|uitzendbureau|uitzendkracht)\b/i;
 /** Remote-opdrachten die aan een ander land dan Nederland gebonden zijn. */
@@ -96,7 +102,7 @@ async function adzuna(): Promise<Extern[]> {
       nl++;
       if (VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
       const uurloon = (n: number | undefined) => (n && !x.salary_is_predicted && n < 400 ? Math.round(n) : null); // alleen echte uurtarieven tonen
-      out.push({ bron: 'adzuna', bron_id: String(x.id), titel, omschrijving: oms, url: x.redirect_url, aanbieder: x.company?.display_name || null, locatie: x.location?.display_name || '',
+      out.push({ bron: 'adzuna', nl: /nederland|netherlands/i.test(String(x.location?.area?.[0] || '')), bron_id: String(x.id), titel, omschrijving: oms, url: x.redirect_url, aanbieder: x.company?.display_name || null, locatie: x.location?.display_name || '',
         vakgebied: TAGS[x.category?.tag] || raadVakgebied(titel), tarief_min: uurloon(x.salary_min), tarief_max: uurloon(x.salary_max), geplaatst: new Date(x.created), werkvorm: werkvorm(`${titel} ${oms}`) });
     }
     if (res.length < 50) break;
@@ -237,6 +243,8 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
     for (const x of items) {
       if (gezien.has(x.bron_id) || !/^https?:\/\//.test(x.url)) continue; gezien.add(x.bron_id);
       if (!echtFreelance(x.titel, x.omschrijving)) continue; // V39d: streng, voor alle bronnen
+      if (!(x.nl || inNederland(x.locatie)) || NIET_NL.test(x.locatie)) continue; // V41: alleen opdrachten in Nederland, voor alle bronnen
+      if (['remotive', 'remoteok', 'jobicy'].includes(x.bron) && !/\b(netherlands|nederland)\b/i.test(x.locatie)) continue; // remote: alleen als expliciet Nederland
       if (GIG_TITEL.test(x.titel) || GIG_AANBIEDER.test(x.aanbieder || '') || GEEN_OPDRACHT.test(x.titel)) continue; // ook voor de remote-bronnen
       const r = await one<{ ins: boolean }>(`
         insert into opdrachten (slug, bron, bron_id, aanbieder, externe_url, laatst_gecontroleerd, titel, vakgebied, omschrijving, locatie, werkvorm, tarief_min, tarief_max, status, geplaatst_op)
