@@ -14,6 +14,14 @@ const GEEN_OPDRACHT = /\b(intern|internship|stage|stagiair|stagiaire|trainee|wer
 /** Wereldwijde klik- en vertaalklussen (AI-training, 'review lead') horen niet bij ons aanbod. */
 const GIG_TITEL = /(english to |review lead|ai trainer|annotat|\brater\b)/i;
 const GIG_AANBIEDER = /(jobgether|invisible technologies|outlier|mindrift|dataannotation)/i;
+/**
+ * V39d (wens Can, 16-10: "STRENG ALLEEN freelance, interim, zzp, zelfstandige of inhuur"), geldt voor ALLE externe bronnen:
+ * het signaal moet in de titel staan, of de tekst moet de opdracht zelf expliciet zo noemen.
+ * "We werken ook met freelancers" of alleen het jobtype 'contract' is niet genoeg.
+ */
+const TITEL_SIGNAAL = /\b(freelance\w*|zzp\w*|interim|zelfstandige|inhuur|self[- ]employed|contractor)\b/i;
+const TEKST_SIGNAAL = /\b((freelance|zzp|interim)[- ]?(opdracht|basis|functie|rol|positie|project|professional|assignment|contract)|als (zzp'?er|zzper|freelancer|zelfstandige|interim\w*)|op (zzp|freelance|interim)[- ]?basis|inhuuropdracht|freelance (role|position|project|assignment)|independent contractor|self[- ]employed)\b/i;
+export const echtFreelance = (titel: string, tekst: string) => TITEL_SIGNAAL.test(titel) || TEKST_SIGNAAL.test(tekst);
 /** Teksten die op een baan in loondienst wijzen (niet passend bij freelance/interim). */
 const WERKNEMER = /\b(jouw nieuwe werkgever|je nieuwe werkgever|dienstverband|vast contract|vaste baan|in loondienst|cao|salaris|uitzendbureau|uitzendkracht)\b/i;
 /** Remote-opdrachten die aan een ander land dan Nederland gebonden zijn. */
@@ -195,6 +203,7 @@ async function importeer(bron: string, ophalen: () => Promise<Extern[]>) {
     const gezien = new Set<string>();
     for (const x of items) {
       if (gezien.has(x.bron_id) || !/^https?:\/\//.test(x.url)) continue; gezien.add(x.bron_id);
+      if (!echtFreelance(x.titel, x.omschrijving)) continue; // V39d: streng, voor alle bronnen
       const r = await one<{ ins: boolean }>(`
         insert into opdrachten (slug, bron, bron_id, aanbieder, externe_url, laatst_gecontroleerd, titel, vakgebied, omschrijving, locatie, werkvorm, tarief_min, tarief_max, status, geplaatst_op)
         values ($1,$2,$3,$4,$5,now(),$6,$7,$8,$9,$10,$11,$12,'live',$13)
