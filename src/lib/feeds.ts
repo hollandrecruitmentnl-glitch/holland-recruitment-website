@@ -62,34 +62,57 @@ async function adzuna(): Promise<Extern[]> {
 const NL_PLAATS = /nederland|netherlands|holland|amsterdam|rotterdam|den haag|'s-gravenhage|utrecht|eindhoven|groningen|tilburg|almere|breda|nijmegen|arnhem|haarlem|zwolle|leiden|dordrecht|delft|amersfoort|den bosch|'s-hertogenbosch|maastricht|leeuwarden|enschede|apeldoorn|zoetermeer|schiedam|vlaardingen|spijkenisse|middelburg|assen|lelystad|venlo|hengelo|deventer|alkmaar|hilversum|emmen|helmond|gouda|purmerend|roosendaal|oss|zaandam|amstelveen|hoofddorp|schiphol|botlek|pernis|europoort|maasvlakte|noord-holland|zuid-holland|noord-brabant|gelderland|overijssel|limburg|friesland|drenthe|flevoland|zeeland|^remote$|thuiswerk/i;
 
 let diag = '';
+/**
+ * V39: met alleen 'freelance', 'zzp' en 'interim' gaf Jooble elke dag dezelfde ~35 opdrachten (16-10: 0 nieuw).
+ * Daarom ook gerichte zoektermen per vakgebied. Elke zoekterm max. 3 pagina's; de filters (Nederland, freelance, geen loondienst) blijven gelijk.
+ */
+const JOOBLE_ZOEK = ['freelance', 'zzp', 'interim', 'zzp opdracht', 'freelance opdracht', 'interim manager', 'freelance developer', 'zzp ict', 'freelance consultant',
+  'interim controller', 'zzp finance', 'freelance projectmanager', 'interim hr', 'freelance marketing', 'freelance engineer', 'zzp monteur', 'zzp verpleegkundige',
+  'zzp begeleider', 'zzp docent', 'zzp chauffeur', 'interim inkoper', 'freelance data'];
+
 async function jooble(): Promise<Extern[]> {
-  let ontvangen = 0, nl = 0; const voorbeeld: string[] = [];
+  let ontvangen = 0, nl = 0, mislukt = 0, verzoeken = 0; const voorbeeld: string[] = [];
   const key = process.env.JOOBLE_KEY;
   if (!key) throw new Error('JOOBLE_KEY ontbreekt');
   const hosts = process.env.JOOBLE_HOST ? [process.env.JOOBLE_HOST] : ['nl.jooble.org', 'jooble.org'];
   const out: Extern[] = [];
-  let host = '';
-  for (const keywords of ['freelance', 'zzp', 'interim']) {
-    for (let page = 1; page <= 3; page++) {
-      let j: any = null;
-      for (const h of host ? [host] : hosts) {
-        const r = await fetch(`https://${h}/api/${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keywords, location: 'Nederland', page: String(page) }), signal: AbortSignal.timeout(15000) });
-        if (r.ok) { j = await r.json(); host = h; break; }
-        if (h === hosts[hosts.length - 1]) throw new Error(`Jooble ${r.status}`);
-      }
-      for (const x of j?.jobs || []) {
-        const titel = strip(x.title), oms = strip(x.snippet), loc = strip(x.location);
-        ontvangen++; if (voorbeeld.length < 4) voorbeeld.push(loc);
-        if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
-        nl++;
-        if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
-        out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
-          vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
-      }
-      if ((j?.jobs || []).length < 20) break;
+  const vraag = (h: string, keywords: string, page: number) => { verzoeken++; return fetch(`https://${h}/api/${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keywords, location: 'Nederland', page: String(page) }), signal: AbortSignal.timeout(15000) }); };
+  const verwerk = (j: any) => {
+    const jobs = j?.jobs || [];
+    for (const x of jobs) {
+      const titel = strip(x.title), oms = strip(x.snippet), loc = strip(x.location);
+      ontvangen++; if (voorbeeld.length < 4) voorbeeld.push(loc);
+      if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
+      nl++;
+      if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
+      out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
+        vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
     }
+    return jobs.length;
+  };
+  // 1. Host bepalen met de eerste zoekterm (faalt die op alle hosts, dan is de bron echt stuk → fout in de bewaking)
+  let host = '', eerste: any = null;
+  for (const h of hosts) {
+    const r = await vraag(h, JOOBLE_ZOEK[0], 1);
+    if (r.ok) { host = h; eerste = await r.json(); break; }
+    if (h === hosts[hosts.length - 1]) throw new Error(`Jooble ${r.status}`);
   }
-  diag = `info: host ${host}, ontvangen ${ontvangen}, in NL ${nl}, freelance ${out.length}; plaatsen bv. ${voorbeeld.join(' | ')}`.slice(0, 290);
+  const zoek = async (keywords: string, startJ?: any) => {
+    for (let page = 1; page <= 3; page++) {
+      let j = page === 1 && startJ ? startJ : null;
+      if (!j) {
+        try { const r = await vraag(host, keywords, page); if (!r.ok) { mislukt++; return; } j = await r.json(); }
+        catch { mislukt++; return; }
+      }
+      if (verwerk(j) < 20) return;
+    }
+  };
+  await zoek(JOOBLE_ZOEK[0], eerste);
+  // 2. Overige zoektermen in groepjes van 4 tegelijk (houdt de nachtelijke run kort)
+  const rest = JOOBLE_ZOEK.slice(1);
+  for (let i = 0; i < rest.length; i += 4) await Promise.all(rest.slice(i, i + 4).map(k => zoek(k)));
+  const uniek = new Set(out.map(x => x.bron_id)).size;
+  diag = `info: host ${host}, ${JOOBLE_ZOEK.length} zoektermen, ${verzoeken} verzoeken${mislukt ? ` (${mislukt} mislukt)` : ''}, ontvangen ${ontvangen}, in NL ${nl}, freelance ${uniek}; plaatsen bv. ${voorbeeld.join(' | ')}`.slice(0, 290);
   return out;
 }
 

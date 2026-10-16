@@ -35,7 +35,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <h1 className="p-h2">Dashboard</h1>
       {feeds.ok
         ? <p className="p-ok p-small" role="status">Opdrachten-update OK: laatste run {feeds.laatsteRun ? relatief(feeds.laatsteRun) : '–'}, {feeds.nieuw} nieuwe opdrachten, {feeds.live} externe opdrachten live.</p>
-        : <div className="p-err-summary" role="alert"><strong>Opdrachten-update: controleer dit</strong><ul style={{ margin: '6px 0 0 18px' }}>{feeds.bevindingen.map((b, i) => <li key={i}>{b.tekst}</li>)}</ul><Link className="p-link" href="/beheer/feeds">Naar Externe feeds</Link></div>}
+        : !feeds.bevindingen.some(b => b.ernst === 'fout')
+          ? <div className="p-note p-small" role="status"><strong>Opdrachten-update: ter info</strong> (geen fouten · laatste run {feeds.laatsteRun ? relatief(feeds.laatsteRun) : '–'} · {feeds.live} externe opdrachten live)<ul style={{ margin: '6px 0 0 18px' }}>{feeds.bevindingen.map((b, i) => <li key={i}>{b.tekst}</li>)}</ul><Link className="p-link" href="/beheer/feeds">Naar Externe feeds</Link></div>
+          : <div className="p-err-summary" role="alert"><strong>Opdrachten-update: controleer dit</strong><ul style={{ margin: '6px 0 0 18px' }}>{feeds.bevindingen.map((b, i) => <li key={i}>{b.tekst}</li>)}</ul><Link className="p-link" href="/beheer/feeds">Naar Externe feeds</Link></div>}
       <form action="/beheer" role="search" className="p-searchbar" style={{ gridTemplateColumns: '1fr auto' }}>
         <label className="sr-only" htmlFor="gz">Zoek op naam, e-mail, KvK of opdracht</label>
         <input id="gz" name="zoek" defaultValue={zoek} placeholder="Zoek op naam, e-mail, KvK of opdracht" /><button className="btn btn-blue">Zoek</button>

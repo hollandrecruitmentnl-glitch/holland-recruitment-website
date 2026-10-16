@@ -33,9 +33,10 @@ export async function controleerFeeds(): Promise<{ ok: boolean; bevindingen: Bev
     if (r.fout && !r.fout.startsWith('info:')) b.push({ ernst: 'fout', tekst: `${naam(bron)}: fout — ${r.fout.slice(0, 160)}` });
     else if (r.klaar && r.nieuw + r.bijgewerkt === 0 && ['jooble', 'adzuna'].includes(bron)) b.push({ ernst: 'let_op', tekst: `${naam(bron)}: leverde 0 opdrachten.` });
   }
-  const nieuw = runs.reduce((s, r) => s + (r.nieuw || 0), 0);
+  // Nieuw = alle runs van de afgelopen 26 uur samen (dus ook als er daarna nog handmatig is opgehaald)
+  const nieuw = (await one<{ n: number }>(`select coalesce(sum(nieuw), 0)::int as n from feed_runs where gestart > now() - interval '26 hours'`))?.n ?? 0;
   if (runs.length && runs.reduce((s, r) => s + r.nieuw + r.bijgewerkt, 0) === 0) b.push({ ernst: 'fout', tekst: 'Er zijn in totaal 0 opdrachten opgehaald.' });
-  else if (runs.length && nieuw === 0) b.push({ ernst: 'let_op', tekst: 'Er is vannacht geen enkele nieuwe opdracht live gegaan.' });
+  else if (runs.length && nieuw === 0) b.push({ ernst: 'let_op', tekst: 'De afgelopen 24 uur zijn er geen nieuwe opdrachten bijgekomen. Dit is geen fout: de bronnen leverden alleen opdrachten die al op het platform stonden (die zijn bijgewerkt).' });
   if (live < 15) b.push({ ernst: 'let_op', tekst: `Er staan nog maar ${live} externe opdrachten live.` });
   return { ok: b.length === 0, bevindingen: b, laatsteRun: laatste, nieuw, live };
 }
