@@ -6,6 +6,14 @@ type Extern = { bron: 'adzuna' | 'jooble' | 'feed' | 'remotive' | 'remoteok' | '
 
 const FREELANCE = /\b(freelance|freelancer|zzp|zzp'er|interim|zelfstandige?|opdracht|contract|inhuur|detachering)\b/i;
 const VAST = /\b(vast contract|vaste baan|in loondienst|cao)\b/i;
+/** V39b: Jooble levert met de bredere zoektermen ook gewone vacatures. Alleen opdrachten met een duidelijk freelance-signaal
+ *  (niet alleen 'contract', 'opdracht' of 'detachering', want die staan ook in vacatures, bv. "Contract Manager"). */
+const STERK_FREELANCE = /\b(freelance|freelancer|freelancers|zzp|zzper|zzp'er|interim|zelfstandige?|inhuur)\b/i;
+/** Stages, werkstudenten en vacatures in fte zijn geen opdrachten. */
+const GEEN_OPDRACHT = /\b(intern|internship|stage|stagiair|stagiaire|trainee|werkstudent|afstudeer\w*)\b|\d[.,]?\d*\s?fte\b/i;
+/** Wereldwijde klik- en vertaalklussen (AI-training, 'review lead') horen niet bij ons aanbod. */
+const GIG_TITEL = /(english to |review lead|ai trainer|annotat|\brater\b)/i;
+const GIG_AANBIEDER = /(jobgether|invisible technologies|outlier|mindrift|dataannotation)/i;
 /** Teksten die op een baan in loondienst wijzen (niet passend bij freelance/interim). */
 const WERKNEMER = /\b(jouw nieuwe werkgever|je nieuwe werkgever|dienstverband|vast contract|vaste baan|in loondienst|cao|salaris|uitzendbureau|uitzendkracht)\b/i;
 /** Remote-opdrachten die aan een ander land dan Nederland gebonden zijn. */
@@ -84,7 +92,8 @@ async function jooble(): Promise<Extern[]> {
       ontvangen++; if (voorbeeld.length < 4) voorbeeld.push(loc);
       if (!NL_PLAATS.test(loc) || /,\s?[A-Z]{2}$|\b(USA|United States|TX|Texas|Colorado)\b/.test(loc)) continue; // alleen Nederland (let op: Nederland, Texas)
       nl++;
-      if (!FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`)) continue;
+      if (!STERK_FREELANCE.test(`${titel} ${oms} ${x.type || ''}`) || VAST.test(titel) || WERKNEMER.test(`${titel} ${oms}`) || GEEN_OPDRACHT.test(titel)
+        || GIG_TITEL.test(titel) || GIG_AANBIEDER.test(String(x.company || x.source || ''))) continue;
       out.push({ bron: 'jooble', bron_id: String(x.id), titel, omschrijving: oms, url: x.link, aanbieder: strip(x.company || x.source) || null, locatie: loc,
         vakgebied: raadVakgebied(titel), tarief_min: null, tarief_max: null, geplaatst: x.updated ? new Date(x.updated) : new Date(), werkvorm: werkvorm(`${titel} ${oms}`) });
     }
