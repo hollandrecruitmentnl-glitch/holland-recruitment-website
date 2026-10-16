@@ -13,7 +13,7 @@ function magBerichten(a: Account | null): string | null {
   if (!a) return 'Log in om een bericht te sturen.';
   if (a.status !== 'actief') return 'Dit account is geblokkeerd.';
   if (a.rol === 'beheer') return 'Beheer kan geen berichten sturen.';
-  if (!a.email_bevestigd) return a.rol === 'bedrijf' ? 'Bevestig eerst uw e-mailadres. We hebben u een e-mail gestuurd; kijk ook in uw spam. U kunt een nieuwe mail aanvragen in uw overzicht.' : 'Bevestig eerst je e-mailadres. We hebben je een e-mail gestuurd; kijk ook in je spam. Je kunt een nieuwe mail aanvragen in je overzicht.';
+  if (!a.email_bevestigd) return a.rol === 'bedrijf' ? 'Bevestig eerst uw e-mailadres: vul de code uit de e-mail in bovenaan de pagina. Geen e-mail? Kijk ook in uw spam of vraag een nieuwe code aan.' : 'Bevestig eerst je e-mailadres: vul de code uit de e-mail in bovenaan de pagina. Geen e-mail? Kijk ook in je spam of vraag een nieuwe code aan.';
   return null;
 }
 

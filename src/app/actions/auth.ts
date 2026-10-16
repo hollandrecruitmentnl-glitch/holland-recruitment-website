@@ -8,6 +8,7 @@ import { mails } from '@/lib/emails';
 import { SITE } from '@/lib/mail';
 import { GRATIS_MAILDIENSTEN, VAKGEBIEDEN } from '@/lib/constants';
 import { kort, randomToken, sha256, slugify, str } from '@/lib/util';
+import { randomInt } from 'node:crypto';
 import { logboek } from '@/lib/log';
 import { stuurUitnodiging } from '@/lib/uitnodigen';
 
@@ -22,10 +23,31 @@ function waarden(fd: FormData, velden: string[]) {
   return Object.fromEntries(velden.map(v => [v, str(fd.get(v), 2000)]));
 }
 
-async function maakBevestigToken(accountId: string): Promise<string> {
+/** Bevestiging per link én per 6-cijferige code (de code typ je op de site in, zonder van pagina te wisselen). */
+const codeHash = (accountId: string, code: string) => sha256(`code:${accountId}:${code}`);
+async function maakBevestiging(accountId: string): Promise<{ url: string; code: string }> {
   const t = randomToken();
-  await q(`insert into tokens (token_hash, account_id, soort, verloopt) values ($1,$2,'email_bevestigen', now() + interval '24 hours')`, [sha256(t), accountId]);
-  return `${SITE}/bevestigen?token=${t}`;
+  const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+  await q(`insert into tokens (token_hash, account_id, soort, verloopt) values ($1,$2,'email_bevestigen', now() + interval '24 hours'), ($3,$2,'email_bevestigen', now() + interval '24 hours')`,
+    [sha256(t), accountId, codeHash(accountId, code)]);
+  return { url: `${SITE}/bevestigen?token=${t}`, code };
+}
+
+/** Bevestig het e-mailadres met de code uit de e-mail (banner bovenaan elke pagina). */
+export async function bevestigMetCode(_: FormState, fd: FormData): Promise<FormState> {
+  const a = await huidigAccount();
+  if (!a) return { fouten: { code: 'Log eerst in.' } };
+  if (a.email_bevestigd) return { ok: true };
+  const code = String(fd.get('code') ?? '').replace(/\D/g, '');
+  const u = a.rol === 'bedrijf';
+  if (code.length !== 6) return { fouten: { code: u ? 'Vul de 6 cijfers uit de e-mail in.' : 'Vul de 6 cijfers uit de e-mail in.' } };
+  if (!(await limiet(`code:${a.id}`, 8, 900))) return { fouten: { code: 'Te veel pogingen. Probeer het over een kwartier opnieuw of gebruik de knop in de e-mail.' } };
+  const t = await one(`select 1 from tokens where account_id = $1 and soort = 'email_bevestigen' and token_hash = $2 and gebruikt is null and verloopt > now()`, [a.id, codeHash(a.id, code)]);
+  if (!t) return { fouten: { code: u ? 'Deze code klopt niet of is verlopen. Controleer de cijfers of vraag een nieuwe code aan.' : 'Deze code klopt niet of is verlopen. Controleer de cijfers of vraag een nieuwe code aan.' } };
+  await q(`update accounts set email_bevestigd = true where id = $1`, [a.id]);
+  await q(`update tokens set gebruikt = now() where account_id = $1 and soort = 'email_bevestigen' and gebruikt is null`, [a.id]);
+  await logboek(a.id, 'email_bevestigd_code', 'account', a.id);
+  return { ok: true };
 }
 
 export async function registreren(_: FormState, fd: FormData): Promise<FormState> {
@@ -102,7 +124,7 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
     return acc;
   });
   await logboek(id, 'account_aangemaakt', 'account', id, { rol });
-  await mails.bevestigEmail(email, voornaam, rol, await maakBevestigToken(id));
+  { const b = await maakBevestiging(id); await mails.bevestigEmail(email, voornaam, rol, b.url, b.code); }
   await maakSessie(id);
   redirect(metParam(veiligTerug(w.terug) || '/mijn', 'welkom', rol));
 }
@@ -167,5 +189,5 @@ export async function bevestigingOpnieuw() {
   const a = await huidigAccount();
   if (!a || a.email_bevestigd) return;
   if (!(await limiet(`bevestig:${a.id}`, 3, 3600))) return;
-  await mails.bevestigEmail(a.email, a.voornaam, a.rol, await maakBevestigToken(a.id));
+  const b = await maakBevestiging(a.id); await mails.bevestigEmail(a.email, a.voornaam, a.rol, b.url, b.code);
 }

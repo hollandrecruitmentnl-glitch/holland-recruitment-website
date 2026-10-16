@@ -427,3 +427,14 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,.p-err-summary[tabindex="-1"]:fo
 .reg-kaart .btn{align-self:flex-start;margin-top:auto;}
 @media (min-width:700px){.reg-kaarten{grid-template-columns:1fr 1fr;gap:20px;}.reg-kaart{padding:30px;}}
 @media (max-width:350px){.site-header .brand b{display:none;}}
+
+/* V35: e-mailbevestiging met code (banner op elke pagina) */
+.p-emailbanner{background:var(--lime-soft);border-bottom:1.5px solid var(--lime-deep);font-size:14.5px;}
+.p-emailbanner-ok{padding:12px 0;}
+.p-emailbanner-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;padding-top:12px;padding-bottom:12px;}
+.p-emailbanner-tekst{flex:1 1 320px;min-width:0;}
+.p-emailbanner-form{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;}
+.p-emailbanner-form input{width:128px;min-height:40px;border:2px solid var(--field);border-radius:12px;padding:6px 12px;font:600 16px/1 Poppins,sans-serif;letter-spacing:3px;background:#fff;}
+.p-emailbanner-form input:focus{outline:none;border-color:var(--blue);}
+.p-emailbanner-form input[aria-invalid="true"]{border-color:#B4331A;}
+.p-emailbanner-fout{flex-basis:100%;margin:0;color:#B4331A;font-weight:600;font-size:13.5px;}

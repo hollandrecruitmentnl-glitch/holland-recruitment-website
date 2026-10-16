@@ -9,6 +9,7 @@ import { limiet } from '@/lib/ratelimit';
 import { synchroniseerIndexering } from '@/lib/indexering';
 import { verwijderAccountVolledig } from '@/lib/accountverwijderen';
 import { bewaakFeeds } from '@/lib/feedbewaking';
+import { stuurHerinneringen } from '@/lib/uitnodigen';
 
 export const maxDuration = 300;
 
@@ -24,8 +25,8 @@ export async function GET(req: NextRequest) {
   await q(`update opdrachten set status = 'gesloten', bijgewerkt = now() where bron = 'direct' and status = 'live' and reageren_tot < current_date`);
   await q(`update reacties set status = 'opdracht_gesloten' where status in ('verstuurd','gelezen') and opdracht_id in (select id from opdrachten where status = 'gesloten')`);
   // 2. Externe feeds (+ direct controleren; bij problemen een mail naar info@)
-  await draaiFeeds();
-  const bewaking = await bewaakFeeds().catch((e: any) => ({ ok: false, gemaild: false, bevindingen: [{ ernst: 'fout', tekst: String(e?.message || e) }] }));
+  if (!process.env.FEEDS_DROOG) await draaiFeeds(); // FEEDS_DROOG: alleen in tests (geen externe API's)
+  const bewaking = process.env.FEEDS_DROOG ? null : await bewaakFeeds().catch((e: any) => ({ ok: false, gemaild: false, bevindingen: [{ ernst: 'fout', tekst: String(e?.message || e) }] }));
   // 3. Bewaarde zoekopdrachten
   const zoek = await q(`select z.*, a.email, a.meldingen, a.rol, a.id as acc from bewaarde_zoekopdrachten z join accounts a on a.id = z.account_id where z.email and a.status = 'actief' and z.laatst_verzonden < now() - interval '20 hours'`);
   let verstuurd = 0;
@@ -65,9 +66,11 @@ export async function GET(req: NextRequest) {
       or (uitgenodigd_op is null and aangemaakt < now() - interval '60 days')) limit 100`)) {
     await verwijderAccountVolledig(x.id, 'niet_geactiveerd'); inactiefVerwijderd++;
   }
+  // Eén herinnering aan klaargezette freelancers die een week na de uitnodiging nog niet hebben geactiveerd
+  const herinneringen = await stuurHerinneringen().catch(() => 0);
   await q(`delete from logboek where aangemaakt < now() - interval '24 months'`);
   await q(`delete from sessies where verloopt < now()`);
   await q(`delete from tokens where verloopt < now() - interval '7 days'`);
   await q(`delete from rate_limits where venster_start < now() - interval '2 days'`);
-  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd, indexering: index, gewaarschuwd, inactiefVerwijderd, bewaking });
+  return NextResponse.json({ ok: true, zoekopdrachtMails: verstuurd, indexering: index, gewaarschuwd, inactiefVerwijderd, herinneringen, bewaking });
 }

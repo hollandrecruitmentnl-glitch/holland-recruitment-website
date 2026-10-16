@@ -92,9 +92,13 @@ try {
   check('na registratie op overzicht', (await f.locator('h1').innerText()).includes('Welkom terug, Lotte'));
   check('banner e-mail bevestigen', await f.getByText('Bevestig je e-mailadres.').count() > 0);
   const bm = laatsteMail('lotte@test.local', 'Bevestig');
-  check('bevestigingsmail verstuurd', !!bm);
-  await f.goto(link(bm.html, /http:\/\/localhost:3100\/bevestigen\?token=[\w-]+/));
-  check('e-mail bevestigd', !(await f.getByText('Bevestig je e-mailadres.').count()));
+  check('bevestigingsmail verstuurd met code', !!bm && /\(code \d{6}\)/.test(bm.onderwerp));
+  const code = (bm?.onderwerp.match(/\d{6}/) || [''])[0];
+  await f.fill('#bevestigcode', code === '000000' ? '111111' : '000000'); await f.click('.p-emailbanner-form button[type=submit]');
+  await f.waitForSelector('#bevestigcode-fout'); check('verkeerde code geweigerd', (await f.locator('#bevestigcode-fout').innerText()).includes('klopt niet'));
+  await f.fill('#bevestigcode', code); await f.click('.p-emailbanner-form button[type=submit]');
+  await f.waitForSelector('text=Je e-mailadres is bevestigd.');
+  await f.reload(); check('e-mail bevestigd met code (zonder de site te verlaten)', !(await f.getByText('Bevestig je e-mailadres.').count()));
   await f.goto(`${B}/mijn/profiel`);
   await f.fill('#v-uurtarief', '65'); await f.fill('#v-introductie', 'Ervaren maintenance planner met tien jaar ervaring in de petrochemie en energiesector, gewend aan stops.');
   await f.click('button:has-text("Profiel opslaan")');
@@ -342,6 +346,13 @@ try {
   await d.waitForSelector('.p-err-summary');
   check('niet-geactiveerd account krijgt uitleg bij inloggen', (await d.locator('.p-err-summary').innerText()).includes('nog niet geactiveerd'));
   check('oude link werkt niet meer', (await (await ctx()).goto(ulink.replace(/^https?:\/\/[^/]+/, B)).then(async r => (await r.text()).includes('werkt niet meer'))));
+  { const kop = { authorization: `Bearer ${(fs.readFileSync('.env.local', 'utf8').match(/^CRON_SECRET=(.*)$/m) || [])[1] || ''}`, 'user-agent': 'vercel-cron/1.0' };
+    await db.query(`update accounts set uitgenodigd_op = now() - interval '8 days' where lower(email) = 'dennis@test.local'`);
+    const r1 = await (await fetch(`${B}/api/cron/dagelijks`, { headers: kop })).json();
+    check('herinnering na 7 dagen verstuurd', r1.herinneringen === 1 && !!laatsteMail('dennis@test.local', 'Herinnering'), JSON.stringify(r1));
+    const r2 = await (await fetch(`${B}/api/cron/dagelijks`, { headers: kop })).json();
+    check('maximaal één herinnering per persoon', r2.herinneringen === 0, JSON.stringify(r2));
+    check('herinnering verlengt bewaartermijn niet', (await db.query(`select (uitgenodigd_op < now() - interval '7 days') as oud from accounts where lower(email) = 'dennis@test.local'`)).rows[0]?.oud === true); }
 
   console.log('8d. Bewaking opdrachten-update');
   const cronKop = { authorization: `Bearer ${(fs.readFileSync('.env.local', 'utf8').match(/^CRON_SECRET=(.*)$/m) || [])[1] || ''}`, 'user-agent': 'vercel-cron/1.0' };

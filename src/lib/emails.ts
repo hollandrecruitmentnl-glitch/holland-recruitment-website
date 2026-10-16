@@ -5,24 +5,24 @@ import { esc } from './util';
 const v = (s: string) => esc(s);
 
 export const mails = {
-  bevestigEmail: (aan: string, voornaam: string, rol: string, url: string) => verstuurVeilig(rol === 'bedrijf' ? {
-    aan, onderwerp: 'Bevestig uw e-mailadres',
+  bevestigEmail: (aan: string, voornaam: string, rol: string, url: string, code: string) => verstuurVeilig(rol === 'bedrijf' ? {
+    aan, onderwerp: `Bevestig uw e-mailadres (code ${code})`,
     html: layout({
-      u: true, preheader: 'Eén klik en uw account is compleet.', titel: `Welkom, ${v(voornaam)}. Bevestig uw e-mailadres.`,
-      intro: 'Uw account is aangemaakt. Bevestig uw e-mailadres, dan kunt u ook berichten sturen en opdrachten plaatsen.',
+      u: true, preheader: `Uw code: ${code}`, titel: `Welkom, ${v(voornaam)}. Bevestig uw e-mailadres.`,
+      intro: `Uw account is aangemaakt. Vul deze code in op de website, of klik op de knop:<br><span style="display:inline-block;margin-top:12px;font-size:30px;font-weight:700;letter-spacing:6px">${code}</span>`,
       blok: { kop: 'Uw account', rijen: [['Account', 'Bedrijf'], ['E-mailadres', aan]] },
-      stappen: ['Bevestig uw e-mailadres met de knop hieronder.', 'Vul uw bedrijfsprofiel aan, zodat freelancers weten wie u bent.', 'Zoek een freelancer of plaats een opdracht.'],
-      knop: { tekst: 'Bevestig e-mailadres', url }, klein: 'De link is 24 uur geldig. Heeft u dit account niet aangemaakt? Dan kunt u deze e-mail negeren.',
+      stappen: ['Bevestig uw e-mailadres met de code of de knop.', 'Vul uw bedrijfsprofiel aan, zodat freelancers weten wie u bent.', 'Zoek een freelancer of plaats een opdracht.'],
+      knop: { tekst: 'Bevestig e-mailadres', url }, klein: 'De code en de link zijn 24 uur geldig. Heeft u dit account niet aangemaakt? Dan kunt u deze e-mail negeren.',
       reden: 'U ontvangt deze e-mail omdat met dit adres een account is aangemaakt bij Holland Recruitment.',
     }),
   } : {
-    aan, onderwerp: 'Bevestig je e-mailadres',
+    aan, onderwerp: `Bevestig je e-mailadres (code ${code})`,
     html: layout({
-      preheader: 'Eén klik en je account is compleet.', titel: `Welkom, ${v(voornaam)}. Bevestig je e-mailadres.`,
-      intro: 'Je account is aangemaakt. Bevestig je e-mailadres, dan kun je ook berichten sturen.',
+      preheader: `Je code: ${code}`, titel: `Welkom, ${v(voornaam)}. Bevestig je e-mailadres.`,
+      intro: `Je account is aangemaakt. Vul deze code in op de website, of klik op de knop:<br><span style="display:inline-block;margin-top:12px;font-size:30px;font-weight:700;letter-spacing:6px">${code}</span>`,
       blok: { kop: 'Je account', rijen: [['Account', 'Freelancer'], ['E-mailadres', aan]] },
-      stappen: ['Bevestig je e-mailadres met de knop hieronder.', 'Vul je profiel aan met je cv en werkervaring.', 'Bekijk opdrachten en reageer in één scherm.'],
-      knop: { tekst: 'Bevestig e-mailadres', url }, klein: 'De link is 24 uur geldig. Heb jij dit account niet aangemaakt? Dan kun je deze e-mail negeren.',
+      stappen: ['Bevestig je e-mailadres met de code of de knop.', 'Vul je profiel aan met je cv en werkervaring.', 'Bekijk opdrachten en reageer in één scherm.'],
+      knop: { tekst: 'Bevestig e-mailadres', url }, klein: 'De code en de link zijn 24 uur geldig. Heb jij dit account niet aangemaakt? Dan kun je deze e-mail negeren.',
       reden: 'Je ontvangt deze e-mail omdat met dit adres een account is aangemaakt bij Holland Recruitment.',
     }),
   }),
@@ -100,15 +100,18 @@ export const mails = {
     }),
   }),
 
-  uitnodiging: (aan: string, voornaam: string, url: string, p: { functie: string; vakgebied: string; regio: string; cv: boolean }, test = false) => verstuurVeilig({
-    aan, onderwerp: `${test ? '[TEST] ' : ''}Je profiel staat klaar op het platform van Holland Recruitment`,
+  /** `herinnering`: één herinnering een week na de uitnodiging, met een nieuwe link. */
+  uitnodiging: (aan: string, voornaam: string, url: string, p: { functie: string; vakgebied: string; regio: string; cv: boolean }, test = false, herinnering = false) => verstuurVeilig({
+    aan, onderwerp: `${test ? '[TEST] ' : ''}${herinnering ? 'Herinnering: je profiel staat nog klaar' : 'Je profiel staat klaar'} op het platform van Holland Recruitment`,
     html: layout({
-      preheader: 'Activeer je profiel en word gevonden door bedrijven.', titel: `${v(voornaam || 'Hallo')}, je profiel staat klaar`,
-      intro: `Je hebt je eerder bij Holland Recruitment aangemeld als freelance professional. Op ons nieuwe platform zoeken bedrijven zelf naar freelancers en nemen ze direct contact op. Op basis van je aanmelding hebben we een profiel voor je klaargezet${p.cv ? ', inclusief je cv' : ''}. Het is nog niet zichtbaar: dat bepaal jij.`,
+      preheader: herinnering ? 'Je profiel is nog niet geactiveerd. Dat kost twee minuten.' : 'Activeer je profiel en word gevonden door bedrijven.', titel: `${v(voornaam || 'Hallo')}, je profiel staat ${herinnering ? 'nog ' : ''}klaar`,
+      intro: `${herinnering ? 'Vorige week stuurden we je een uitnodiging, maar je profiel is nog niet geactiveerd. Hieronder vind je een nieuwe link. ' : ''}Je hebt je eerder bij Holland Recruitment aangemeld als freelance professional. Op ons nieuwe platform zoeken bedrijven zelf naar freelancers en nemen ze direct contact op. Op basis van je aanmelding hebben we een profiel voor je klaargezet${p.cv ? ', inclusief je cv' : ''}. Het is nog niet zichtbaar: dat bepaal jij.`,
       blok: { kop: 'Je klaargezette profiel', rijen: [['Functie', v(p.functie || '–')], ['Vakgebied', v(p.vakgebied || 'Nog kiezen')], ['Regio', v(p.regio || '–')], ['Cv', p.cv ? 'Toegevoegd (alleen zichtbaar na contact, tenzij je dat anders kiest)' : 'Nog niet toegevoegd']] },
       stappen: ['Kies een wachtwoord.', 'Controleer je profiel en kies wat zichtbaar is.', 'Activeer je profiel. Bedrijven kunnen je dan vinden en je een bericht sturen.'],
       knop: { tekst: 'Profiel activeren', url },
-      klein: `De link is ${14} dagen geldig. Het platform is de eerste 6 maanden helemaal gratis. Wil je geen profiel op het platform? Dan hoef je niets te doen: we verwijderen het klaargezette profiel na 30 dagen automatisch. Je aanmelding in ons netwerk blijft gewoon bestaan.`,
+      klein: herinnering
+        ? 'De link is 14 dagen geldig. Dit is de enige herinnering die we sturen. Wil je geen profiel op het platform? Dan hoef je niets te doen: we verwijderen het klaargezette profiel 30 dagen na de eerste uitnodiging automatisch. Je aanmelding in ons netwerk blijft gewoon bestaan.'
+        : `De link is ${14} dagen geldig. Het platform is de eerste 6 maanden helemaal gratis. Wil je geen profiel op het platform? Dan hoef je niets te doen: we verwijderen het klaargezette profiel na 30 dagen automatisch. Je aanmelding in ons netwerk blijft gewoon bestaan.`,
       reden: 'Je ontvangt deze e-mail omdat je je bij Holland Recruitment hebt aangemeld als freelance professional.',
     }),
   }),

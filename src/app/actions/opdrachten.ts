@@ -16,7 +16,7 @@ import type { FormState } from './auth';
 export async function reageer(_: FormState, fd: FormData): Promise<FormState> {
   const a = await huidigAccount();
   if (!a || a.rol !== 'freelancer' || a.status !== 'actief') return { fouten: { algemeen: 'Log in als freelancer om te reageren.' } };
-  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst je e-mailadres. Je kunt een nieuwe bevestigingsmail aanvragen in je overzicht.' } };
+  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst je e-mailadres: vul de code uit de e-mail in bovenaan de pagina. Geen e-mail? Kijk ook in je spam of vraag een nieuwe code aan.' } };
   const opdrachtId = str(fd.get('opdracht'));
   const motivatie = str(fd.get('motivatie'), 3000);
   const o = await one(`select o.*, b.naam as bedrijf_naam from opdrachten o join bedrijven b on b.id = o.bedrijf_id where o.id = $1 and o.status = 'live' and o.bron = 'direct' and b.status = 'actief' and (o.reageren_tot is null or o.reageren_tot >= current_date)`, [opdrachtId]);
@@ -130,7 +130,7 @@ export async function opslaanConcept(fd: FormData): Promise<{ id?: string; fout?
 export async function indienen(_: FormState, fd: FormData): Promise<FormState> {
   const a = await vereis('bedrijf');
   if (!a.bedrijf_id) return { fouten: { algemeen: 'Uw account hoort niet bij een bedrijf.' } };
-  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst uw e-mailadres. U kunt een nieuwe bevestigingsmail aanvragen in uw overzicht.' } };
+  if (!a.email_bevestigd) return { fouten: { algemeen: 'Bevestig eerst uw e-mailadres: vul de code uit de e-mail in bovenaan de pagina. Geen e-mail? Kijk ook in uw spam of vraag een nieuwe code aan.' } };
   const v = lees(fd);
   const f = valideer(v);
   const id = str(fd.get('id')) || null;

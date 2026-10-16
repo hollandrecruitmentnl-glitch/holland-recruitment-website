@@ -198,6 +198,23 @@ export async function stuurUitnodiging(accountId: string, alGeclaimd = false): P
   return true;
 }
 
+/** Eén herinnering per freelancer, 7 dagen na de uitnodiging, met een nieuwe link (14 dagen geldig).
+ *  De bewaartermijn verandert niet: niet-geactiveerde profielen verdwijnen nog steeds 30 dagen na de eerste uitnodiging. */
+export async function stuurHerinneringen(max = 40): Promise<number> {
+  const rijen = await q<{ id: string; email: string; voornaam: string; functietitel: string; vakgebied: string; regio: string; cv_pad: string | null }>(
+    `select a.id, a.email, a.voornaam, f.functietitel, f.vakgebied, f.regio, f.cv_pad from accounts a join freelancers f on f.id = a.id
+     where a.status = 'uitgenodigd' and a.rol = 'freelancer' and a.uitgenodigd_op < now() - interval '7 days' and a.uitgenodigd_op > now() - interval '23 days'
+       and not exists (select 1 from logboek l where l.object_id = a.id::text and l.actie = 'uitnodiging_herinnering')
+     order by a.uitgenodigd_op limit $1`, [max]);
+  let n = 0;
+  for (const a of rijen) {
+    await logboek(null, 'uitnodiging_herinnering', 'account', a.id); // eerst vastleggen: nooit twee herinneringen
+    await mails.uitnodiging(a.email, a.voornaam, await uitnodigingsLink(a.id), { functie: a.functietitel, vakgebied: vakgebiedNaam(a.vakgebied), regio: a.regio, cv: !!a.cv_pad }, false, true);
+    n++;
+  }
+  return n;
+}
+
 /** Verstuur uitnodigingen aan klaargezette accounts die nog geen uitnodiging kregen (max. per keer).
  *  Eerst "claimen" (uitgenodigd_op zetten), dan mailen: een dubbele klik stuurt niemand twee keer een mail. */
 export async function verstuurUitnodigingen(door: string, max = 40): Promise<{ verstuurd: number; resterend: number }> {
