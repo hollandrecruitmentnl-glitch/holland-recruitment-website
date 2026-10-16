@@ -8,9 +8,9 @@ const FREELANCE = /\b(freelance|freelancer|zzp|zzp'er|interim|zelfstandige?|opdr
 const VAST = /\b(vast contract|vaste baan|in loondienst|cao)\b/i;
 /** V39b: Jooble levert met de bredere zoektermen ook gewone vacatures. Alleen opdrachten met een duidelijk freelance-signaal
  *  (niet alleen 'contract', 'opdracht' of 'detachering', want die staan ook in vacatures, bv. "Contract Manager"). */
-const STERK_FREELANCE = /\b(freelance|freelancer|freelancers|zzp|zzper|zzp'er|interim|zelfstandige?|inhuur)\b/i;
+const STERK_FREELANCE = /\b(freelance|freelancer|freelancers|zzp|zzper|zzp'er|interim|zelfstandige|zelfstandig (?:professional|ondernemer)|inhuur)\b/i;
 /** Stages, werkstudenten en vacatures in fte zijn geen opdrachten. */
-const GEEN_OPDRACHT = /\b(intern|internship|stage|stagiair|stagiaire|trainee|werkstudent|afstudeer\w*)\b|\d[.,]?\d*\s?fte\b/i;
+const GEEN_OPDRACHT = /\b(intern|internship|stage|stagiair|stagiaire|trainee|werkstudent|afstudeer\w*)\b|\d[.,]?\d*\s?fte\b|naar (?:een )?vaste? (?:kracht|baan|dienst)|\bvan (?:zzp|freelance\w*) naar\b|^inschrijven\b/i;
 /** Wereldwijde klik- en vertaalklussen (AI-training, 'review lead') horen niet bij ons aanbod. */
 const GIG_TITEL = /(english to |review lead|ai trainer|annotat|\brater\b)/i;
 const GIG_AANBIEDER = /(jobgether|invisible technologies|outlier|mindrift|dataannotation)/i;
