@@ -42,6 +42,7 @@ try {
     await r.close(); }
   { const html = await p.content();
     check('thuisadres staat niet op de home (ook niet in JSON-LD)', !/Brielse|3081/i.test(html));
+    check('home: eerdere samenwerkingen Albeda en Zadkine (los van de bedrijvenstrook)', /Eerder samengewerkt met\s*Albeda\s*·\s*Zadkine/.test(await p.locator('.h-ref').innerText()));
     check('footer: KvK + Rotterdam zonder straat', (await p.locator('.footer-bot span').first().innerText()).includes('KvK 96618914 · Rotterdam')); }
   check('/freelance-platform stuurt door naar home', (await (await ctx()).goto(`${B}/freelance-platform`)).url() === `${B}/`);
   await p.screenshot({ path: `${SHOTS}/01-home.png`, fullPage: true });
@@ -156,8 +157,14 @@ try {
   await g.goto(link(pm.html, /http:\/\/localhost:3100\/bevestigen\?token=[\w-]+/));
   await g.goto(`${B}/freelancer/sanne-de-vries-t1`);
   check('bericht nog steeds bewaard', (await g.inputValue('#bericht-tekst')).includes('stop in november'));
-  check('logo op home bij "Bedrijven op ons platform" na bevestiging', await logoOpHome());
-  { const v = await ctx(); await v.goto(`${B}/`); check('logo linkt naar bedrijfsprofiel', (await v.locator('.h-logos a').first().getAttribute('href') || '').startsWith('/bedrijf/pan-techniek'));
+  { const v = await ctx(); await v.goto(`${B}/`); check('logostrook verborgen zolang er minder dan 10 bedrijven met logo zijn', await v.locator('.h-logos').count() === 0); await v.close(); }
+  for (let i = 1; i <= 9; i++) {
+    const acc = (await db.query(`insert into accounts (rol, email, email_bevestigd, wachtwoord_hash, voornaam, achternaam) values ('bedrijf', $1, true, 'x', 'Logo', 'Test') returning id`, [`logo${i}@logo-test.nl`])).rows[0].id;
+    const bid = (await db.query(`insert into bedrijven (slug, naam, kvk, plaats, logo_pad) values ($1, $2, $3, 'Rotterdam', $4) returning id`, [`logo-test-${i}`, `Logo Test ${i}`, String(90000000 + i), pan.logo_pad])).rows[0].id;
+    await db.query(`insert into bedrijf_leden (bedrijf_id, account_id, rol) values ($1, $2, 'eigenaar')`, [bid, acc]);
+  }
+  check('logo op home bij "Bedrijven op ons platform" vanaf 10 bedrijven', await logoOpHome());
+  { const v = await ctx(); await v.goto(`${B}/`); check('logo linkt naar bedrijfsprofiel', (await v.locator('.h-logos a:has(img[alt="Pan Techniek (test)"])').getAttribute('href') || '').startsWith('/bedrijf/pan-techniek'));
     const img = await v.request.get(B + await v.locator('.h-logos img').first().getAttribute('src')); check('logo-afbeelding laadt', img.status() === 200 && (img.headers()['content-type'] || '').includes('image')); await v.close(); }
   await g.goto(`${B}/mijn/bedrijf`);
   check('bedrijfsprofiel: logo aanwezig + keuze homepage', await g.getByText('Uw logo staat op de homepage').count() === 1);

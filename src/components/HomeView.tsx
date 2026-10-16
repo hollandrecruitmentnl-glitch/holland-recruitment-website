@@ -5,7 +5,7 @@ import { zoekFreelancers } from '@/lib/data/freelancers';
 import { Avatar } from '@/components/Kaarten';
 import { zoekOpdrachten, tariefTekst } from '@/lib/data/opdrachten';
 import { BEMIDDELING_URL, REG_BEDRIJF, REG_FREELANCER } from '@/lib/navigatie';
-import { werkvormNaam } from '@/lib/constants';
+import { werkvormNaam, LOGO_STROOK_MIN, EERDERE_SAMENWERKINGEN } from '@/lib/constants';
 import { relatief } from '@/lib/util';
 import { logoStrook } from '@/lib/data/bedrijven';
 
@@ -74,10 +74,11 @@ export default async function HomeView({ sp, basis = '/' }: { sp: Record<string,
             {(tel?.opdrachten ?? 0) >= 10 && <span><b>{tel!.opdrachten}</b> opdrachten live</span>}
             {(tel?.freelancers ?? 0) >= 50 && <span><b>{tel!.freelancers}</b> freelancers</span>}
           </p>
+          {EERDERE_SAMENWERKINGEN.length > 0 && <p className="h-ref"><span>Eerder samengewerkt met</span> {EERDERE_SAMENWERKINGEN.map((n, i) => <b key={n}>{i > 0 && <i aria-hidden="true"> · </i>}{n}</b>)}</p>}
         </div>
       </section>
 
-      {logos.length > 0 && (
+      {logos.length >= LOGO_STROOK_MIN && (
         <section className="p-wrap h-logos" aria-labelledby="h-logos">
           <h2 id="h-logos" className="h-logos-kop">Bedrijven op ons platform</h2>
           <ul className="h-logos-rij">

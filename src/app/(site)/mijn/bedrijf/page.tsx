@@ -4,6 +4,8 @@ import { q, one } from '@/lib/db';
 import { BedrijfForm, UitnodigForm } from '@/components/BedrijfForms';
 import BestandUpload from '@/components/BestandUpload';
 import LogoTonen from '@/components/LogoTonen';
+import { logoStrookAantal } from '@/lib/data/bedrijven';
+import { LOGO_STROOK_MIN } from '@/lib/constants';
 import { trekUitnodigingIn, verwijderLid } from '@/app/actions/profiel';
 import { datumNL } from '@/lib/util';
 
@@ -13,13 +15,14 @@ export default async function BedrijfProfiel() {
   const b = await one('select * from bedrijven where id = $1', [a.bedrijf_id]);
   const leden = await q(`select a.id, a.voornaam, a.achternaam, a.email, bl.rol from bedrijf_leden bl join accounts a on a.id = bl.account_id where bl.bedrijf_id = $1 order by bl.rol, a.voornaam`, [a.bedrijf_id]);
   const bevestigd = !!(await one(`select 1 from bedrijf_leden bl join accounts ac on ac.id = bl.account_id where bl.bedrijf_id = $1 and ac.email_bevestigd and ac.status = 'actief' limit 1`, [a.bedrijf_id]));
+  const andere = await logoStrookAantal(a.bedrijf_id ?? undefined);
   const uitn = await q(`select id, email, aangemaakt from bedrijf_uitnodigingen where bedrijf_id = $1 and geaccepteerd is null and aangemaakt > now() - interval '7 days' order by aangemaakt desc`, [a.bedrijf_id]);
   return (
     <div className="p-wrap" style={{ padding: '28px 26px 64px', maxWidth: 980 }}>
       <div className="p-between" style={{ marginBottom: 16 }}><h1 className="p-h2">Bedrijfsprofiel</h1><Link className="btn btn-line btn-sm" href={`/bedrijf/${b.slug}`}>Bekijk zoals freelancers</Link></div>
       <div className="p-stack" style={{ gap: 18 }}>
         <section className="p-card p-stack"><div className="p-between"><h2 className="p-h3">Logo</h2>{b.logo_pad && <img src={`/bestand/logo/${b.id}?w=200&v=${encodeURIComponent(String(b.logo_pad).split('/').pop() || '')}`} alt={`Huidig logo van ${b.naam}`} style={{ maxHeight: 44, maxWidth: 160, objectFit: 'contain' }} />}</div><BestandUpload soort="logo" huidig={b.logo_pad ? 'Logo' : null} label="Bedrijfslogo" />
-          <LogoTonen aan={b.logo_tonen !== false} heeftLogo={!!b.logo_pad} bevestigd={bevestigd} verborgen={!!b.logo_verborgen} /></section>
+          <LogoTonen aan={b.logo_tonen !== false} heeftLogo={!!b.logo_pad} bevestigd={bevestigd} verborgen={!!b.logo_verborgen} andere={andere} minimum={LOGO_STROOK_MIN} /></section>
         <section className="p-card p-stack"><h2 className="p-h3">Gegevens</h2>
           {b.kvk_controle_resultaat !== 'actief' && <p className="p-note p-small">Uw KvK-nummer is nog niet automatisch gecontroleerd. Holland Recruitment kijkt het na.</p>}
           <BedrijfForm b={b} telefoon={a.telefoon} /></section>

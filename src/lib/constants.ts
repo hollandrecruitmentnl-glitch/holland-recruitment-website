@@ -59,3 +59,8 @@ export const BRANCHES = ['Petrochemie en industrie','Energie','Haven en logistie
 export const GROOTTES = ['1–10','11–50','51–200','201–500','501–1000','1000+'];
 
 export const BRON_SITE: Record<string, string> = { adzuna: 'https://www.adzuna.nl', jooble: 'https://nl.jooble.org', careerjet: 'https://www.careerjet.nl', remotive: 'https://remotive.com', remoteok: 'https://remoteok.com', jobicy: 'https://jobicy.com' };
+
+/** V37: de logostrook 'Bedrijven op ons platform' verschijnt pas vanaf dit aantal bedrijven (minder oogt leeg). */
+export const LOGO_STROOK_MIN = 10;
+/** V37: organisaties waarmee Holland Recruitment eerder heeft samengewerkt (opgave Can, 16-10-2026). Namen als tekst tot er toestemming is voor hun logo. */
+export const EERDERE_SAMENWERKINGEN = ['Albeda', 'Zadkine'];

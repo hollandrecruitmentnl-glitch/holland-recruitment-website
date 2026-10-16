@@ -5,6 +5,8 @@ import { OPDRACHT_STATUS } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
 import Blokkeer from '../../Blokkeer';
 import { zetLogoVerborgen } from '@/app/actions/beheer';
+import { logoStrookAantal } from '@/lib/data/bedrijven';
+import { LOGO_STROOK_MIN } from '@/lib/constants';
 
 export default async function BedrijfDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string>> }) {
   const { id } = await params; const sp = await searchParams;
@@ -12,6 +14,7 @@ export default async function BedrijfDetail({ params, searchParams }: { params: 
   const b = await one(`select * from bedrijven where id = $1`, [id]); if (!b) notFound();
   const leden = await q(`select a.voornaam, a.achternaam, a.email, a.telefoon, bl.rol, bl.functie, a.email_bevestigd from bedrijf_leden bl join accounts a on a.id = bl.account_id where bl.bedrijf_id = $1`, [id]);
   const ops = await q(`select o.id, o.titel, o.status, o.aangemaakt, (select count(*) from reacties r where r.opdracht_id = o.id)::int as reacties from opdrachten o where o.bedrijf_id = $1 order by o.aangemaakt desc`, [id]);
+  const inStrook = await logoStrookAantal();
   const tel = await one(`select (select count(*) from gesprekken where bedrijf_id = $1)::int as gesprekken, (select count(*) from gesprekken where bedrijf_id = $1 and statuslabel = 'samenwerken')::int as samenwerkingen`, [id]);
   return (
     <div className="p-stack" style={{ gap: 20 }}>
@@ -33,6 +36,7 @@ export default async function BedrijfDetail({ params, searchParams }: { params: 
             <span className="p-small">{b.logo_verborgen ? 'Verborgen door beheer' : !b.logo_tonen ? 'Uitgezet door het bedrijf' : !leden.some((l: any) => l.email_bevestigd) ? 'Nog niet zichtbaar: e-mailadres niet bevestigd' : 'Zichtbaar bij ‘Bedrijven op ons platform’'}</span></span>
           <form action={zetLogoVerborgen}><input type="hidden" name="id" value={b.id} /><input type="hidden" name="verborgen" value={b.logo_verborgen ? '0' : '1'} />
             <button className="btn btn-line btn-sm">{b.logo_verborgen ? 'Logo weer tonen op de homepage' : 'Logo verbergen op de homepage'}</button></form>
+          <p className="p-xs p-muted">De strook staat op de homepage zodra {LOGO_STROOK_MIN} bedrijven een zichtbaar logo hebben. Nu: {inStrook}.</p>
         </>}
       </section>
       <Blokkeer soort="bedrijf" id={b.id} status={b.status} reden={b.blok_reden} terug={`/beheer/bedrijven/${b.id}`} fout={sp.fout === 'reden'} />

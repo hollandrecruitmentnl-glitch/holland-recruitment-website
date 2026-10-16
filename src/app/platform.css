@@ -461,3 +461,7 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,.p-err-summary[tabindex="-1"]:fo
 .reg-logo-knop{cursor:pointer;}
 #v-logo:focus-visible + .reg-logo-knop{outline:3px solid var(--blue);outline-offset:2px;}
 .reg-logo-naam{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* V37: eerdere samenwerkingen onder de trust-regel op de home */
+.h-ref{margin:10px 0 0;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:center;gap:4px 8px;align-items:baseline;}
+.h-ref b{font-family:Poppins,sans-serif;font-weight:700;color:var(--ink);letter-spacing:.01em;}
+.h-ref i{font-style:normal;color:var(--muted);font-weight:400;}

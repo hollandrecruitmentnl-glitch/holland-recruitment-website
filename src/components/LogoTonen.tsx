@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react';
 import { zetLogoTonen } from '@/app/actions/profiel';
 
 /** Bedrijfsprofiel: zelf kiezen of het logo in de strook 'Bedrijven op ons platform' op de home staat (V36). */
-export default function LogoTonen({ aan, heeftLogo, bevestigd, verborgen }: { aan: boolean; heeftLogo: boolean; bevestigd: boolean; verborgen: boolean }) {
+export default function LogoTonen({ aan, heeftLogo, bevestigd, verborgen, andere = 0, minimum = 10 }: { aan: boolean; heeftLogo: boolean; bevestigd: boolean; verborgen: boolean; andere?: number; minimum?: number }) {
   const [v, setV] = useState(aan);
   const [ok, setOk] = useState(false);
   const [bezig, start] = useTransition();
@@ -11,6 +11,7 @@ export default function LogoTonen({ aan, heeftLogo, bevestigd, verborgen }: { aa
     : !heeftLogo ? 'Upload een logo, dan verschijnt het op de homepage.'
     : !bevestigd ? 'Uw logo verschijnt op de homepage zodra uw e-mailadres is bevestigd.'
     : verborgen ? 'Uw logo staat op dit moment niet op de homepage. Vragen? Mail info@holland-recruitment.nl.'
+    : andere + 1 < minimum ? `Uw logo staat klaar. Het overzicht ‘Bedrijven op ons platform’ verschijnt op de homepage zodra ${minimum} bedrijven een logo hebben.`
     : 'Uw logo staat op de homepage bij ‘Bedrijven op ons platform’.';
   return (
     <div className="p-stack" style={{ gap: 4 }}>
