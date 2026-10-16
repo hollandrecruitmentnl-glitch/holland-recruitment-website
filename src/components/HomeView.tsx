@@ -7,6 +7,7 @@ import { zoekOpdrachten, tariefTekst } from '@/lib/data/opdrachten';
 import { BEMIDDELING_URL, REG_BEDRIJF, REG_FREELANCER } from '@/lib/navigatie';
 import { werkvormNaam } from '@/lib/constants';
 import { relatief } from '@/lib/util';
+import { logoStrook } from '@/lib/data/bedrijven';
 
 
 const CAL_URL = 'https://cal.eu/holland-recruitment/30min';
@@ -33,12 +34,13 @@ const ALLEEN_OP_OPDRACHTEN = new Set(['jobicy', 'remotive', 'remoteok']);
 export default async function HomeView({ sp, basis = '/' }: { sp: Record<string, string>; basis?: string }) {
   const a = await huidigAccount();
   const voorOpdrachten = sp.zoek === 'opdrachten' || (sp.zoek !== 'freelancers' && a?.rol === 'freelancer');
-  const [fr, op, tel] = await Promise.all([
+  const [fr, op, tel, logos] = await Promise.all([
     zoekFreelancers({ perPagina: 3 }, a),
     zoekOpdrachten({ perPagina: 24, sorteer: 'relevant' }),
     one<{ opdrachten: number; freelancers: number }>(`select
       (select count(*) from opdrachten o left join bedrijven b on b.id = o.bedrijf_id where o.status = 'live' and (o.bedrijf_id is null or b.status = 'actief') and (o.reageren_tot is null or o.reageren_tot >= current_date))::int as opdrachten,
       (select count(*) from freelancers f join accounts ac on ac.id = f.id where ac.status = 'actief' and f.functietitel <> '')::int as freelancers`),
+    logoStrook().catch(() => []),
   ]);
   const opdrachten = op.items.filter(o => !ALLEEN_OP_OPDRACHTEN.has(o.bron)).slice(0, 3);
   const faq: [string, string][] = [
@@ -74,6 +76,20 @@ export default async function HomeView({ sp, basis = '/' }: { sp: Record<string,
           </p>
         </div>
       </section>
+
+      {logos.length > 0 && (
+        <section className="p-wrap h-logos" aria-labelledby="h-logos">
+          <h2 id="h-logos" className="h-logos-kop">Bedrijven op ons platform</h2>
+          <ul className="h-logos-rij">
+            {logos.map(l => (
+              <li key={l.id}><Link href={`/bedrijf/${l.slug}`} title={l.naam}>
+                <img src={`/bestand/logo/${l.id}?w=200&v=${encodeURIComponent(String(l.logo_pad).split('/').pop() || '')}`} alt={l.naam} loading="lazy" decoding="async" />
+              </Link></li>
+            ))}
+          </ul>
+          {a?.rol !== 'bedrijf' && a?.rol !== 'freelancer' && <p className="h-logos-cta"><Link className="p-link" href={REG_BEDRIJF}>Ook uw bedrijf hier? Maak een gratis account →</Link></p>}
+        </section>
+      )}
 
       <section className="p-wrap h-sectie" aria-labelledby="h-zo">
         <div className="h-kop"><span className="p-eyebrow">Zo werkt het</span><h2 id="h-zo" className="p-h2">Twee kanten, één platform</h2></div>
@@ -166,7 +182,7 @@ export default async function HomeView({ sp, basis = '/' }: { sp: Record<string,
         { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Holland Recruitment', url: 'https://www.holland-recruitment.nl/',
           potentialAction: { '@type': 'SearchAction', target: 'https://www.holland-recruitment.nl/opdrachten?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
         { '@context': 'https://schema.org', '@type': 'Organization', name: 'Holland Recruitment BV', url: 'https://www.holland-recruitment.nl/', logo: 'https://www.holland-recruitment.nl/favicon-512x512.png',
-          email: 'info@holland-recruitment.nl', address: { '@type': 'PostalAddress', streetAddress: 'Brielselaan 278', postalCode: '3081 LR', addressLocality: 'Rotterdam', addressCountry: 'NL' },
+          email: 'info@holland-recruitment.nl', address: { '@type': 'PostalAddress', addressLocality: 'Rotterdam', addressCountry: 'NL' },
           sameAs: ['https://www.linkedin.com/company/hollandrecruitment/', 'https://www.instagram.com/hollandrecruitment/'] },
       ]) }} />
     </>

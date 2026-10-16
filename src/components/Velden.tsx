@@ -52,7 +52,7 @@ const LABELS: Record<string, string> = {
   contactnaam: 'Naam contactpersoon', bedrijfsnaam: 'Bedrijfsnaam', kvk: 'KvK-nummer', website: 'Website', plaats: 'Plaats', titel: 'Titel', omschrijving: 'Omschrijving',
   werkvorm: 'Werkvorm', locatie: 'Locatie', uren: 'Uren per week', tarief: 'Tarief', reactietermijn: 'Reactietermijn', reageren_tot: 'Reageren kan tot', telefoon: 'Telefoonnummer',
   postcode: 'Postcode', start: 'Start', looptijd: 'Looptijd', dagen_op_locatie: 'Dagen op locatie', uurtarief: 'Uurtarief', introductie: 'Introductie', beschikbaarheid: 'Beschikbaarheid',
-  naam: 'Naam', reden: 'Reden', tekst: 'Bericht', functie: 'Functie', van: 'Van', tot: 'Tot', rol: 'Rol', bestand: 'Bestand',
+  naam: 'Naam', reden: 'Reden', tekst: 'Bericht', functie: 'Functie', van: 'Van', tot: 'Tot', rol: 'Rol', bestand: 'Bestand', logo: 'Logo',
 };
 export function FoutSamenvatting({ fouten }: { fouten?: Record<string, string> }) {
   if (!fouten || !Object.keys(fouten).length) return null;

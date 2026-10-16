@@ -6,6 +6,7 @@ import { registreren } from '@/app/actions/auth';
 import { FoutSamenvatting, Keuze, Veld } from './Velden';
 import { Verzend, WachtwoordVeld, useActie } from './Client';
 import { VAKGEBIEDEN, GRATIS_MAILDIENSTEN } from '@/lib/constants';
+import LogoKiezer from './LogoKiezer';
 
 const STAP1 = { freelancer: ['voornaam', 'achternaam', 'email', 'wachtwoord'], bedrijf: ['contactnaam', 'email', 'wachtwoord'] } as const;
 
@@ -101,6 +102,7 @@ export default function RegistratieForm({ rolStart, terug, ctx, uitnodiging, uit
           <Veld naam="kvk" label="KvK-nummer" waarde={w.kvk} fout={fouten.kvk} verplicht inputMode="numeric" maxLength={8} pattern="\d{8}" hint="8 cijfers. We controleren het nummer bij de KvK." />
           <Veld naam="website" label="Website (optioneel)" waarde={w.website} fout={fouten.website} placeholder="www.bedrijf.nl" auto="url" />
           <Veld naam="plaats" label="Plaats" waarde={w.plaats} fout={fouten.plaats} verplicht auto="address-level2" />
+          <LogoKiezer fout={fouten.logo} />
         </>}
         {rol === 'bedrijf'
           ? <p className="p-xs p-muted">Door een account te maken gaat u akkoord met de <a className="p-link" href="/voorwaarden" target="_blank">gebruiksvoorwaarden</a>. Hoe we met uw gegevens omgaan, leest u in de <a className="p-link" href="/privacyverklaring" target="_blank">privacyverklaring</a>.</p>

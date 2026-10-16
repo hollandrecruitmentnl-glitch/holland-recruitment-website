@@ -438,3 +438,26 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus,.p-err-summary[tabindex="-1"]:fo
 .p-emailbanner-form input:focus{outline:none;border-color:var(--blue);}
 .p-emailbanner-form input[aria-invalid="true"]{border-color:#B4331A;}
 .p-emailbanner-fout{flex-basis:100%;margin:0;color:#B4331A;font-weight:600;font-size:13.5px;}
+
+/* ===== V36: logostrook 'Bedrijven op ons platform' (home) + logo kiezen bij registratie ===== */
+.h-logos{padding-top:30px;padding-bottom:6px;text-align:center;}
+.h-logos-kop{font-family:Poppins,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;}
+.h-logos-rij{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 30px;}
+.h-logos-rij a{display:flex;align-items:center;justify-content:center;min-height:56px;min-width:48px;padding:6px;border-radius:10px;}
+.h-logos-rij a:focus-visible{outline:3px solid var(--blue);outline-offset:2px;}
+.h-logos-rij img{display:block;max-height:44px;max-width:150px;width:auto;height:auto;object-fit:contain;transition:transform .2s;}
+.h-logos-rij a:hover img,.h-logos-rij a:focus-visible img{transform:scale(1.04);}
+.h-logos-cta{margin:12px 0 0;font-size:14px;}
+.h-hero + .h-logos + .h-sectie{padding-top:56px;}
+@media (min-width:760px){.h-logos{padding-top:0;}.h-hero + .h-logos + .h-sectie{padding-top:88px;}}
+@media (max-width:600px){.h-logos-rij{gap:6px 20px;}.h-logos-rij img{max-height:34px;max-width:112px;}}
+@media (prefers-reduced-motion:reduce){.h-logos-rij img{transition:none;}}
+.reg-logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.reg-logo-vb{width:72px;height:72px;border:1.5px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--muted);font-size:12px;overflow:hidden;flex:none;}
+.reg-logo-vb img{max-width:64px;max-height:64px;object-fit:contain;}
+.reg-logo-acties{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;flex:1;}
+.reg-logo-acties{position:relative;}
+.field .reg-logo-acties input.sr-only{position:absolute;left:0;top:0;width:1px;height:1px;min-height:0;padding:0;margin:0;border:0;opacity:0;}
+.reg-logo-knop{cursor:pointer;}
+#v-logo:focus-visible + .reg-logo-knop{outline:3px solid var(--blue);outline-offset:2px;}
+.reg-logo-naam{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}

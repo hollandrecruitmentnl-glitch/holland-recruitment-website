@@ -95,6 +95,18 @@ export async function gesprekInzage(fd: FormData) {
   redirect(`/beheer/gesprekken/${id}`);
 }
 
+/** Beheer haalt een logo uit (of terug in) de strook "Bedrijven op ons platform". */
+export async function zetLogoVerborgen(fd: FormData) {
+  const a = await beheer();
+  const id = str(fd.get('id'));
+  if (!/^[0-9a-f-]{36}$/.test(id)) return;
+  const verborgen = fd.get('verborgen') === '1';
+  await q('update bedrijven set logo_verborgen = $2 where id = $1', [id, verborgen]);
+  await logboek(a.id, verborgen ? 'logo_verborgen' : 'logo_zichtbaar', 'bedrijf', id);
+  revalidatePath('/');
+  redirect(`/beheer/bedrijven/${id}?melding=opgeslagen`);
+}
+
 export async function zetInstelling(fd: FormData) {
   const a = await beheer();
   const sleutel = str(fd.get('sleutel'));

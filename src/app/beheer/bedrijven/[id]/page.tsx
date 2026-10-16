@@ -4,6 +4,7 @@ import { q, one } from '@/lib/db';
 import { OPDRACHT_STATUS } from '@/lib/constants';
 import { datumNL } from '@/lib/util';
 import Blokkeer from '../../Blokkeer';
+import { zetLogoVerborgen } from '@/app/actions/beheer';
 
 export default async function BedrijfDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string>> }) {
   const { id } = await params; const sp = await searchParams;
@@ -26,6 +27,14 @@ export default async function BedrijfDetail({ params, searchParams }: { params: 
       </div>
       <section className="p-card p-stack"><h2 className="p-h3">Opdrachten ({ops.length}) · {tel.gesprekken} gesprekken · {tel.samenwerkingen} samenwerkingen</h2>
         {ops.map((o: any) => <div key={o.id} className="p-between p-small"><Link className="p-link" href={`/beheer/opdrachten?open=${o.id}`}>{o.titel}</Link><span>{o.reacties} reacties · {datumNL(o.aangemaakt)} <span className={`p-status ${o.status}`}>{OPDRACHT_STATUS[o.status]}</span></span></div>)}</section>
+      <section className="p-card p-stack" style={{ gap: 8 }}><h2 className="p-h3">Logo op de homepage</h2>
+        {!b.logo_pad ? <p className="p-small p-muted">Dit bedrijf heeft geen logo.</p> : <>
+          <span className="p-row" style={{ gap: 14, alignItems: 'center' }}><img src={`/bestand/logo/${b.id}?w=200&v=${encodeURIComponent(String(b.logo_pad).split('/').pop() || '')}`} alt={`Logo ${b.naam}`} style={{ maxHeight: 48, maxWidth: 160, objectFit: 'contain' }} />
+            <span className="p-small">{b.logo_verborgen ? 'Verborgen door beheer' : !b.logo_tonen ? 'Uitgezet door het bedrijf' : !leden.some((l: any) => l.email_bevestigd) ? 'Nog niet zichtbaar: e-mailadres niet bevestigd' : 'Zichtbaar bij ‘Bedrijven op ons platform’'}</span></span>
+          <form action={zetLogoVerborgen}><input type="hidden" name="id" value={b.id} /><input type="hidden" name="verborgen" value={b.logo_verborgen ? '0' : '1'} />
+            <button className="btn btn-line btn-sm">{b.logo_verborgen ? 'Logo weer tonen op de homepage' : 'Logo verbergen op de homepage'}</button></form>
+        </>}
+      </section>
       <Blokkeer soort="bedrijf" id={b.id} status={b.status} reden={b.blok_reden} terug={`/beheer/bedrijven/${b.id}`} fout={sp.fout === 'reden'} />
     </div>
   );

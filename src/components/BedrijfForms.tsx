@@ -20,7 +20,7 @@ export function BedrijfForm({ b, telefoon }: { b: any; telefoon: string | null }
         <Keuze naam="branche" label="Branche" opties={BRANCHES.map(x => ({ v: x, l: x }))} waarde={v.branche} leeg="Kies een branche" />
         <Keuze naam="grootte" label="Aantal medewerkers" opties={GROOTTES.map(x => ({ v: x, l: x }))} waarde={v.grootte} leeg="Kies" />
         <Veld naam="straat" label="Straat en huisnummer" waarde={v.straat} auto="street-address" />
-        <Veld naam="postcode" label="Postcode" waarde={v.postcode} fout={s?.fouten?.postcode} auto="postal-code" placeholder="3081 LR" />
+        <Veld naam="postcode" label="Postcode" waarde={v.postcode} fout={s?.fouten?.postcode} auto="postal-code" placeholder="1234 AB" />
         <Veld naam="plaats" label="Plaats" waarde={v.plaats} fout={s?.fouten?.plaats} verplicht />
         <Veld naam="telefoon" label="Uw telefoonnummer" type="tel" waarde={telefoon} hint="Alleen zichtbaar voor Holland Recruitment." />
       </div>

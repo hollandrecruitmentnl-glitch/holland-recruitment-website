@@ -19,3 +19,15 @@ export async function bedrijfPagina(slug: string) {
   if (!b) return null;
   return b;
 }
+
+/**
+ * Logostrook "Bedrijven op ons platform" (home). Alleen bedrijven die:
+ * actief zijn, een logo hebben, het tonen niet hebben uitgezet, niet door beheer verborgen zijn,
+ * en minstens één actief teamlid met een bevestigd e-mailadres hebben (voorkomt nep-accounts met andermans logo).
+ */
+export async function logoStrook(max = 18) {
+  return q<{ id: string; slug: string; naam: string; logo_pad: string }>(`select b.id, b.slug, b.naam, b.logo_pad from bedrijven b
+    where b.status = 'actief' and b.logo_pad is not null and b.logo_tonen and not b.logo_verborgen
+      and exists (select 1 from bedrijf_leden bl join accounts ac on ac.id = bl.account_id where bl.bedrijf_id = b.id and ac.email_bevestigd and ac.status = 'actief')
+    order by b.aangemaakt desc limit ${Math.max(1, Math.min(48, max))}`);
+}

@@ -88,6 +88,16 @@ export async function uploadBestand(fd: FormData): Promise<{ fout?: string; naam
   return { naam: c.naam };
 }
 
+/** Bedrijf kiest zelf of het logo in de strook "Bedrijven op ons platform" op de home staat. */
+export async function zetLogoTonen(aan: boolean): Promise<{ ok?: boolean }> {
+  const a = await vereis('bedrijf');
+  if (!a.bedrijf_id) return {};
+  await q('update bedrijven set logo_tonen = $2 where id = $1', [a.bedrijf_id, !!aan]);
+  await logboek(a.id, 'logo_tonen_gewijzigd', 'bedrijf', a.bedrijf_id, { aan: !!aan });
+  revalidatePath('/mijn/bedrijf'); revalidatePath('/');
+  return { ok: true };
+}
+
 export async function verwijderBestand(soort: 'cv' | 'foto' | 'logo') {
   const a = await huidigAccount(); if (!a) return;
   if (soort === 'logo' && a.bedrijf_id) { const o = await one('select logo_pad from bedrijven where id=$1', [a.bedrijf_id]); await q('update bedrijven set logo_pad=null where id=$1', [a.bedrijf_id]); await verwijderen(o?.logo_pad); revalidatePath('/mijn/bedrijf'); return; }
@@ -129,7 +139,7 @@ export async function bewaarBedrijf(_: FormState, fd: FormData): Promise<FormSta
   const f: Record<string, string> = {};
   if (!v.naam) f.naam = 'Vul de bedrijfsnaam in.';
   if (!/^\d{8}$/.test(v.kvk)) f.kvk = 'Een KvK-nummer heeft 8 cijfers.';
-  if (v.postcode && !/^\d{4}\s?[A-Z]{2}$/.test(v.postcode)) f.postcode = 'Vul een postcode in zoals 3081 LR.';
+  if (v.postcode && !/^\d{4}\s?[A-Z]{2}$/.test(v.postcode)) f.postcode = 'Vul een postcode in zoals 1234 AB.';
   if (!v.plaats) f.plaats = 'Vul de vestigingsplaats in.';
   if (v.branche && !BRANCHES.includes(v.branche)) v.branche = '';
   if (v.grootte && !GROOTTES.includes(v.grootte)) v.grootte = '';

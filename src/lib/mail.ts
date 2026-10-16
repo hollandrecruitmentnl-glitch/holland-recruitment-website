@@ -34,7 +34,7 @@ ${o.klein ? `<p style="margin:18px 0 0;font-size:13px;line-height:1.55;color:${C
 </div></td></tr>
 <tr><td style="padding:22px 12px 0;font-size:12.5px;line-height:1.6;color:${C.muted}" align="center">
 <a href="mailto:${from}" style="color:${C.blue};text-decoration:none">${from}</a> · WhatsApp 085 124 9654 · <a href="https://www.holland-recruitment.nl" style="color:${C.blue};text-decoration:none">holland-recruitment.nl</a><br>
-Holland Recruitment BV · Brielselaan 278, 3081 LR Rotterdam · KvK 96618914<br>
+Holland Recruitment BV · KvK 96618914<br>
 ${o.reden || (o.u ? 'U ontvangt deze e-mail omdat u een account heeft op het platform van Holland Recruitment.' : 'Je ontvangt deze e-mail omdat je een account hebt op het platform van Holland Recruitment.')} <a href="${SITE}/mijn/instellingen" style="color:${C.muted}">Meldingen instellen</a>
 </td></tr></table></td></tr></table></body></html>`;
 }

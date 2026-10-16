@@ -11,6 +11,7 @@ import { kort, randomToken, sha256, slugify, str } from '@/lib/util';
 import { randomInt } from 'node:crypto';
 import { logboek } from '@/lib/log';
 import { stuurUitnodiging } from '@/lib/uitnodigen';
+import { controleer, nieuwPad, opslaan } from '@/lib/storage';
 
 export type FormState = { fouten?: Record<string, string>; melding?: string; ok?: boolean; waarden?: Record<string, string> } | undefined;
 
@@ -102,7 +103,15 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
     kvkRes = await controleerKvk(w.kvk);
     if (!kvkRes.ok) f.kvk = kvkRes.fout;
   }
+  // Optioneel logo (alleen bij een nieuw bedrijf). Fout = gewoon terug naar het formulier; geen logo = prima.
+  let logo: Awaited<ReturnType<typeof controleer>> | null = null;
+  const lf = fd.get('logo');
+  if (rol === 'bedrijf' && !w.uitnodiging && lf && typeof lf !== 'string' && lf.size > 0) {
+    logo = await controleer(lf, 'logo');
+    if ('fout' in logo) f.logo = logo.fout;
+  }
   if (Object.keys(f).length) return { fouten: f, waarden: w };
+  const logoTonen = fd.get('logo_keuze') ? fd.get('logo_tonen') === 'on' : true;
 
   const hash = await hashWachtwoord(pw);
   const id = await tx(async c => {
@@ -117,13 +126,24 @@ export async function registreren(_: FormState, fd: FormData): Promise<FormState
     } else {
       const kvk = kvkRes as { ok: true; gecontroleerd: boolean };
       let site = w.website; if (site && !/^https?:\/\//.test(site)) site = 'https://' + site;
-      const b = (await c.query(`insert into bedrijven (slug, naam, kvk, kvk_controle_op, kvk_controle_resultaat, website, plaats) values ($1,$2,$3,$4,$5,$6,$7) returning id`,
-        [`${slugify(w.bedrijfsnaam)}-${kort()}`, w.bedrijfsnaam.slice(0, 120), w.kvk, kvk.gecontroleerd ? new Date() : null, kvk.gecontroleerd ? 'actief' : 'niet gecontroleerd', site || null, w.plaats.slice(0, 60)])).rows[0].id;
+      const b = (await c.query(`insert into bedrijven (slug, naam, kvk, kvk_controle_op, kvk_controle_resultaat, website, plaats, logo_tonen) values ($1,$2,$3,$4,$5,$6,$7,$8) returning id`,
+        [`${slugify(w.bedrijfsnaam)}-${kort()}`, w.bedrijfsnaam.slice(0, 120), w.kvk, kvk.gecontroleerd ? new Date() : null, kvk.gecontroleerd ? 'actief' : 'niet gecontroleerd', site || null, w.plaats.slice(0, 60), logoTonen])).rows[0].id;
       await c.query(`insert into bedrijf_leden (bedrijf_id, account_id, rol) values ($1,$2,'eigenaar')`, [b, acc]);
     }
     return acc;
   });
   await logboek(id, 'account_aangemaakt', 'account', id, { rol });
+  if (logo && !('fout' in logo)) {
+    // Opslaan na de transactie: mislukt de opslag, dan bestaat het account wel en kan het logo later via Bedrijfsprofiel.
+    try {
+      const lid = await one<{ bedrijf_id: string }>(`select bedrijf_id from bedrijf_leden where account_id = $1`, [id]);
+      if (lid) {
+        const pad = nieuwPad(`logo/${lid.bedrijf_id}`, logo.ext);
+        await opslaan(pad, logo.data, logo.type);
+        await q(`update bedrijven set logo_pad = $2 where id = $1`, [lid.bedrijf_id, pad]);
+      }
+    } catch { await logboek(id, 'logo_upload_mislukt', 'account', id); }
+  }
   { const b = await maakBevestiging(id); await mails.bevestigEmail(email, voornaam, rol, b.url, b.code); }
   await maakSessie(id);
   redirect(metParam(veiligTerug(w.terug) || '/mijn', 'welkom', rol));

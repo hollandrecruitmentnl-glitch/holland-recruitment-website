@@ -47,7 +47,7 @@ export default async function SiteFooter() {
         </div>
         {!rol && <div className="footer-regio"><span>Freelancer inhuren in:</span> {REGIO_FOOTER.flatMap(([h, l], i) => [i > 0 ? ' · ' : null, <a key={h} href={h}>{l}</a>])}</div>}
         <div className="footer-bot">
-          <span>© {new Date().getFullYear()} Holland Recruitment BV · KvK 96618914 · Brielselaan 278, 3081 LR Rotterdam</span>
+          <span>© {new Date().getFullYear()} Holland Recruitment BV · KvK 96618914 · Rotterdam</span>
           <span><a href="/privacyverklaring">Privacyverklaring</a> · <a href="/voorwaarden">Voorwaarden</a></span>
         </div>
       </div>

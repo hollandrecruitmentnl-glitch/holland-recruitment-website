@@ -40,6 +40,9 @@ try {
     await r.click('.reg-kaart:has-text("Ik zoek een freelancer")');
     check('registreren: kaart kiest rol bedrijf', await r.getByText('Maak een account voor uw bedrijf').count() === 1);
     await r.close(); }
+  { const html = await p.content();
+    check('thuisadres staat niet op de home (ook niet in JSON-LD)', !/Brielse|3081/i.test(html));
+    check('footer: KvK + Rotterdam zonder straat', (await p.locator('.footer-bot span').first().innerText()).includes('KvK 96618914 · Rotterdam')); }
   check('/freelance-platform stuurt door naar home', (await (await ctx()).goto(`${B}/freelance-platform`)).url() === `${B}/`);
   await p.screenshot({ path: `${SHOTS}/01-home.png`, fullPage: true });
   await p.fill('input[name=q]', 'Maintenance'); await Promise.all([p.waitForURL(/freelancers-zoeken/), p.click('form[role=search] button[type=submit]')]);
@@ -93,6 +96,7 @@ try {
   check('banner e-mail bevestigen', await f.getByText('Bevestig je e-mailadres.').count() > 0);
   const bm = laatsteMail('lotte@test.local', 'Bevestig');
   check('bevestigingsmail verstuurd met code', !!bm && /\(code \d{6}\)/.test(bm.onderwerp));
+  check('mail-voettekst zonder thuisadres', !!bm && !/Brielse|3081/i.test(bm.html));
   const code = (bm?.onderwerp.match(/\d{6}/) || [''])[0];
   await f.fill('#bevestigcode', code === '000000' ? '111111' : '000000'); await f.click('.p-emailbanner-form button[type=submit]');
   await f.waitForSelector('#bevestigcode-fout'); check('verkeerde code geweigerd', (await f.locator('#bevestigcode-fout').innerText()).includes('klopt niet'));
@@ -126,14 +130,25 @@ try {
   check('gratis maildienst geweigerd', (await g.locator('.p-err-summary').innerText()).includes('zakelijke'));
   await g.fill('#v-email', 'peter@pan-techniek-test.nl'); await g.click('button:has-text("Volgende")');
   await g.fill('#v-bedrijfsnaam', 'Pan Techniek (test)'); await g.fill('#v-kvk', '1234'); await g.fill('#v-plaats', 'Delft');
+  check('registratie bedrijf: optioneel logoveld + keuze homepage', await g.locator('#v-logo[type=file]').count() === 1 && await g.locator('input[name=logo_tonen]').isChecked());
+  await g.setInputFiles('#v-logo', 'scripts/fixtures/cv-test.pdf');
+  check('logo: verkeerd type direct geweigerd in het formulier', (await g.locator('#v-logo-err').innerText()).includes('bestandstype'));
+  await g.setInputFiles('#v-logo', 'scripts/fixtures/nep-logo.png');
   await g.click('button:has-text("Account aanmaken")');
   await g.waitForSelector('.p-err-summary');
   check('KvK-formaat gecontroleerd', (await g.locator('.p-err-summary').innerText()).includes('8 cijfers'));
   check('ingevulde bedrijfsnaam blijft staan na fout', await g.inputValue('#v-bedrijfsnaam') === 'Pan Techniek (test)');
+  check('logo: nep-png door de server geweigerd (inhoud gecontroleerd)', (await g.locator('.p-err-summary').innerText()).includes('Logo'));
+  await g.setInputFiles('#v-logo', 'scripts/fixtures/logo-test.png');
+  check('logo: voorbeeld zichtbaar na kiezen', await g.locator('.reg-logo-vb img').count() === 1);
   await g.fill('#v-kvk', '11223344');
   await Promise.all([g.waitForURL(/freelancer\/sanne/), g.click('button:has-text("Account aanmaken")')]);
   check('terug op profiel na registratie', g.url().includes('/freelancer/sanne-de-vries-t1'));
   check('na registratie direct het berichtvak', await g.locator('#bericht-tekst').count() === 1);
+  const pan = (await db.query(`select id, logo_pad, logo_tonen from bedrijven where naam = 'Pan Techniek (test)'`)).rows[0];
+  check('logo bij registratie opgeslagen', !!pan?.logo_pad && pan.logo_tonen === true, JSON.stringify(pan));
+  const logoOpHome = async () => { const v = await ctx(); await v.goto(`${B}/`); const n = await v.locator('.h-logos img[alt="Pan Techniek (test)"]').count(); await v.close(); return n === 1; };
+  check('logo nog niet op home zolang e-mail onbevestigd is', !(await logoOpHome()));
   await g.fill('#bericht-tekst', 'Hallo Sanne, we zoeken iemand voor een stop in november.');
   await g.click('#bericht button:has-text("Stuur bericht")');
   check('onbevestigd account kan nog geen bericht sturen', await g.waitForSelector('#bericht-fout', { timeout: 5000 }).then(() => true).catch(() => false));
@@ -141,6 +156,16 @@ try {
   await g.goto(link(pm.html, /http:\/\/localhost:3100\/bevestigen\?token=[\w-]+/));
   await g.goto(`${B}/freelancer/sanne-de-vries-t1`);
   check('bericht nog steeds bewaard', (await g.inputValue('#bericht-tekst')).includes('stop in november'));
+  check('logo op home bij "Bedrijven op ons platform" na bevestiging', await logoOpHome());
+  { const v = await ctx(); await v.goto(`${B}/`); check('logo linkt naar bedrijfsprofiel', (await v.locator('.h-logos a').first().getAttribute('href') || '').startsWith('/bedrijf/pan-techniek'));
+    const img = await v.request.get(B + await v.locator('.h-logos img').first().getAttribute('src')); check('logo-afbeelding laadt', img.status() === 200 && (img.headers()['content-type'] || '').includes('image')); await v.close(); }
+  await g.goto(`${B}/mijn/bedrijf`);
+  check('bedrijfsprofiel: logo aanwezig + keuze homepage', await g.getByText('Uw logo staat op de homepage').count() === 1);
+  await g.uncheck('input[name=logo_tonen]'); await g.waitForSelector('text=Opgeslagen.');
+  check('bedrijf zet logo op home uit', !(await logoOpHome()));
+  await g.check('input[name=logo_tonen]'); await g.waitForSelector('text=Opgeslagen. Uw logo staat op de homepage');
+  check('bedrijf zet logo op home weer aan', await logoOpHome());
+  await g.goto(`${B}/freelancer/sanne-de-vries-t1`);
   await Promise.all([g.waitForURL(/mijn\/berichten\//), g.click('#bericht button:has-text("Stuur bericht")')]);
   check('gesprek gestart', await g.getByText('stop in november').count() > 0);
   await g.waitForTimeout(800);
@@ -217,6 +242,12 @@ try {
   h.on('pageerror', x => errors.push(x.message));
   await login(h, 'beheer@test.local');
   check('beheer komt op dashboard', h.url().endsWith('/beheer'));
+  await h.goto(`${B}/beheer/bedrijven/${pan.id}`);
+  await Promise.all([h.waitForURL(/melding=opgeslagen/), h.click('button:has-text("Logo verbergen op de homepage")')]);
+  check('beheer verbergt logo op home', !(await logoOpHome()));
+  await Promise.all([h.waitForURL(/melding=opgeslagen/), h.click('button:has-text("Logo weer tonen op de homepage")')]);
+  check('beheer toont logo weer', await logoOpHome());
+  await h.goto(`${B}/beheer`);
   await h.screenshot({ path: `${SHOTS}/09-beheer-dashboard.png`, fullPage: true });
   await h.goto(`${B}/beheer/opdrachten?status=in_controle`);
   await h.click('a:has-text("Planner turnaround")');
