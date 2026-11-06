@@ -469,3 +469,8 @@ a.card:hover .more svg{transform:translateX(3px);}
 .ref-kop{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
 .ref-namen{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 28px;}
 .ref-namen li{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);}
+
+/* V42: voorbeeldblok in kennisbankartikelen */
+.prose blockquote{margin:18px 0 22px;padding:18px 22px;background:var(--cream);border-left:4px solid var(--blue);border-radius:0 16px 16px 0;}
+.prose blockquote p{margin:0 0 10px;}
+.prose blockquote p:last-child{margin-bottom:0;}
