@@ -10,7 +10,7 @@ const C = { blue: '#3551E6', lime: '#D6F24E', ink: '#15183A', cream: '#FAF6EE', 
 type Team = 'info' | 'sales';
 export type Mail = { aan: string; onderwerp: string; html: string; team?: Team; antwoordAan?: string };
 
-export function layout(o: { preheader: string; titel: string; intro: string; blok?: { kop: string; rijen: [string, string][] }; stappen?: string[]; knop?: { tekst: string; url: string }; citaat?: string; klein?: string; afsluiting?: string; team?: Team; reden?: string; u?: boolean }) {
+export function layout(o: { preheader: string; titel: string; intro: string; blok?: { kop: string; rijen: [string, string][] }; stappen?: string[]; knop?: { tekst: string; url: string }; citaat?: string; klein?: string; afsluiting?: string; team?: Team; reden?: string; u?: boolean; lijst?: { titel: string; sub: string; url: string }[] }) {
   const from = o.team === 'sales' ? 'sales@holland-recruitment.nl' : 'info@holland-recruitment.nl';
   const rijen = o.blok ? o.blok.rijen.filter(([, v]) => v).map(([k, v]) =>
     `<tr><td style="padding:6px 0;color:${C.muted};font-size:14px;width:150px;vertical-align:top">${esc(k)}</td><td style="padding:6px 0;color:${C.ink};font-size:14px;font-weight:600">${esc(v)}</td></tr>`).join('') : '';
@@ -25,6 +25,7 @@ export function layout(o: { preheader: string; titel: string; intro: string; blo
 <tr><td style="background:#fff;border-radius:24px;border:1px solid ${C.line};overflow:hidden"><div style="height:6px;background:${C.blue}"></div><div style="padding:34px 34px 30px">
 <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;color:${C.ink};font-family:Arial,Helvetica,sans-serif">${o.titel}</h1>
 <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:${C.ink}">${o.intro}</p>
+${(o.lijst || []).map(k => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;border:1px solid ${C.line};border-radius:16px"><tr><td style="padding:14px 18px"><a href="${esc(k.url)}" style="font-size:16px;font-weight:700;color:${C.ink};text-decoration:none">${esc(k.titel)}</a><div style="font-size:14px;line-height:1.5;color:${C.muted};margin:4px 0 8px">${esc(k.sub)}</div><a href="${esc(k.url)}" style="font-size:14px;font-weight:700;color:${C.blue};text-decoration:none">Bekijk profiel &rsaquo;</a></td></tr></table>`).join('')}${o.lijst?.length ? '<div style="height:12px"></div>' : ''}
 ${rijen ? `<div style="background:${C.cream};border-radius:16px;padding:16px 20px;margin:0 0 24px"><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:${C.muted};font-weight:700;margin-bottom:6px">${esc(o.blok!.kop)}</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rijen}</table></div>` : ''}
 ${o.citaat ? `<div style="border-left:4px solid ${C.blue};background:${C.cream};border-radius:0 14px 14px 0;padding:14px 18px;margin:0 0 24px;font-size:15px;line-height:1.6;color:${C.ink};font-style:italic">“${esc(o.citaat)}”</div>` : ''}
 ${stappen ? `<div style="font-size:16px;font-weight:700;color:${C.ink};margin:0 0 6px">Wat gebeurt er nu?</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 26px">${stappen}</table>` : ''}

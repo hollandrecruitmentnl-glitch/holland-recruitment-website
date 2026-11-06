@@ -257,6 +257,16 @@ try {
   check('beheer verbergt logo op home', !(await logoOpHome()));
   await Promise.all([h.waitForURL(/melding=opgeslagen/), h.click('button:has-text("Logo weer tonen op de homepage")')]);
   check('beheer toont logo weer', await logoOpHome());
+  // V43: freelancers aanbevelen per e-mail
+  await h.goto(`${B}/beheer/bedrijven/${pan.id}#tips`);
+  await h.fill('#v-aanhef', 'Peter'); await h.fill('#v-notitie', 'Fijn dat u er bent.');
+  const vinkjes = h.locator('#tips input[name=freelancer]'); await vinkjes.nth(0).check(); await vinkjes.nth(1).check();
+  await Promise.all([h.waitForURL(/melding=tips-verstuurd/), h.click('#tips button:has-text("E-mail versturen")')]);
+  { const tm = laatsteMail('peter@pan-techniek-test.nl', 'Freelancers die passen bij');
+    check('beheer: freelancers per e-mail aanbevolen (sales@, team, 2 profielen, notitie)', !!tm && tm.team === 'sales' && (tm.html.match(/\/freelancer\//g) || []).length >= 4 && tm.html.includes('het team van') && tm.html.includes('Beste Peter') && tm.html.includes('Fijn dat u er bent.'), tm ? tm.onderwerp : 'geen mail');
+    check('beheer: verzending staat in logboek', (await db.query(`select count(*)::int n from logboek where actie='freelancer_tips_verstuurd' and object_id=$1`, [pan.id])).rows[0].n === 1); }
+  await Promise.all([h.waitForURL(/fout=geen-freelancers/), h.click('#tips button:has-text("E-mail versturen")')]);
+  check('beheer: zonder gekozen freelancers geen mail', await h.waitForSelector('text=Kies minstens één freelancer.', { timeout: 8000 }).then(() => true).catch(() => false));
   await h.goto(`${B}/beheer`);
   await h.screenshot({ path: `${SHOTS}/09-beheer-dashboard.png`, fullPage: true });
   await h.goto(`${B}/beheer/opdrachten?status=in_controle`);

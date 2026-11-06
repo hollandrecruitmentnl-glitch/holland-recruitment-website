@@ -198,6 +198,20 @@ export const mails = {
     }),
   }),
 
+  /** V43: beheer beveelt een bedrijf passende freelancers aan (ondertekend door het team, verstuurd vanaf sales@). */
+  freelancerTips: (aan: string, voornaam: string, bedrijf: string, notitie: string, profielen: { titel: string; sub: string; url: string }[], zoekUrl: string) => ({
+    aan, onderwerp: `Freelancers die passen bij ${bedrijf}`, team: 'sales' as const,
+    html: layout({
+      u: true, team: 'sales', preheader: `${profielen.length} freelancers op ons platform die passen bij ${bedrijf}.`,
+      titel: 'Freelancers die bij u passen',
+      intro: `Beste ${v(voornaam || 'heer/mevrouw')},<br><br>${notitie ? v(notitie).replace(/\n/g, '<br>') + '<br><br>' : ''}Op het platform van Holland Recruitment staan freelancers die passen bij ${v(bedrijf)}. Met de knop <b>Stuur bericht</b> op hun profiel neemt u direct contact op.`,
+      lijst: profielen,
+      knop: { tekst: 'Meer freelancers bekijken', url: zoekUrl },
+      klein: 'Liever dat wij een selectie maken en de gesprekken plannen? Beantwoord deze e-mail, dan nemen we contact met u op.',
+      afsluiting: 'Met vriendelijke groet,<br>het team van',
+    }),
+  }),
+
   intern: (team: 'info' | 'sales', onderwerp: string, rijen: [string, string][], url: string) => verstuurVeilig({
     aan: team === 'sales' ? (process.env.MELDING_SALES || 'sales@holland-recruitment.nl') : (process.env.MELDING_INFO || 'info@holland-recruitment.nl'),
     onderwerp, team,

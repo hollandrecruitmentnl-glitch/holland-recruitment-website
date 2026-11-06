@@ -6,7 +6,8 @@ import { vereis, hashWachtwoord } from '@/lib/auth';
 import { q, one } from '@/lib/db';
 import { logboek } from '@/lib/log';
 import { mails } from '@/lib/emails';
-import { SITE } from '@/lib/mail';
+import { SITE, verstuur } from '@/lib/mail';
+import { vakgebiedNaam } from '@/lib/constants';
 import { REACTIETERMIJN } from '@/lib/constants';
 import { datumNL, randomToken, sha256, str } from '@/lib/util';
 import { draaiFeeds } from '@/lib/feeds';
@@ -93,6 +94,39 @@ export async function gesprekInzage(fd: FormData) {
   if (!['melding', 'fraudecontrole', 'support', 'bemiddeling'].includes(reden)) redirect(`/beheer/gesprekken?fout=reden`);
   await logboek(a.id, 'gesprek_inzage', 'gesprek', id, { reden });
   redirect(`/beheer/gesprekken/${id}`);
+}
+
+/** V43: passende freelancers per e-mail aanbevelen aan een bedrijf (vanaf sales@, ondertekend door het team). */
+export async function stuurFreelancerTips(fd: FormData) {
+  const a = await beheer();
+  const id = str(fd.get('id'));
+  if (!/^[0-9a-f-]{36}$/.test(id)) return;
+  const slugs = fd.getAll('freelancer').map(x => String(x)).filter(x => /^[a-z0-9-]{3,120}$/.test(x)).slice(0, 5);
+  const notitie = str(fd.get('notitie'), 800);
+  const zoekVak = str(fd.get('zoekvakgebied'), 60);
+  if (!slugs.length) redirect(`/beheer/bedrijven/${id}?fout=geen-freelancers#tips`);
+  const b = await one(`select naam from bedrijven where id = $1 and status = 'actief'`, [id]);
+  const ontvanger = await one(`select a.email, a.voornaam from bedrijf_leden bl join accounts a on a.id = bl.account_id
+    where bl.bedrijf_id = $1 and a.status = 'actief' and a.email_bevestigd order by (bl.rol = 'eigenaar') desc limit 1`, [id]);
+  if (!b || !ontvanger) redirect(`/beheer/bedrijven/${id}?fout=geen-ontvanger#tips`);
+  const fr = await q(`select f.slug, f.functietitel, f.regio, f.vakgebied, f.beschikbaarheid, a.voornaam from freelancers f join accounts a on a.id = f.id
+    where f.slug = any($1) and a.status = 'actief'`, [slugs]);
+  const profielen = slugs.map(sl => fr.find((x: any) => x.slug === sl)).filter(Boolean).map((x: any) => ({
+    titel: `${x.voornaam} · ${x.functietitel}`,
+    sub: [x.regio, vakgebiedNaam(x.vakgebied), x.beschikbaarheid === 'nu' ? 'nu beschikbaar' : ''].filter(Boolean).join(' · '),
+    url: `${SITE}/freelancer/${x.slug}`,
+  }));
+  const aanhef = str(fd.get('aanhef'), 60);
+  const voornaam = aanhef || ontvanger!.voornaam || '';
+  const zoekUrl = `${SITE}/freelancers-zoeken${zoekVak ? `?vakgebied=${encodeURIComponent(zoekVak)}` : ''}`;
+  try {
+    await verstuur(mails.freelancerTips(ontvanger!.email, voornaam, b!.naam, notitie, profielen, zoekUrl));
+  } catch (e) {
+    await logboek(a.id, 'freelancer_tips_mislukt', 'bedrijf', id, { fout: String((e as Error).message).slice(0, 200) });
+    redirect(`/beheer/bedrijven/${id}?fout=mail#tips`);
+  }
+  await logboek(a.id, 'freelancer_tips_verstuurd', 'bedrijf', id, { aan: ontvanger!.email, freelancers: slugs });
+  redirect(`/beheer/bedrijven/${id}?melding=tips-verstuurd#tips`);
 }
 
 /** Beheer haalt een logo uit (of terug in) de strook "Bedrijven op ons platform". */
